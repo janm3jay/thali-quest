@@ -546,7 +546,7 @@ function adaptW(W,rating,pain){
 
 // ---------- state ----------
 let S=null;
-const V={tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
+const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
@@ -659,6 +659,7 @@ function newW(p){const w=+p.w;return{days:+p.days,fit:p.fit,body:p.body,equip:p.
 function rebuildWeek(){S.W.week=buildWorkout(S.W,weightNow());}
 function mpSig(){const t=T();return JSON.stringify([t.target,S.profile.style,!!S.profile.jain,!!S.profile.hp,S.cheat.day,S.cheat.id,S.seed]);}
 function ensurePlans(){
+  if(!S.meas)S.meas=(S.waists||[]).map(x=>({d:x.d,v:{waist:x.cm}}));
   const mk=monK(todayK());
   if(S.mp&&S.mp.start!==mk){
     const prev=S.mp.start;if(!S.chestDone)S.chestDone={};
@@ -675,7 +676,7 @@ function ensurePlans(){
 }
 function createState(p){
   const t=todayK();
-  S={v:1,profile:p,start:{w:+p.w,d:t},weights:[{d:t,kg:+p.w}],log:{},xp:0,streak:0,best:0,lastFinal:addD(t,-1),badges:{},
+  S={v:1,profile:p,start:{w:+p.w,d:t},weights:[{d:t,kg:+p.w}],meas:[],log:{},xp:0,streak:0,best:0,lastFinal:addD(t,-1),badges:{},
    stats:{logs:0,waterDays:0,proteinDays:0,workouts:0,swaps:0,cheats:0,checkins:0,chests:0,iron:0},weekQual:{},chestDone:{},
    seed:Math.floor(Math.random()*1e9),cheat:{day:6,id:'pavbhaji'},mp:null,W:newW(p)};
   ensurePlans();
@@ -797,11 +798,55 @@ function wChart(){
   const pts=ws.map((p,i)=>x(i).toFixed(1)+','+y(p.kg).toFixed(1)).join(' ');
   return '<div style="overflow-x:auto"><svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Weight over time"><line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(tw).toFixed(1)+'" y2="'+y(tw).toFixed(1)+'" stroke="var(--gold)" stroke-dasharray="4 4" stroke-width="1.5"/><text x="'+(W-R)+'" y="'+(y(tw)-4).toFixed(1)+'" text-anchor="end" font-size="10" fill="var(--muted)">goal '+tw+' kg</text><polyline points="'+pts+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>'+ws.map((p,i)=>'<circle cx="'+x(i).toFixed(1)+'" cy="'+y(p.kg).toFixed(1)+'" r="'+(i===ws.length-1?4.5:3)+'" fill="var(--accent)"/>').join('')+'<text x="'+L+'" y="'+(H-6)+'" font-size="10" fill="var(--muted)">'+ws[0].d.slice(5)+'</text><text x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+ws[ws.length-1].d.slice(5)+'</text><text x="'+(L-4)+'" y="'+(y(ws[0].kg)+4).toFixed(1)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+ws[0].kg+'</text><text x="'+(L-4)+'" y="'+(y(ws[ws.length-1].kg)+4).toFixed(1)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+ws[ws.length-1].kg+'</text></svg></div>';
 }
+function lineChart(ws,vk,goal){
+  if(ws.length<2)return '<p class="note">Log at least twice to see the trend.</p>';
+  const vals=ws.map(x=>x[vk]).concat(goal!=null?[goal]:[]),mn=Math.min(...vals)-1,mx=Math.max(...vals)+1;
+  const W=320,H=130,L=34,R=10,Tp=10,B=22;
+  const x=i=>L+(W-L-R)*(i/(ws.length-1)),y=v=>Tp+(H-Tp-B)*(1-(v-mn)/(mx-mn));
+  const pts=ws.map((p,i)=>x(i).toFixed(1)+','+y(p[vk]).toFixed(1)).join(' ');
+  return '<div style="overflow-x:auto"><svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Trend over time"><polyline points="'+pts+'" fill="none" stroke="var(--pop)" stroke-width="2.5" stroke-linejoin="round"/>'+ws.map((p,i)=>'<circle cx="'+x(i).toFixed(1)+'" cy="'+y(p[vk]).toFixed(1)+'" r="'+(i===ws.length-1?4.5:3)+'" fill="var(--pop)"/>').join('')+'<text x="'+L+'" y="'+(H-6)+'" font-size="10" fill="var(--muted)">'+ws[0].d.slice(5)+'</text><text x="'+(W-R)+'" y="'+(H-6)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+ws[ws.length-1].d.slice(5)+'</text><text x="'+(L-4)+'" y="'+(y(ws[0][vk])+4).toFixed(1)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+ws[0][vk]+'</text><text x="'+(L-4)+'" y="'+(y(ws[ws.length-1][vk])+4).toFixed(1)+'" text-anchor="end" font-size="10" fill="var(--muted)">'+ws[ws.length-1][vk]+'</text></svg></div>';
+}
+const MEAS=[
+ ['neck','Neck','Just below the Adam\u2019s apple, at the narrowest point',20,70],
+ ['shoulder','Shoulders','Around the widest part of your shoulders, arms relaxed',70,200],
+ ['chest','Chest','Under the armpits across the chest, breathing normally',50,220],
+ ['arm','Upper arm','Relaxed, halfway between shoulder and elbow. Use the same arm every time',15,70],
+ ['waist','Waist','Around your belly button, relaxed, after breathing out',40,250],
+ ['hip','Hips','Around the widest part of your hips and buttocks',50,250],
+ ['thigh','Thigh','Halfway between hip crease and knee, standing',25,120],
+ ['calf','Calf','Around the widest part of your calf',15,70]
+];
+function lastOf(k){for(let i=S.meas.length-1;i>=0;i--){const v=S.meas[i].v[k];if(v!=null)return v;}return null;}
+function firstOf(k){for(const e of S.meas){if(e.v[k]!=null)return e.v[k];}return null;}
+function seriesOf(k){return S.meas.filter(e=>e.v[k]!=null).map(e=>({d:e.d,val:e.v[k]}));}
+function navyFat(){
+  const p=S.profile,n=lastOf('neck'),w=lastOf('waist'),hp=lastOf('hip'),h=+p.h;let r=null;
+  if(n==null||w==null||w<=n)return null;
+  if(p.sex==='m')r=495/(1.0324-0.19077*Math.log10(w-n)+0.15456*Math.log10(h))-450;
+  else if(hp!=null)r=495/(1.29579-0.35004*Math.log10(w+hp-n)+0.221*Math.log10(h))-450;
+  return(r==null||r<2||r>60)?null:Math.round(r*10)/10;
+}
+function measCard(){
+  const have=MEAS.filter(m=>lastOf(m[0])!=null);
+  let h='<section class="card"><div class="row sp"><h2>Body measurements</h2><button class="btn sm" data-a="meassheet">Log</button></div>';
+  if(!have.length)return h+'<p class="note" style="margin-top:8px">Measure with a soft tape, in the morning, relaxed. Log every 1 to 2 weeks. Your body often shrinks before the scale moves.</p></section>';
+  h+='<div class="col" style="margin-top:10px;gap:6px">';
+  for(const m of have){const l=lastOf(m[0]),f=firstOf(m[0]),d=Math.round((l-f)*10)/10;h+='<div class="row sp"><span>'+m[1]+'</span><span><b>'+l+' cm</b> <small>'+(d===0?'start':(d>0?'+':'')+d+' cm')+'</small></span></div>';}
+  h+='</div>';
+  const w=lastOf('waist');
+  if(w!=null){const r=w/(+S.profile.h),lab=r<0.5?'Healthy':r<0.6?'Raised':'High';h+='<p style="margin-top:10px"><b>Waist-to-height ratio: '+r.toFixed(2)+'</b> <span class="pill'+(r>=0.6?' warn':'')+'">'+lab+'</span><br><small>Aim for below 0.5. It is a better health marker than BMI alone.</small></p>';}
+  const bf=navyFat();
+  if(bf!=null)h+='<p style="margin-top:8px"><b>Estimated body fat: '+bf+'%</b><br><small>US Navy tape method. It can be off by 3 to 4 points, so watch the trend, not the number.</small></p>';
+  const mk=have.some(m=>m[0]===V.mk)?V.mk:have[0][0];
+  h+='<div class="row wrap" style="margin:12px 0 6px;gap:6px">'+have.map(m=>'<button class="chip'+(m[0]===mk?' on':'')+'" data-a="mkey" data-k="'+m[0]+'">'+m[1]+'</button>').join('')+'</div>'+lineChart(seriesOf(mk),'val');
+  return h+'</section>';
+}
 function viewMe(){
   const t=T(),p=S.profile,now=weightNow(),tw=+p.tw,span=Math.max(0.1,S.start.w-tw),pct=clamp((S.start.w-now)/span*100,0,100);
   const eta=isFinite(t.weeks)&&t.toLose>0?pkey(addD(todayK(),Math.round(t.weeks*7))).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):null;
   let h='<h1>Me</h1>';
   h+='<section class="card"><div class="row sp"><h2>Weight</h2><button class="btn sm" data-a="weightsheet">Log weight</button></div><div class="row sp" style="margin:10px 0 6px"><span>Start <b>'+S.start.w+' kg</b></span><span>Now <b>'+now+' kg</b></span><span>Goal <b>'+tw+' kg</b></span></div><div class="prog"><i style="width:'+pct.toFixed(0)+'%"></i></div>'+wChart()+'</section>';
+  h+=measCard();
   h+='<section class="card"><h2 style="margin-bottom:10px">Your numbers</h2><div class="stat"><div><b>'+t.bmi+'</b><span>BMI · '+t.cat+'</span></div><div><b>'+fmtN(t.tdee)+'</b><span>Maintenance kcal</span></div><div><b>'+fmtN(t.target)+'</b><span>Daily target kcal</span></div><div><b>'+t.deficit+'</b><span>Daily deficit kcal</span></div></div><p class="note" style="margin-top:10px">Protein '+t.protein+' g · Carbs '+t.carbs+' g · Fat '+t.fat+' g a day. Healthy weight for your height: '+t.hmin+' to '+t.hmax+' kg.'+(eta?' At about '+t.rate+' kg a week you reach your goal around <b>'+eta+'</b>.':'')+'</p>'+t.warn.map(w=>'<p class="err" style="margin-top:8px">'+w+'</p>').join('')+'<button class="btn ghost full" style="margin-top:12px" data-a="editprofile">Edit my details</button></section>';
   h+='<section class="card"><h2>About the numbers</h2><div class="col note" style="margin-top:8px"><p><b>Food calories</b> are estimates for typical home-cooked portions. Each is worked out from protein, carbs and fat using 4, 4 and 9 kcal per gram, the same Atwater factors used in ICMR-NIN’s Indian Food Composition Tables 2017. That book lists raw ingredients only, so the cooked-dish values here are not copied from it and are not lab verified. Oil, ghee and portion size change the real figure, so adjust quantities or add a custom food. For packaged food, trust the label.</p><p><b>BMI</b> uses Asian cut-offs: healthy is 18.5 to 22.9. <b>Maintenance</b> uses the Mifflin-St Jeor formula times your activity. <b>Deficit</b> assumes about 7,700 kcal per kg of body weight.</p><p><b>Videos</b> open a YouTube search for each exercise, so you can pick a trainer you like.</p><p>This is general guidance, not medical advice. Check with a doctor first if you have a health condition, are pregnant, or are under 18.</p><p>Your data is saved in this browser only.</p></div></section>';
   h+='<section class="card"><button class="btn ghost full" data-a="reset">'+(V.resetAsk?'Tap again to erase everything':'Reset all data')+'</button></section>';
@@ -891,6 +936,7 @@ function sheetBody(){
     return '<h2>Week '+S.W.num+' check-in</h2><p class="muted">You finished '+done+' of '+tot+' sessions.</p><div class="col"><b>How did the workouts feel?</b>'+opt('cirate','easy','Too easy','Make it harder',s.rate)+opt('cirate','right','About right','Add a little more',s.rate)+opt('cirate','hard','Too hard','Ease off',s.rate)+'<button class="opt'+(s.pain?' on':'')+'" data-a="ciflip"><b>My knees or joints hurt</b><small>Switch to low impact moves</small></button><label class="field">Your weight today (kg)<input type="number" inputmode="decimal" id="ciw" value="'+weightNow()+'"></label><p class="err">'+(s.err||'')+'</p><button class="btn full" data-a="cisubmit">Build next week</button></div>';
   }
   if(s.type==='weight')return '<h2>Log your weight</h2><label class="field">Weight today (kg)<input type="number" inputmode="decimal" id="nw" value="'+weightNow()+'"></label><button class="btn full" data-a="saveweight">Save</button>';
+  if(s.type==='meas'){return '<h2>Log measurements</h2><p class="muted">Fill in what you can. Leave the rest blank. Use a soft tape, relaxed, in the morning.</p>'+MEAS.map(m=>{const lv=lastOf(m[0]);return '<label class="field">'+m[1]+' (cm)<input type="number" inputmode="decimal" id="m_'+m[0]+'" value="'+(lv==null?'':lv)+'" placeholder="cm"><small style="font-weight:400">'+m[2]+'</small></label>';}).join('')+'<p class="err" id="merr"></p><button class="btn full" data-a="savemeas">Save</button>';}
   if(s.type==='chest')return '<h2>Weekly chest opened</h2><p>You had '+s.n+' good days last week. <b>+150 XP</b> added. Keep going.</p><button class="btn full" data-a="closesheet">Nice</button>';
   return '';
 }
@@ -982,6 +1028,16 @@ function onClick(e){
       rebuildWeek();V.tday=null;V.sheet=null;commit();toast(msg);return;}
     case 'weightsheet':V.sheet={type:'weight'};render();return;
     case 'saveweight':{const kg=+$('#nw').value;if(!(kg>=30&&kg<=250))return;S.weights.push({d:todayK(),kg});V.sheet=null;commit();return;}
+    case 'meassheet':V.sheet={type:'meas'};render();return;
+    case 'mkey':V.mk=d.k;render();return;
+    case 'savemeas':{
+      const vals={};let any=false;
+      for(const m of MEAS){const raw=$('#m_'+m[0]).value;if(raw===''||raw==null)continue;const n=+raw;
+        if(!(n>=m[3]&&n<=m[4])){$('#merr').textContent=m[1]+' should be between '+m[3]+' and '+m[4]+' cm.';return;}
+        vals[m[0]]=n;any=true;}
+      if(!any){$('#merr').textContent='Enter at least one measurement.';return;}
+      const t=todayK();let e=S.meas.find(x=>x.d===t);if(e)Object.assign(e.v,vals);else S.meas.push({d:t,v:vals});
+      V.sheet=null;commit();toast('Measurements saved');return;}
     case 'editprofile':V.form=Object.assign({},S.profile);V.editing=true;V.onb=0;render();window.scrollTo(0,0);return;
     case 'reset':{if(!V.resetAsk){V.resetAsk=true;render();return;}try{localStorage.removeItem(KEY);}catch(x){}S=null;V.form=blankForm();V.editing=false;V.onb=0;V.resetAsk=false;V.tab='today';render();window.scrollTo(0,0);return;}
   }

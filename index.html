@@ -182,6 +182,7 @@ svg .ol{fill:none;stroke:#7d8591;stroke-width:1.3;stroke-linejoin:round;vector-e
 @media (prefers-reduced-motion:reduce){.fl.live{animation:none}}
 .rrow2{display:flex;align-items:center;gap:8px;margin:6px 0}.rrow2 .chip{flex:1;text-align:left}
 .rrow2 input[type=time],.rrow2 select{font:700 16px var(--body);padding:6px 8px;border:2.5px solid var(--edge);border-radius:12px;background:var(--surface);color:var(--ink);min-height:40px}
+.dstrip{display:flex;gap:6px;overflow-x:auto;padding:8px 0}.dstrip .chip{flex:none;white-space:nowrap}.dsum{background:var(--card2,rgba(127,127,127,.12));border-radius:12px;padding:10px 12px;margin-bottom:10px}.vwrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden}.vwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.vlink{background:none;border:0;padding:0;font:700 14px var(--body);color:var(--cyan);cursor:pointer}
 </style>
 </head><body>
 <div id="app"></div><nav id="nav"></nav><div id="sheetwrap"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -1303,7 +1304,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 reminders';
+const APP_VER='2026.10.23 diary+videos';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1529,7 +1530,7 @@ function viewToday(){
   let h=hdr();
   h+='<section class="card ringcard">'+ring(t.k,tg.target)+'<div class="macros">'+mbar('Protein',t.p,tg.protein,'p')+mbar('Carbs',t.c,tg.carbs,'c')+mbar('Fat',t.f,tg.fat,'f')+mbar('Fibre',t.fi,tg.fibre,'fi')+'<p class="left">'+(left>=0?'<b>'+left+'</b> kcal left':'<b>'+(-left)+'</b> kcal over')+'</p></div></section>';
   h+=questsCard(k);
-  h+='<section class="card"><h2 style="margin-bottom:10px">Food log</h2>'+SLOTS.map(s=>slotBlock(s[0],s[1],k,dl)).join('')+'</section>';
+  h+='<section class="card"><div class="row sp" style="margin-bottom:10px"><h2>Food log</h2><button class="btn sm ghost" data-a="diary">History</button></div>'+SLOTS.map(s=>slotBlock(s[0],s[1],k,dl)).join('')+'</section>';
   let d='';for(let i=1;i<=8;i++)d+='<button class="drop'+(dl.water>=i?' on':'')+'" data-a="water" data-n="'+i+'" aria-label="Glass '+i+'">'+ic('drop')+'</button>';
   h+='<section class="card"><div class="row sp"><h2>Water</h2><small>'+dl.water+' of 8 glasses</small></div><div class="drops" style="margin-top:10px">'+d+'</div></section>';
   return h;
@@ -1561,7 +1562,7 @@ function amtText(it){const e=EX[it.ex];const side=e.side?' each side':'';
   return it.sets+' × '+it.amt+side;}
 function exRow(di,i,it){
   const e=EX[it.ex],isToday=true,lg=(it.part==='main'&&(it.u==='reps'||it.u==='sec'))?liftLast(it.ex):null;
-  return '<div class="ex'+(it.done?' done':'')+'"><button class="qc" style="'+(it.done?'background:var(--accent);border-color:var(--accent);color:var(--on-accent)':'')+'" data-a="exdone" data-d="'+di+'" data-i="'+i+'" aria-label="Mark done">'+(it.done?ic('check'):'')+'</button><div style="flex:1;min-width:0"><div class="row sp"><span><span class="en">'+e.name+'</span><br><small>'+(MUSCLE[e.pat]||'')+'</small></span><b>'+amtText(it)+'</b></div><div class="row wrap" style="gap:14px;margin-top:2px"><a href="'+yt(e.q)+'" target="_blank" rel="noopener">Watch video</a>'+(it.part==='main'&&(it.u==='reps'||it.u==='sec')?'<button class="btn sm ghost" data-a="liftsheet" data-d="'+di+'" data-i="'+i+'">Log'+(lg?' · last '+liftText(lg):'')+'</button>':'')+(it.part==='main'?'<button class="btn sm ghost" data-a="swapex" data-d="'+di+'" data-i="'+i+'">'+ic('swap')+' Swap</button>':'')+'</div><details><summary>How to do it</summary><p style="margin-top:4px">'+e.cue+'</p></details></div>'+muscleThumb(it.ex)+'</div>';
+  return '<div class="ex'+(it.done?' done':'')+'"><button class="qc" style="'+(it.done?'background:var(--accent);border-color:var(--accent);color:var(--on-accent)':'')+'" data-a="exdone" data-d="'+di+'" data-i="'+i+'" aria-label="Mark done">'+(it.done?ic('check'):'')+'</button><div style="flex:1;min-width:0"><div class="row sp"><span><span class="en">'+e.name+'</span><br><small>'+(MUSCLE[e.pat]||'')+'</small></span><b>'+amtText(it)+'</b></div><div class="row wrap" style="gap:14px;margin-top:2px">'+(VID[e.id]?'<button class="vlink" data-a="video" data-ex="'+e.id+'">▶ Watch video</button>':'<a href="'+yt(e.q)+'" target="_blank" rel="noopener">Watch video</a>')+''+(it.part==='main'&&(it.u==='reps'||it.u==='sec')?'<button class="btn sm ghost" data-a="liftsheet" data-d="'+di+'" data-i="'+i+'">Log'+(lg?' · last '+liftText(lg):'')+'</button>':'')+(it.part==='main'?'<button class="btn sm ghost" data-a="swapex" data-d="'+di+'" data-i="'+i+'">'+ic('swap')+' Swap</button>':'')+'</div><details><summary>How to do it</summary><p style="margin-top:4px">'+e.cue+'</p></details></div>'+muscleThumb(it.ex)+'</div>';
 }
 function viewTrain(){
   const W=S.W,td=dow(todayK()),inWeek=todayK()>=W.start&&todayK()<=addD(W.start,6),di=V.tday==null?(inWeek?td:0):V.tday;
@@ -2073,6 +2074,8 @@ function sheetExtra2(s){
   if(s.type==='musc')return muscSheet(s);
   if(s.type==='social')return socSheet(s);
   if(s.type==='rem')return remSheet(s);
+  if(s.type==='diary')return diarySheet(s);
+  if(s.type==='video')return vidSheet(s);
   return null;
 }
 function restoCard(){return '<section class="card"><h2>Eating out?</h2><p class="muted" style="margin:4px 0 10px">Pick what you plan to order, see calories against your day, then log it in one tap.</p><button class="btn" data-a="restosheet" data-s="'+restoSlotGuess()+'">Restaurant mode</button></section>';}
@@ -2451,6 +2454,65 @@ function runShortcut(){
   }catch(e){}
 }
 setTimeout(runShortcut,60);
+/* ---- Food diary (history) + in-app exercise videos ---- */
+const MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],WDAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function dayLabel(k){
+  const t=todayK();if(k===t)return 'Today';if(k===addD(t,-1))return 'Yesterday';
+  const d=pkey(k);return WDAYS[d.getDay()]+', '+d.getDate()+' '+MONS[d.getMonth()];
+}
+function diaryDays(){
+  return Object.keys(S.log).filter(k=>S.log[k]&&S.log[k].items&&S.log[k].items.length).sort().reverse().slice(0,30);
+}
+function diaryOpen(k){V.sheet={type:'diary',k:k||addD(todayK(),-1)};V.keepSc=0;render();}
+function diaryLogAgain(slot){
+  const k=V.sheet&&V.sheet.k,dl=S.log[k];if(!dl)return;
+  const t=todayK();let n=0;
+  for(const i of dl.items){
+    if(slot&&i.slot!==slot)continue;
+    if(!FD[i.f])continue;
+    addItem(t,i.slot,i.f,i.q);n++;
+  }
+  if(!n){toast('Nothing to add');return;}
+  toast(n+' item'+(n>1?'s':'')+' added to today');
+  commit();
+}
+function diarySheet(s){
+  const k=s.k,t=todayK(),dl=S.log[k],items=dl?dl.items:[];
+  const tot=dl?totalsOf(dl):{k:0,p:0,c:0,f:0,fi:0};
+  let h='<div class="row sp"><h2>Food diary</h2><button class="btn sm ghost" data-a="closesheet">Close</button></div>';
+  const days=diaryDays();
+  if(days.length){
+    h+='<div class="dstrip">'+days.map(d=>{const x=totalsOf(S.log[d]);return '<button class="chip'+(d===k?' on':'')+'" data-a="diaryday" data-k="'+d+'">'+dayLabel(d).replace(/,.*/,'')+(dayLabel(d).indexOf(',')>0?' '+pkey(d).getDate():'')+'<small> '+x.k+'</small></button>';}).join('')+'</div>';
+  }
+  h+='<div class="row sp" style="margin:10px 0"><button class="btn sm ghost" data-a="diaryday" data-k="'+addD(k,-1)+'" aria-label="Previous day">‹ Prev</button><b>'+dayLabel(k)+'</b><button class="btn sm ghost" data-a="diaryday" data-k="'+addD(k,1)+'"'+(k>=t?' disabled':'')+' aria-label="Next day">Next ›</button></div>';
+  if(!items.length){
+    return h+'<p class="muted" style="margin:14px 0">Nothing logged on this day.</p>';
+  }
+  const tg=T();
+  h+='<div class="dsum"><b>'+Math.round(tot.k)+'</b> / '+fmtN(tg.target)+' kcal<br><small>P '+Math.round(tot.p)+'g · C '+Math.round(tot.c)+'g · F '+Math.round(tot.f)+'g · Fibre '+Math.round(tot.fi)+'g'+(dl.water?' · '+dl.water+' glasses water':'')+'</small></div>';
+  for(const sl of SLOTS){
+    const its=items.filter(i=>i.slot===sl[0]);if(!its.length)continue;
+    const sk=its.reduce((a,i)=>a+i.k,0);
+    h+='<div class="slot"><div class="row sp"><div><b>'+sl[1]+'</b> <small>'+Math.round(sk)+' kcal</small></div>'+(k!==t?'<button class="btn sm ghost" data-a="diarycopy" data-s="'+sl[0]+'">Log again today</button>':'')+'</div>';
+    for(const i of its)h+='<div class="it"><span>'+esc(i.n)+' <small>'+fmtQ(i.q)+' × '+esc(i.sv)+'</small></span><em>'+i.k+'</em></div>';
+    h+='</div>';
+  }
+  if(k!==t)h+='<button class="btn" style="margin-top:12px;width:100%" data-a="diarycopy" data-s="">Log whole day again today</button>';
+  return h;
+}
+/* videos */
+const VID={wallpu:"b01muAD0_NI",inclpu:"Gvm5Q29UHbk",kneepu:"__71lgdtiB8",pushup:"i9sTjhN4Z3M",declpu:"9yoySai9DuI",diamond:"8_ILkbB9an8",pikehold:"3qHXmRDN-ig",lateral:"Y29xKcze8Ik",pikepu:"XckEEwa1BPI",dbpress:"qEwKCR5JCog",chairdip:"3ydgLFLK8e0",curl:"6DeLZ6cbgWQ",closepu:"zGEkpb42jhU",ohext:"xbNm9fRoUTw",superman:"z6PJMT2y8GQ",revsnow:"8TZmPjoY6hQ",bprow:"puaKVJOY8eg",dbrow:"6TSP1TRMUzs",onearm:"gfUg6qWohTk",chairsq:"ITv-_BkcrD0",wallsit:"JaZNYM3zAP0",squat:"DlS-GAF8Edg",goblet:"JO7D6GJ98wY",revlunge:"xrPteyQLGAo",splitsq:"zCsZwLeXrCg",jumpsq:"tZSYZdtbONc",bulg:"hiLF_pF3EJM",bridge:"KI6fjDqGZh4",donkey:"SJ1Xuz9D-ZQ",gm:"9ylRcYLSz40",slbridge:"3NXv0Nany-Q",rdl:"hQgFixeXdZo",hipthrust:"5eBDUIZ3Cio",deadbug:"g_BYB0R-4Ws",birddog:"k2azbhhuKuM",kneeplank:"ic40NXcsQ2M",plank:"ASdvN_XEl_c",bicycle:"eqg47ZuGZXQ",sideplank:"oaJ15vYERoU",climber:"BhERlhtzQ1s",legraise:"oeuKRVdhxXQ",march:"QilgMPG7OaA",walk:"tVpUCkMLgms",sn:"1xRX1MuoImw",garba:"He22jISekS0",shadow:"Q7VZf-2SwA0",jacks:"uLVt6u15L98",highk:"tx5rgpDAJRI",rope:"E6v_VcZ6qDQ",burpee:"AQ3nfN5aIuo",child:"fzM3uSrr4-g",hamstr:"pG_cWmaA1Pk",hipflex:"iZ1eZBY4fwM",cobra:"fOdrW7nf9gw",catcow:"vuyUwtHl694",chestmach:"rY0B8UFdne0",dbbench:"5Y3VZsLb1Ys",cablefly:"tYxbYHT3EAc",bbbench:"4Y2ZdHCOXok",inclpress:"OC7Qs_SAO2E",machshoulder:"e5gJP7quyGk",facepull:"6chrLjsE47c",cablelat:"qghfvzcoS2I",pushdown:"vPeQu_L-1n0",preacher:"3mtXqrkbEfI",skull:"4re6CJ0XNF8",latpd:"RTNmVfnRitA",cablerow:"OeLb503NZHk",assistpu:"gx0RWT7WbmA",bbrow:"roRrtuD7UnE",pullup:"Y44dJcTEhJE",legpress:"K5n2vg3oZa4",legext:"_FEO1ODr72s",smithsq:"iAcRGCsG_PY",bbsquat:"kRX2NfqM90g",hack:"hrciyIRwFzs",legcurl:"3gZm9wGTsEo",backext:"ENXyYltB7CM",pullthru:"OkcryKUZTZs",bbrdl:"osbkDJFMP-w",bbthrust:"S_uZP4UH6J0",cablecrunch:"3qjoXDTuyOE",pallof:"Te5VAYXy0wQ",hangknee:"p9hhX_Sx5v0",tread:"vdsaHSr1H_E",bike:"rEqRmKAQ5xM",elliptical:"3pCdU1XkNm8",stairs:"9lRWsalXSAw",rower:"4zWu1yuJ0_g",treadint:"ufhM_9eLU-s",dbkick:"TsNoEJGyUw0",cabletri:"1657VVZi0Ms",bptowel:"XKySx6ADUNQ",bpcurl:"6CsddTE-ZIk",bphammer:"dMTHYFzYFpA",hammer:"G7hy-AxQwcQ",conc:"ZcU2hN76UyA",cablecurl:"rfRdD5PKrko",wallslide:"GaP20t6ZOfU",bppress:"rtN17U6ZMYg",bpfront:"-G4CPcuQspI",shtap:"QOCn3_iOAro",dbfront:"ugPIPY7j-GM",rearfly:"dA4iqyTgx5I",calfraise:"4HQ8Am9IuME",stepcalf:"rbvyXV1uHhY",slcalf:"RsD4JeHb69g",dbcalf:"SRUtMJ0tE2A",seatcalf:"pz66Bw6HJ4s",stcalf:"GAQ-oohMhog"};
+const vidOk=id=>!!VID[id];
+function vidSheet(s){
+  const e=EX[s.ex];if(!e)return '<h2>Video</h2>';
+  const id=VID[s.ex];
+  let h='<div class="row sp"><h2>'+esc(e.name)+'</h2><button class="btn sm ghost" data-a="closesheet">Close</button></div>';
+  h+='<div class="vwrap"><iframe src="https://www.youtube-nocookie.com/embed/'+id+'?rel=0&modestbranding=1&playsinline=1" title="'+esc(e.name)+'" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>';
+  if(e.cue)h+='<p class="muted" style="margin:10px 0">'+esc(e.cue)+'</p>';
+  h+='<p class="muted" style="font-size:12px">Needs internet. If the video does not play, open it in YouTube.</p>';
+  h+='<div class="row" style="margin-top:10px;gap:8px"><a class="btn ghost" style="flex:1;text-align:center" href="https://www.youtube.com/watch?v='+id+'" target="_blank" rel="noopener">Open in YouTube</a><a class="btn ghost" style="flex:1;text-align:center" href="'+yt(e.q)+'" target="_blank" rel="noopener">More videos</a></div>';
+  return h;
+}
 
 // ---------- actions ----------
 function finishOnb(){
@@ -2475,6 +2537,10 @@ function onClick0(e){
     case 'tab':V.tab=d.t;V.sheet=null;V.resetAsk=false;render();window.scrollTo(0,0);return;
     case 'closesheet':V.sheet=null;V.delAsk=false;render();return;
     case 'rem':remOpen();return;
+    case 'diary':diaryOpen();return;
+    case 'diaryday':if(d.k<=todayK()){V.sheet={type:'diary',k:d.k};V.keepSc=0;render();}return;
+    case 'diarycopy':diaryLogAgain(d.s);return;
+    case 'video':if(VID[d.ex]){V.sheet={type:'video',ex:d.ex};V.keepSc=0;render();}return;
     case 'remon':remEnable();return;
     case 'remoff':remDisable();return;
     case 'remtest':remTest();return;

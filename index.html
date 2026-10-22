@@ -164,6 +164,11 @@ svg text{font-family:var(--body)}
 svg .b{fill:#e9ebf0;stroke:#98a0ad;stroke-width:1.2;stroke-linejoin:round}
 svg .b.s{fill:var(--gold);stroke:#b5622d}svg .b.p{fill:var(--pop);stroke:#7a0f3d;stroke-width:1.4}
 svg .ol{fill:none;stroke:#7d8591;stroke-width:1.3;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.codebox{background:var(--surface2);border:2.5px solid var(--edge);border-radius:16px;padding:12px;text-align:center;display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.codebox b{font:800 32px var(--display);letter-spacing:.22em}
+.lb{display:flex;flex-direction:column;gap:8px}.lbrow{display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--edge);border-radius:14px;padding:8px 10px}
+.lbrow.me{background:var(--accent);color:var(--on-accent)}.lbrow.me small{color:var(--on-accent);opacity:.8}
+.lbrow .rk{font:800 18px var(--display);width:24px;text-align:center}.lbrow .nm{flex:1;min-width:0}.lbrow .nm b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head><body>
 <div id="app"></div><nav id="nav"></nav><div id="sheetwrap"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -1285,12 +1290,12 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 muscle diagrams';
+const APP_VER='2026.10.23 friends';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function loadS(){try{const j=localStorage.getItem(KEY);return j?JSON.parse(j):null;}catch(e){return null;}}
-function saveS(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function saveS(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(typeof socSyncSoon==='function')socSyncSoon();}
 const pad=n=>String(n).padStart(2,'0');
 const dkey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const pkey=k=>{const a=k.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);};
@@ -1575,7 +1580,7 @@ function viewRewards(){
   const L=lvlOf(S.xp),mk=monK(todayK()),q=S.weekQual[mk]||0+0,todayQ=Object.keys(DL(todayK()).q).length>=3?1:0,wq=Math.min(5,(S.weekQual[mk]||0)+todayQ);
   let h=hdr()+'<div class="stat"><div><b>'+S.xp+'</b><span>Total XP</span></div><div><b>'+streakNow()+'</b><span>Day streak (best '+bestNow()+')</span></div><div><b>'+Object.keys(S.badges).length+'/'+BADGES.length+'</b><span>Badges</span></div><div><b>'+S.stats.workouts+'</b><span>Workouts finished</span></div></div>';
   h+='<section class="card"><div class="row sp"><h2>Weekly chest</h2><span class="pill">'+wq+' of 5 days</span></div><div class="prog" style="margin:10px 0 6px"><i style="width:'+(wq/5*100)+'%"></i></div><p class="note">A good day means 3 or more quests done. Get 5 good days between Monday and Sunday to open the chest next Monday: 150 bonus XP.</p></section>';
-  h+=freezeCard();
+  h+=freezeCard();h+=socCard();
   h+='<section class="card"><h2 style="margin-bottom:12px">Badges</h2><div class="badges">'+BADGES.map(b=>'<div class="bd'+(S.badges[b.id]?'':' lock')+'"><i>'+ic(b.i)+'</i><b>'+b.n+'</b><small>'+b.d+'</small></div>').join('')+'</div></section>';
   h+='<section class="card"><h2>How XP works</h2><p class="note" style="margin-top:6px">Quests give 15 to 40 XP each, every exercise you tick gives 3, and each badge gives 25. Levels get steadily harder: level 5 needs 960 XP and level 10 needs 4,860 XP.</p></section>';
   return h;
@@ -2051,6 +2056,7 @@ function sheetExtra2(s){
   if(s.type==='lift')return liftSheet(s);
   if(s.type==='resto')return restoSheet(s);
   if(s.type==='musc')return muscSheet(s);
+  if(s.type==='social')return socSheet(s);
   return null;
 }
 function restoCard(){return '<section class="card"><h2>Eating out?</h2><p class="muted" style="margin:4px 0 10px">Pick what you plan to order, see calories against your day, then log it in one tap.</p><button class="btn" data-a="restosheet" data-s="'+restoSlotGuess()+'">Restaurant mode</button></section>';}
@@ -2088,6 +2094,158 @@ function muscSheet(s){const e=EX[s.ex],m=musclesFor(s.ex);if(!e||!m)return '<h2>
   return '<h2>'+e.name+'</h2><p class="muted" style="margin:2px 0 10px">Muscles worked</p><div class="mstage"><div><span>'+muscleSvg('front',m[0],m[1])+'</span><small>FRONT</small></div><div><span>'+muscleSvg('back',m[0],m[1])+'</span><small>BACK</small></div></div>'
    +'<div class="row wrap" style="gap:6px;margin-top:12px">'+m[0].map(k=>tag(k,'p')).join('')+m[1].map(k=>tag(k,'s')).join('')+'</div><p class="note" style="margin-top:10px"><b style="color:var(--pop)">Pink</b> is the main target, <b style="color:var(--gold)">yellow</b> is helping.</p>'
    +'<div class="row" style="margin-top:12px"><button class="btn ghost" data-a="closesheet" style="flex:1">Close</button></div>';}
+// ---------- friends and leaderboard (Firebase) ----------
+const FBCFG={apiKey:"AIzaSyCv9StL2nBZx4zjPCVtGnnGHPFiLzFpC4o",authDomain:"thali-quest-77c59.firebaseapp.com",projectId:"thali-quest-77c59",storageBucket:"thali-quest-77c59.firebasestorage.app",messagingSenderId:"962786386636",appId:"1:962786386636:web:b5691b1de821d8387ed869"};
+const FBV='10.12.2';
+let FB=null,FBP=null,socT=0;
+function SC(){return V.soc||(V.soc={st:'idle',user:null,list:[],msg:'',sort:'week',hooked:0,at:0});}
+function socS(){if(!S.social)S.social={on:false,name:'',code:'',share:true};return S.social;}
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error('Could not load Firebase. Check your internet.'));document.head.appendChild(s);});}
+function fbInit(){
+  if(FB)return Promise.resolve(FB);
+  if(FBP)return FBP;
+  FBP=(async()=>{
+    if(!window.firebase){
+      if(typeof navigator!=='undefined'&&navigator.onLine===false)throw new Error('You are offline. Friends need an internet connection.');
+      const b='https://www.gstatic.com/firebasejs/'+FBV+'/';
+      await loadScript(b+'firebase-app-compat.js');
+      await Promise.all([loadScript(b+'firebase-auth-compat.js'),loadScript(b+'firebase-firestore-compat.js')]);
+    }
+    if(!firebase.apps.length)firebase.initializeApp(FBCFG);
+    FB={auth:firebase.auth(),db:firebase.firestore()};return FB;
+  })();
+  FBP.catch(()=>{FBP=null;});
+  return FBP;
+}
+function socErr(e){const c=(e&&e.code)||'',m=(e&&e.message)||'';
+  if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return 'Sign-in was cancelled.';
+  if(c==='auth/unauthorized-domain')return 'This website is not allowed yet. Add janm3jay.github.io under Authentication, Settings, Authorized domains.';
+  if(c==='auth/operation-not-allowed')return 'This sign-in method is not turned on in Firebase yet.';
+  if(c==='permission-denied'||/permission/i.test(m))return 'The database rules are not set up yet. Publish the rules in Firebase, then try again.';
+  if(c==='unavailable'||/offline|network/i.test(m))return 'Cannot reach the server. Check your internet and try again.';
+  return m||'Something went wrong. Try again.';}
+function socRender(){if(V.sheet&&V.sheet.type==='social'){V.keepSc=1;render();}}
+function socOpen(){V.sheet={type:'social'};V.keepSc=0;render();socStart();}
+async function socStart(silent){
+  const c=SC();
+  if(c.st==='in'&&c.user&&FB){try{await socLoad();}catch(e){c.msg=socErr(e);}socRender();return;}
+  if(!silent){c.st='loading';c.msg='';socRender();}
+  try{
+    const fb=await fbInit();
+    if(!c.hooked){c.hooked=1;
+      fb.auth.onAuthStateChanged(u=>{socAuth(u);});
+      fb.auth.getRedirectResult().catch(e=>{c.msg=socErr(e);});
+    }else{const cu=fb.auth.currentUser;if(cu)socAuth(cu);else{c.st='out';socRender();}}
+  }catch(e){if(!silent){c.st='err';c.msg=socErr(e);socRender();}}
+}
+async function socAuth(u){
+  const c=SC();
+  if(!u){c.user=null;c.list=[];c.st='out';socRender();return;}
+  c.user=u;
+  try{await socEnsure(u);await socLoad();c.st='in';c.msg='';const sd=socS();sd.on=true;saveS();}
+  catch(e){c.st='err';c.msg=socErr(e);}
+  socRender();
+}
+async function socMakeCode(uid){
+  const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  for(let t=0;t<8;t++){
+    let code='';for(let i=0;i<6;i++)code+=A[Math.floor(Math.random()*A.length)];
+    const r=FB.db.collection('codes').doc(code);
+    try{await FB.db.runTransaction(async tx=>{const s=await tx.get(r);if(s.exists)throw new Error('taken');tx.set(r,{uid});});return code;}
+    catch(e){if(e.message!=='taken')throw e;}
+  }
+  throw new Error('Could not make a friend code. Try again.');
+}
+async function socEnsure(u){
+  const sd=socS(),ref=FB.db.collection('users').doc(u.uid),snap=await ref.get(),old=snap.exists?snap.data():{};
+  let code=old.code||'';if(!code)code=await socMakeCode(u.uid);
+  sd.code=code;
+  if(!sd.name)sd.name=(old.name||(u.displayName||'').split(' ')[0]||'Player');
+  sd.name=String(sd.name).slice(0,24);
+  await socPushNow();
+}
+function socWeekGood(){const mk=monK(todayK()),tq=Object.keys(DL(todayK()).q).length>=3?1:0;return Math.min(5,(S.weekQual[mk]||0)+tq);}
+function socStats(){return{xp:S.xp,lvl:lvlOf(S.xp),streak:streakNow(),best:bestNow(),badges:Object.keys(S.badges).length,week:socWeekGood()};}
+function socProf(){const sd=socS(),p={name:sd.name||'Player',code:sd.code,share:sd.share!==false,upd:firebase.firestore.FieldValue.serverTimestamp()};
+  if(p.share)Object.assign(p,socStats());return p;}
+async function socPushNow(){const c=SC();if(!FB||!c.user)return;await FB.db.collection('users').doc(c.user.uid).set(socProf());}
+function socSyncSoon(){const c=V.soc;if(!c||!c.user||!FB)return;clearTimeout(socT);socT=setTimeout(()=>{socPushNow().catch(()=>{});},4000);}
+async function socLoad(){
+  const c=SC(),db=FB.db,fs=await db.collection('users').doc(c.user.uid).collection('friends').get(),ids=fs.docs.map(d=>d.id);
+  const docs=await Promise.all(ids.map(id=>db.collection('users').doc(id).get().catch(()=>null)));
+  c.list=docs.map((d,i)=>d&&d.exists?Object.assign({id:ids[i]},d.data()):{id:ids[i],name:'Unknown player',share:false});
+  c.at=Date.now();
+}
+async function socGoogle(){
+  const c=SC();c.st='loading';c.msg='';socRender();
+  try{
+    const fb=await fbInit();if(!c.hooked){c.hooked=1;fb.auth.onAuthStateChanged(u=>{socAuth(u);});}
+    const pr=new firebase.auth.GoogleAuthProvider();
+    try{await fb.auth.signInWithPopup(pr);}
+    catch(e){
+      if(e&&(e.code==='auth/popup-blocked'||e.code==='auth/operation-not-supported-in-this-environment'))await fb.auth.signInWithRedirect(pr);
+      else throw e;
+    }
+  }catch(e){c.st='out';c.msg=socErr(e);socRender();}
+}
+async function socGuest(){
+  const c=SC();c.st='loading';c.msg='';socRender();
+  try{const fb=await fbInit();if(!c.hooked){c.hooked=1;fb.auth.onAuthStateChanged(u=>{socAuth(u);});}await fb.auth.signInAnonymously();}
+  catch(e){c.st='out';c.msg=socErr(e);socRender();}
+}
+async function socOut(){
+  const c=SC();try{if(FB)await FB.auth.signOut();}catch(e){}
+  c.user=null;c.list=[];c.st='out';const sd=socS();sd.on=false;saveS();socRender();
+}
+async function socAdd(raw){
+  const c=SC(),sd=socS(),code=String(raw||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length!==6){c.msg='A friend code has 6 letters and numbers.';socRender();return;}
+  if(code===sd.code){c.msg='That is your own code. Share it with a friend instead.';socRender();return;}
+  try{
+    const r=await FB.db.collection('codes').doc(code).get();
+    if(!r.exists){c.msg='No one has that code. Check it with your friend.';socRender();return;}
+    const fid=r.data().uid;
+    if(fid===c.user.uid){c.msg='That is your own code.';socRender();return;}
+    if(c.list.some(f=>f.id===fid)){c.msg='Already in your list.';socRender();return;}
+    await FB.db.collection('users').doc(c.user.uid).collection('friends').doc(fid).set({since:Date.now()});
+    await socLoad();c.msg='Friend added.';
+  }catch(e){c.msg=socErr(e);}
+  socRender();
+}
+async function socRemove(id){
+  const c=SC();try{await FB.db.collection('users').doc(c.user.uid).collection('friends').doc(id).delete();await socLoad();c.msg='Removed.';}catch(e){c.msg=socErr(e);}
+  socRender();
+}
+async function socRefresh(){const c=SC();try{await socPushNow();await socLoad();c.msg='';}catch(e){c.msg=socErr(e);}socRender();}
+function socCopy(){const sd=socS();try{navigator.clipboard.writeText(sd.code);toast('Code copied');}catch(e){toast('Code: '+sd.code);}}
+function socShare(){const sd=socS(),t='Join me on Thali Quest. My friend code is '+sd.code+'. https://janm3jay.github.io/thali-quest/';
+  if(navigator.share){navigator.share({text:t}).catch(()=>{});}else{try{navigator.clipboard.writeText(t);toast('Invite copied');}catch(e){toast(t);}}}
+function socCard(){const sd=socS();
+  return '<section class="card"><h2>Friends</h2><p class="muted" style="margin:4px 0 10px">'+(sd.on?'Your friend code is <b>'+esc(sd.code||'…')+'</b>. See how your friends are doing.':'Add friends with a short code and compare XP, streaks and weekly progress. Only those few numbers are shared.')+'</p><button class="btn" data-a="social">'+(sd.on?'Open friends':'Set up friends')+'</button></section>';}
+function socSheet(s){
+  const c=SC(),sd=socS();let h='<h2>Friends</h2>';
+  const msg=c.msg?'<p class="note" style="margin:8px 0;color:var(--pop)">'+esc(c.msg)+'</p>':'';
+  if(c.st==='idle'||c.st==='loading')return h+'<p class="muted" style="margin:8px 0">Connecting…</p>';
+  if(c.st==='err')return h+msg+'<div class="col" style="margin-top:10px"><button class="btn" data-a="socretry">Try again</button><button class="btn ghost" data-a="closesheet">Close</button></div>';
+  if(c.st==='out')return h+'<p class="muted" style="margin:4px 0 10px">Sign in to get a friend code and a leaderboard with your friends.</p>'+msg
+    +'<div class="col"><button class="btn" data-a="socgoogle">Sign in with Google</button><button class="btn ghost" data-a="socguest">Continue as guest</button></div>'
+    +'<p class="note" style="margin-top:10px">What friends can see: your name, level, XP, streak, badge count and good days this week. Never your meals, weight or photos. A guest account is lost if you clear the app data, so Google is safer.</p>'
+    +'<div class="row" style="margin-top:10px"><button class="btn ghost" data-a="closesheet" style="flex:1">Close</button></div>';
+  const me=Object.assign({id:c.user.uid,name:sd.name||'Player',me:1},socStats());
+  const rows=[me].concat(c.list.filter(f=>f.share!==false&&f.xp!=null)).sort((a,b)=>c.sort==='xp'?b.xp-a.xp:c.sort==='streak'?(b.streak-a.streak||b.xp-a.xp):(b.week-a.week||b.xp-a.xp));
+  const hidden=c.list.filter(f=>f.share===false||f.xp==null);
+  h+='<div class="codebox"><small>Your friend code</small><b>'+esc(sd.code)+'</b><div class="row" style="gap:8px;justify-content:center"><button class="btn sm ghost" data-a="soccopy">Copy</button><button class="btn sm" data-a="socshare">Invite</button></div></div>'+msg
+   +'<label class="field" style="margin-top:12px">Add a friend by code<span class="row" style="gap:8px"><input id="socin" maxlength="8" autocapitalize="characters" autocomplete="off" placeholder="e.g. K7M2QX" style="flex:1"><button class="btn sm" data-a="socadd">Add</button></span></label>'
+   +'<div class="row wrap" style="gap:6px;margin:14px 0 6px">'+[['week','This week'],['xp','Total XP'],['streak','Streak']].map(a=>'<button class="chip'+(c.sort===a[0]?' on':'')+'" data-a="socsort" data-v="'+a[0]+'">'+a[1]+'</button>').join('')+'<button class="btn sm ghost" data-a="socrefresh" style="margin-left:auto">Refresh</button></div>'
+   +'<div class="lb">'+rows.map((r,i)=>'<div class="lbrow'+(r.me?' me':'')+'"><span class="rk">'+(i+1)+'</span><span class="nm"><b>'+esc(r.name||'Player')+(r.me?' (you)':'')+'</b><small>Level '+r.lvl+' · '+r.xp+' XP · '+r.streak+' day streak · '+r.week+'/5 this week</small></span>'+(r.me?'':'<button class="btn sm ghost" data-a="socrm" data-id="'+esc(r.id)+'" aria-label="Remove friend">Remove</button>')+'</div>').join('')+'</div>';
+  if(!c.list.length)h+='<p class="note" style="margin-top:8px">No friends yet. Send your code to a friend, or enter theirs above. Adding someone shows you their stats. They need to add your code to see yours.</p>';
+  if(hidden.length)h+='<p class="note" style="margin-top:8px">'+hidden.length+' friend'+(hidden.length>1?'s are':' is')+' keeping their stats private.</p>';
+  h+='<label class="field" style="margin-top:14px">Your display name<input id="socname" maxlength="24" value="'+esc(sd.name||'')+'"></label>'
+   +'<button class="chip'+(sd.share!==false?' on':'')+'" data-a="socpriv" style="margin-top:8px">Share my stats with friends: '+(sd.share!==false?'on':'off')+'</button>'
+   +'<div class="row" style="margin-top:14px;gap:8px"><button class="btn ghost" data-a="socout" style="flex:1">Sign out</button><button class="btn ghost" data-a="closesheet" style="flex:1">Close</button></div>';
+  return h;
+}
+setTimeout(()=>{try{if(typeof S!=='undefined'&&S&&S.social&&S.social.on)socStart(true);}catch(e){}},2500);
 
 // ---------- actions ----------
 function finishOnb(){
@@ -2111,6 +2269,18 @@ function onClick(e){
     case 'oncancel':V.form=null;V.editing=false;V.onb=0;V.err='';render();return;
     case 'tab':V.tab=d.t;V.sheet=null;V.resetAsk=false;render();window.scrollTo(0,0);return;
     case 'closesheet':V.sheet=null;V.delAsk=false;render();return;
+    case 'social':socOpen();return;
+    case 'socretry':socStart();return;
+    case 'socgoogle':socGoogle();return;
+    case 'socguest':socGuest();return;
+    case 'socout':socOut();return;
+    case 'socadd':socAdd($('#socin')?$('#socin').value:'');return;
+    case 'socrm':socRemove(d.id);return;
+    case 'socrefresh':socRefresh();return;
+    case 'soccopy':socCopy();return;
+    case 'socshare':socShare();return;
+    case 'socsort':SC().sort=d.v;socRender();return;
+    case 'socpriv':{const sd=socS();sd.share=sd.share===false;saveS();socPushNow().catch(()=>{});socRender();return;}
     case 'muscsheet':V.sheet={type:'musc',ex:d.ex};V.keepSc=0;render();return;
     case 'liftsheet':V.sheet={type:'lift',d:+d.d,i:+d.i};render();return;
     case 'savelift':{
@@ -2225,6 +2395,7 @@ function onInput(e){
 }
 function onChange(e){
   const t=e.target;if(!S)return;
+  if(t.id==='socname'){const sd=socS();sd.name=t.value.trim().slice(0,24)||'Player';saveS();socPushNow().catch(()=>{});return;}
   if(t.id==='phin'){const f=t.files&&t.files[0];t.value='';addPhotoFile(f);return;}
   if(t.id==='rsin'){const f=t.files&&t.files[0];t.value='';readRestore(f);return;}
   if(t.id==='s_days'||t.id==='s_equip'||t.id==='s_body'){

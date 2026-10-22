@@ -137,6 +137,7 @@ nav button.on{background:var(--accent);color:var(--on-accent)}
 #toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
 @media (prefers-reduced-motion:reduce){#toast,.btn,.xpbar i{transition:none;animation:none}}
 .note{font-size:13px;color:var(--muted)}
+.band{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:2px dashed var(--line)}.band:first-child{border-top:0}.band i{width:14px;height:14px;border-radius:50%;border:2.5px solid var(--edge);flex:none}
 svg text{font-family:var(--body)}
 </style>
 </head><body>
@@ -447,7 +448,7 @@ function calcPlan(p){
   const fat=Math.round(0.27*target/9);
   const carbs=Math.max(0,Math.round((target-protein*4-fat*9)/4));
   const cat=bmi<18.5?'Underweight':bmi<23?'Healthy':bmi<25?'Overweight':'Obese';
-  return{bmi:Math.round(bmi*10)/10,cat,bmr:Math.round(bmr),tdee,target,deficit,rate:Math.round(rate*100)/100,weeks,protein,fat,carbs,fibre:30,hmin,hmax,toLose:Math.round(toLose*10)/10,mode,warn};
+  return{bmi:Math.round(bmi*10)/10,cat,bmr:Math.round(bmr),tdee,target,deficit,rate:Math.round(rate*100)/100,weeks,protein,fat,carbs,fibre:30,ideal:Math.round(21*(h/100)**2),w23:Math.round(23*(h/100)**2),w25:Math.round(25*(h/100)**2),hmin,hmax,toLose:Math.round(toLose*10)/10,mode,warn};
 }
 
 // ---------- exercises ----------
@@ -932,13 +933,41 @@ function measCard(){
   h+='<div class="row wrap" style="margin:12px 0 6px;gap:6px">'+have.map(m=>'<button class="chip'+(m[0]===mk?' on':'')+'" data-a="mkey" data-k="'+m[0]+'">'+m[1]+'</button>').join('')+'</div>'+lineChart(seriesOf(mk),'val');
   return h+'</section>';
 }
+function bmiCat(b){return b<18.5?'Underweight':b<23?'Healthy':b<25?'Overweight':'Obese';}
+function bmiScale(b){
+  const W=320,L=14,bw=W-2*L,mn=15,mx=42,X=v=>L+bw*(clamp(v,mn,mx)-mn)/(mx-mn);
+  const segs=[[15,18.5,'--cyan'],[18.5,23,'--accent'],[23,25,'--gold'],[25,42,'--chili']];
+  let s='<svg viewBox="0 0 '+W+' 64" width="100%" role="img" aria-label="BMI scale. Your BMI is '+b.toFixed(1)+'"><defs><clipPath id="bmiclip"><rect x="'+L+'" y="27" width="'+bw+'" height="14" rx="7"/></clipPath></defs><g clip-path="url(#bmiclip)">';
+  segs.forEach(g=>{s+='<rect x="'+X(g[0]).toFixed(1)+'" y="27" width="'+(X(g[1])-X(g[0])+0.5).toFixed(1)+'" height="14" style="fill:var('+g[2]+')"/>';});
+  s+='</g><rect x="'+L+'" y="27" width="'+bw+'" height="14" rx="7" style="fill:none;stroke:var(--edge)" stroke-width="2.5"/>';
+  [18.5,23,25].forEach(v=>{s+='<text x="'+X(v).toFixed(1)+'" y="57" text-anchor="middle" font-size="10" style="fill:var(--muted)">'+v+'</text>';});
+  const x=X(b),anc=x>W-52?'end':x<52?'start':'middle',tx=anc==='end'?x+8:anc==='start'?x-8:x;
+  s+='<polygon points="'+(x-6).toFixed(1)+',15 '+(x+6).toFixed(1)+',15 '+x.toFixed(1)+',26" style="fill:var(--pop);stroke:var(--edge)" stroke-width="2" stroke-linejoin="round"/><text x="'+tx.toFixed(1)+'" y="10" text-anchor="'+anc+'" font-size="12" font-weight="700" style="fill:var(--ink)">You '+b.toFixed(1)+'</text></svg>';
+  return s;
+}
+function idealCard(t){
+  const p=S.profile,h2=Math.pow(p.h/100,2),now=weightNow(),bmi=now/h2,cat=bmiCat(bmi),hm=t.hmin,hx=t.hmax,tw=+p.tw,gb=tw/h2;
+  let msg;
+  if(now>hx)msg='To reach the healthy range, lose about <b>'+(Math.round((now-hx)*10)/10)+' kg</b>, down to '+hx+' kg.';
+  else if(now<hm)msg='To reach the healthy range, gain about <b>'+(Math.round((hm-now)*10)/10)+' kg</b>, up to '+hm+' kg.';
+  else msg='You are inside the healthy range. Keep your weight steady.';
+  let gm;
+  if(gb<18.5)gm='Your goal of '+tw+' kg is below the healthy range. Consider a higher goal.';
+  else if(gb<23)gm='Your goal of '+tw+' kg is inside the healthy range.';
+  else gm='Your goal of '+tw+' kg is BMI '+gb.toFixed(1)+' ('+bmiCat(gb)+'). That is a good first milestone, and you can aim lower once you reach it.';
+  const rows=[['Underweight','Below '+hm+' kg','--cyan'],['Healthy',hm+' to '+hx+' kg','--accent'],['Overweight',hx+' to '+t.w25+' kg','--gold'],['Obese',t.w25+' kg and above','--chili']];
+  let h='<section class="card"><h2>Ideal weight and BMI</h2><p class="muted" style="margin:4px 0 8px">At '+p.h+' cm, a healthy weight is <b>'+hm+' to '+hx+' kg</b> (BMI 18.5 to 22.9). Your ideal is about <b>'+t.ideal+' kg</b>, the middle of that range.</p>'+bmiScale(bmi)+'<div style="margin-top:6px">';
+  for(const r of rows)h+='<div class="band"><i style="background:var('+r[2]+')"></i><span style="flex:1;font-weight:'+(r[0]===cat?'800':'500')+'">'+r[0]+'</span><span>'+r[1]+'</span>'+(r[0]===cat?'<span class="pill">You</span>':'')+'</div>';
+  return h+'</div><p style="margin-top:10px">'+msg+'</p><p class="note" style="margin-top:6px">'+gm+'</p><p class="note" style="margin-top:6px">These are the Asian BMI ranges used for Indians. BMI cannot tell muscle from fat, so also watch your waist-to-height ratio under Body measurements.</p></section>';
+}
 function viewMe(){
   const t=T(),p=S.profile,now=weightNow(),tw=+p.tw,span=Math.max(0.1,S.start.w-tw),pct=clamp((S.start.w-now)/span*100,0,100);
   const eta=isFinite(t.weeks)&&t.toLose>0?pkey(addD(todayK(),Math.round(t.weeks*7))).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):null;
   let h='<h1>Me</h1>';
   h+='<section class="card"><div class="row sp"><h2>Weight</h2><button class="btn sm" data-a="weightsheet">Log weight</button></div><div class="row sp" style="margin:10px 0 6px"><span>Start <b>'+S.start.w+' kg</b></span><span>Now <b>'+now+' kg</b></span><span>Goal <b>'+tw+' kg</b></span></div><div class="prog"><i style="width:'+pct.toFixed(0)+'%"></i></div>'+wChart()+'</section>';
   h+=measCard();
-  h+='<section class="card"><h2 style="margin-bottom:10px">Your numbers</h2><div class="stat"><div><b>'+t.bmi+'</b><span>BMI · '+t.cat+'</span></div><div><b>'+fmtN(t.tdee)+'</b><span>Maintenance kcal</span></div><div><b>'+fmtN(t.target)+'</b><span>Daily target kcal</span></div><div><b>'+t.deficit+'</b><span>Daily deficit kcal</span></div></div><p class="note" style="margin-top:10px">Protein '+t.protein+' g · Carbs '+t.carbs+' g · Fat '+t.fat+' g a day. Healthy weight for your height: '+t.hmin+' to '+t.hmax+' kg.'+(eta?' At about '+t.rate+' kg a week you reach your goal around <b>'+eta+'</b>.':'')+'</p>'+t.warn.map(w=>'<p class="err" style="margin-top:8px">'+w+'</p>').join('')+'<button class="btn ghost full" style="margin-top:12px" data-a="editprofile">Edit my details</button></section>';
+  h+='<section class="card"><h2 style="margin-bottom:10px">Your numbers</h2><div class="stat"><div><b>'+(now/Math.pow(p.h/100,2)).toFixed(1)+'</b><span>BMI · '+bmiCat(now/Math.pow(p.h/100,2))+'</span></div><div><b>'+fmtN(t.tdee)+'</b><span>Maintenance kcal</span></div><div><b>'+fmtN(t.target)+'</b><span>Daily target kcal</span></div><div><b>'+t.deficit+'</b><span>Daily deficit kcal</span></div></div><p class="note" style="margin-top:10px">Protein '+t.protein+' g · Carbs '+t.carbs+' g · Fat '+t.fat+' g a day. Healthy weight for your height: '+t.hmin+' to '+t.hmax+' kg.'+(eta?' At about '+t.rate+' kg a week you reach your goal around <b>'+eta+'</b>.':'')+'</p>'+t.warn.map(w=>'<p class="err" style="margin-top:8px">'+w+'</p>').join('')+'<button class="btn ghost full" style="margin-top:12px" data-a="editprofile">Edit my details</button></section>';
+  h+=idealCard(t);
   h+='<section class="card"><h2>About the numbers</h2><div class="col note" style="margin-top:8px"><p><b>Food calories</b> are estimates for typical home-cooked portions. Each is worked out from protein, carbs and fat using 4, 4 and 9 kcal per gram, the same Atwater factors used in ICMR-NIN’s Indian Food Composition Tables 2017. That book lists raw ingredients only, so the cooked-dish values here are not copied from it and are not lab verified. Oil, ghee and portion size change the real figure, so adjust quantities or add a custom food. For packaged food, trust the label.</p><p><b>Fibre</b> values are estimates per serving, and are already part of the carbs. Aim for about 30 g a day. Raise fibre slowly and drink plenty of water, or you may get gas and bloating.</p><p><b>BMI</b> uses Asian cut-offs: healthy is 18.5 to 22.9. <b>Maintenance</b> uses the Mifflin-St Jeor formula times your activity. <b>Deficit</b> assumes about 7,700 kcal per kg of body weight.</p><p><b>Videos</b> open a YouTube search for each exercise, so you can pick a trainer you like.</p><p>This is general guidance, not medical advice. Check with a doctor first if you have a health condition, are pregnant, or are under 18.</p><p>Your data is saved in this browser only.</p></div></section>';
   h+='<section class="card"><button class="btn ghost full" data-a="reset">'+(V.resetAsk?'Tap again to erase everything':'Reset all data')+'</button></section>';
   return h;
@@ -971,7 +1000,7 @@ function viewOnb(){
   }else{
     const t=calcPlan(f);
     h+='<div class="col"><h1>Your numbers</h1></div><div class="stat"><div><b>'+t.bmi+'</b><span>BMI · '+t.cat+'</span></div><div><b>'+fmtN(t.tdee)+'</b><span>Maintenance kcal a day</span></div><div><b>'+fmtN(t.target)+'</b><span>Eat this many kcal a day</span></div><div><b>'+t.protein+' g</b><span>Protein a day</span></div></div>';
-    h+='<section class="card"><p>'+(t.mode==='maintain'?'Your target is at or above your current weight, so this plan keeps you at maintenance.':'You are eating <b>'+t.deficit+' kcal</b> below maintenance. That loses about <b>'+t.rate+' kg a week</b>, so '+t.toLose+' kg takes about <b>'+(isFinite(t.weeks)?Math.round(t.weeks):'many')+' weeks</b>.')+'</p></section>'+t.warn.map(w=>'<p class="err">'+w+'</p>').join('');
+    h+='<section class="card"><p>'+(t.mode==='maintain'?'Your target is at or above your current weight, so this plan keeps you at maintenance.':'You are eating <b>'+t.deficit+' kcal</b> below maintenance. That loses about <b>'+t.rate+' kg a week</b>, so '+t.toLose+' kg takes about <b>'+(isFinite(t.weeks)?Math.round(t.weeks):'many')+' weeks</b>.')+'</p><p class="note" style="margin-top:8px">Healthy weight for your height: <b>'+t.hmin+' to '+t.hmax+' kg</b> (BMI 18.5 to 22.9). Ideal: about <b>'+t.ideal+' kg</b>.</p></section>'+t.warn.map(w=>'<p class="err">'+w+'</p>').join('');
   }
   if(V.err)h+='<p class="err">'+V.err+'</p>';
   h+='<div class="row">'+(st>0?'<button class="btn ghost" data-a="onback">Back</button>':(V.editing?'<button class="btn ghost" data-a="oncancel">Cancel</button>':''))+'<button class="btn" style="flex:1" data-a="onnext">'+(st===4?(V.editing?'Save changes':'Start my quest'):'Next')+'</button></div>';

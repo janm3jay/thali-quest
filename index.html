@@ -1097,7 +1097,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 brands 2';
+const APP_VER='2026.10.23 xp undo fix';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1144,16 +1144,17 @@ const TITLES=['Chai Starter','Roti Rookie','Dal Defender','Khichdi Knight','Thep
 const lvlOf=xp=>Math.floor(Math.sqrt(xp/60))+1;
 const xpAt=L=>60*(L-1)*(L-1);
 const titleOf=L=>TITLES[Math.min(L-1,TITLES.length-1)];
-function addXP(n,why){const a=lvlOf(S.xp);S.xp+=n;const b=lvlOf(S.xp);if(b>a)toast('Level '+b+': '+titleOf(b)+'!');else toast('+'+n+' XP  '+why);}
+function addXP(n,why){if(n<0){S.xp=Math.max(0,S.xp+n);toast(n+' XP  '+why);return;}const a=lvlOf(S.xp);S.xp+=n;const b=lvlOf(S.xp);if(b>a)toast('Level '+b+': '+titleOf(b)+'!');else toast('+'+n+' XP  '+why);}
 const weightNow=()=>S.weights[S.weights.length-1].kg;
 const lostKg=()=>S.start.w-weightNow();
+const bestNow=()=>Math.max(S.best,streakNow());
 const BADGES=[
  {id:'first',n:'First bite',d:'Log your first food',i:'leaf',t:()=>S.stats.logs>=1},
  {id:'hyd',n:'Water warrior',d:'Drink 8 glasses on 3 days',i:'drop',t:()=>S.stats.waterDays>=3},
- {id:'s3',n:'3-day streak',d:'3 good days in a row',i:'flame',t:()=>S.best>=3},
- {id:'s7',n:'7-day streak',d:'A full week of good days',i:'flame',t:()=>S.best>=7},
- {id:'s14',n:'14-day streak',d:'Two weeks strong',i:'flame',t:()=>S.best>=14},
- {id:'s30',n:'30-day streak',d:'A whole month',i:'flame',t:()=>S.best>=30},
+ {id:'s3',n:'3-day streak',d:'3 good days in a row',i:'flame',t:()=>bestNow()>=3},
+ {id:'s7',n:'7-day streak',d:'A full week of good days',i:'flame',t:()=>bestNow()>=7},
+ {id:'s14',n:'14-day streak',d:'Two weeks strong',i:'flame',t:()=>bestNow()>=14},
+ {id:'s30',n:'30-day streak',d:'A whole month',i:'flame',t:()=>bestNow()>=30},
  {id:'rep',n:'First workout',d:'Finish a workout session',i:'train',t:()=>S.stats.workouts>=1},
  {id:'w5',n:'Five sessions',d:'Finish 5 workouts',i:'bolt',t:()=>S.stats.workouts>=5},
  {id:'iron',n:'Iron week',d:'Complete every session in a week',i:'trophy',t:()=>S.stats.iron>=1},
@@ -1168,8 +1169,8 @@ const BADGES=[
  {id:'l5',n:'Level 5',d:'Reach level 5',i:'star',t:()=>lvlOf(S.xp)>=5},
  {id:'l10',n:'Level 10',d:'Reach level 10',i:'star',t:()=>lvlOf(S.xp)>=10},
  {id:'l15',n:'Level 15',d:'Reach level 15',i:'star',t:()=>lvlOf(S.xp)>=15},
- {id:'s60',n:'60-day streak',d:'Two months of good days',i:'flame',t:()=>S.best>=60},
- {id:'s100',n:'100-day streak',d:'A hundred good days',i:'flame',t:()=>S.best>=100},
+ {id:'s60',n:'60-day streak',d:'Two months of good days',i:'flame',t:()=>bestNow()>=60},
+ {id:'s100',n:'100-day streak',d:'A hundred good days',i:'flame',t:()=>bestNow()>=100},
  {id:'frz',n:'Ice cold',d:'A streak freeze saved your streak',i:'snow',t:()=>(S.stats.frozen||0)>=1},
  {id:'hyd15',n:'Hydration hero',d:'Drink 8 glasses on 15 days',i:'drop',t:()=>S.stats.waterDays>=15},
  {id:'pro20',n:'Protein machine',d:'Hit your protein goal on 20 days',i:'bolt',t:()=>S.stats.proteinDays>=20},
@@ -1202,7 +1203,7 @@ const BADGES=[
  {id:'goal',n:'Goal reached',d:'Reach your target weight',i:'trophy',t:()=>weightNow()<=+S.profile.tw}
 ];
 const waistDrop=()=>{const a=(S.meas||[]).filter(m=>m.v&&m.v.waist!=null);return a.length>1?a[0].v.waist-a[a.length-1].v.waist:0;};
-function checkBadges(){for(const b of BADGES){if(!S.badges[b.id]&&b.t()){S.badges[b.id]=todayK();addXP(25,'Badge: '+b.n);}}}
+function checkBadges(){for(const b of BADGES){const has=S.badges[b.id],ok=b.t();if(!has&&ok){S.badges[b.id]=todayK();addXP(25,'Badge: '+b.n);}else if(has&&!ok&&has===todayK()){delete S.badges[b.id];addXP(-25,'Badge removed: '+b.n);}}}
 function workoutFor(k){const W=S.W;if(!W)return null;const d=dow(k);if(k<W.start||k>addD(W.start,6))return null;return W.week[d];}
 function closeOK(dl){const t=totalsOf(dl),tg=T().target,slots=new Set(dl.items.map(i=>i.slot));return slots.size>=3&&t.k>=tg*0.7&&t.k<=tg*1.05;}
 function quests(k){
@@ -1225,9 +1226,12 @@ function awardQuests(){
     if(q.close)continue;
     if(q.done&&!dl.q[q.id]){dl.q[q.id]=1;addXP(q.xp,q.label);
       if(q.id==='water')S.stats.waterDays++;if(q.id==='protein')S.stats.proteinDays++;if(q.id==='workout'&&!q.manual)S.stats.workouts++;}
+    else if(!q.done&&dl.q[q.id]){delete dl.q[q.id];addXP(-q.xp,'Undone: '+q.label);
+      if(q.id==='water')S.stats.waterDays=Math.max(0,S.stats.waterDays-1);if(q.id==='protein')S.stats.proteinDays=Math.max(0,S.stats.proteinDays-1);if(q.id==='workout'&&!q.manual)S.stats.workouts=Math.max(0,S.stats.workouts-1);}
   }
+  if(dl.q.close&&!closeOK(dl)){delete dl.q.close;addXP(-30,'Undone: day closed');}
   if(!dl.fibCounted&&totalsOf(dl).fi>=T().fibre){dl.fibCounted=1;S.stats.fibreDays=(S.stats.fibreDays||0)+1;}
-  S.best=Math.max(S.best,streakNow());
+  if(dl.fibCounted&&totalsOf(dl).fi<T().fibre){dl.fibCounted=0;S.stats.fibreDays=Math.max(0,(S.stats.fibreDays||0)-1);}
   checkBadges();
 }
 const streakNow=()=>S.streak+(Object.keys(DL(todayK()).q).length>=3?1:0);
@@ -1299,7 +1303,7 @@ function questsCard(k){
   let h='<section class="card"><div class="row sp"><h2>Today’s quests</h2><span class="pill">'+got+' of 5</span></div>';
   for(const q of qs){
     let ctl='<span class="qc">'+(q.done?ic('check'):'')+'</span>';
-    if(q.manual&&!q.done)ctl='<button class="qc" data-a="walk" aria-label="Mark walk done"></button>';
+    if(q.manual)ctl='<button class="qc'+(q.done?' on':'')+'" data-a="walk" aria-label="'+(q.done?'Undo walk':'Mark walk done')+'">'+(q.done?ic('check'):'')+'</button>';
     h+='<div class="q'+(q.done?' done':'')+'">'+ctl+'<div class="qt">'+q.label+(q.sub&&!q.done?' <small>'+q.sub+'</small>':'')+'</div><span class="xp">+'+q.xp+'</span></div>';
   }
   const ok=closeOK(dl);
@@ -1381,7 +1385,7 @@ function viewTrain(){
 }
 function viewRewards(){
   const L=lvlOf(S.xp),mk=monK(todayK()),q=S.weekQual[mk]||0+0,todayQ=Object.keys(DL(todayK()).q).length>=3?1:0,wq=Math.min(5,(S.weekQual[mk]||0)+todayQ);
-  let h=hdr()+'<div class="stat"><div><b>'+S.xp+'</b><span>Total XP</span></div><div><b>'+streakNow()+'</b><span>Day streak (best '+S.best+')</span></div><div><b>'+Object.keys(S.badges).length+'/'+BADGES.length+'</b><span>Badges</span></div><div><b>'+S.stats.workouts+'</b><span>Workouts finished</span></div></div>';
+  let h=hdr()+'<div class="stat"><div><b>'+S.xp+'</b><span>Total XP</span></div><div><b>'+streakNow()+'</b><span>Day streak (best '+bestNow()+')</span></div><div><b>'+Object.keys(S.badges).length+'/'+BADGES.length+'</b><span>Badges</span></div><div><b>'+S.stats.workouts+'</b><span>Workouts finished</span></div></div>';
   h+='<section class="card"><div class="row sp"><h2>Weekly chest</h2><span class="pill">'+wq+' of 5 days</span></div><div class="prog" style="margin:10px 0 6px"><i style="width:'+(wq/5*100)+'%"></i></div><p class="note">A good day means 3 or more quests done. Get 5 good days between Monday and Sunday to open the chest next Monday: 150 bonus XP.</p></section>';
   h+=freezeCard();
   h+='<section class="card"><h2 style="margin-bottom:12px">Badges</h2><div class="badges">'+BADGES.map(b=>'<div class="bd'+(S.badges[b.id]?'':' lock')+'"><i>'+ic(b.i)+'</i><b>'+b.n+'</b><small>'+b.d+'</small></div>').join('')+'</div></section>';
@@ -1904,7 +1908,7 @@ function onClick(e){
     case 'fbrand':V.sheet.brand=d.v;render();return;
     case 'addphoto':{const i=$('#phin');if(i)i.click();return;}
     case 'viewphoto':V.sheet={type:'photo',i:+d.i};V.delAsk=false;render();return;
-    case 'delphoto':{if(!V.delAsk){V.delAsk=true;render();return;}const p=(PH||[])[V.sheet.i];if(p){idbDel(p.id).catch(()=>{});PH.splice(V.sheet.i,1);}V.delAsk=false;V.sheet=null;render();toast('Photo deleted');return;}
+    case 'delphoto':{if(!V.delAsk){V.delAsk=true;render();return;}const p=(PH||[])[V.sheet.i];if(p){idbDel(p.id).catch(()=>{});PH.splice(V.sheet.i,1);S.stats.photos=Math.max(0,(S.stats.photos||0)-1);addXP(-10,'Photo deleted');checkBadges();saveS();}V.delAsk=false;V.sheet=null;render();toast('Photo deleted');return;}
     case 'phall':V.phAll=!V.phAll;render();return;
     case 'backup':doBackup(false);return;
     case 'backupshare':doBackup(true);return;
@@ -1938,9 +1942,11 @@ function onClick(e){
       const cf={id:'c_'+uid(),name:n,serv:sv,p,c,f,fi,k};S.custom.push(cf);regCustom(cf);
       V.sheet={type:'food',slot:V.sheet.slot,sel:cf.id,qty:1};saveS();render();return;}
     case 'delcustom':{const id=V.sheet.sel;S.custom=(S.custom||[]).filter(x=>x.id!==id);delete FD[id];V.sheet.sel=null;saveS();render();toast('Food deleted');return;}
-    case 'delitem':{const dl=DL(todayK());dl.items=dl.items.filter(i=>i.id!==d.id);saveS();render();return;}
+    case 'delitem':{const dl=DL(todayK()),it=dl.items.find(i=>i.id===d.id);dl.items=dl.items.filter(i=>i.id!==d.id);
+      if(it){S.stats.logs=Math.max(0,S.stats.logs-1);if(FD[it.f]&&FD[it.f].cheat&&dl.cheatCounted&&!dl.items.some(i=>FD[i.f]&&FD[i.f].cheat)){dl.cheatCounted=0;S.stats.cheats=Math.max(0,S.stats.cheats-1);}}
+      commit();return;}
     case 'water':{const dl=DL(todayK()),n=+d.n;dl.water=dl.water===n?n-1:n;commit();return;}
-    case 'walk':DL(todayK()).walk=true;commit();return;
+    case 'walk':{const w=DL(todayK());w.walk=!w.walk;commit();return;}
     case 'closeday':{const dl=DL(todayK());if(closeOK(dl)&&!dl.q.close){dl.q.close=1;addXP(30,'Day closed');}commit();return;}
     case 'cheatsheet':V.sheet={type:'cheat'};render();return;
     case 'cheatday':S.cheat.day=+d.i;ensurePlans();saveS();render();return;
@@ -1948,6 +1954,7 @@ function onClick(e){
     case 'nocheat':S.cheat.day=-1;ensurePlans();saveS();V.sheet=null;render();return;
     case 'exdone':{const it=S.W.week[+d.d].items[+d.i];it.done=!it.done;
       if(it.done&&!it.xpd){it.xpd=1;addXP(3,EX[it.ex].name);}
+      else if(!it.done&&it.xpd){it.xpd=0;addXP(-3,'Undone: '+EX[it.ex].name);}
       const k=dkey(new Date(pkey(S.W.start).getTime()+(+d.d)*864e5+36e5));
       if(k===todayK())awardQuests();saveS();render();return;}
     case 'swapex':V.sheet={type:'exswap',d:+d.d,i:+d.i};render();return;

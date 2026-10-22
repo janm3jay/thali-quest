@@ -33,5 +33,59 @@
    "type": "image/png",
    "purpose": "maskable"
   }
+ ],
+ "shortcuts": [
+  {
+   "name": "Log water",
+   "short_name": "Water",
+   "description": "Add a glass of water",
+   "url": "./?a=water",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  },
+  {
+   "name": "Add food",
+   "short_name": "Add food",
+   "description": "Log what you ate",
+   "url": "./?a=food",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  },
+  {
+   "name": "Today’s workout",
+   "short_name": "Workout",
+   "description": "Open your training plan",
+   "url": "./?a=train",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  },
+  {
+   "name": "Log weight",
+   "short_name": "Weight",
+   "description": "Record your weight",
+   "url": "./?a=weight",
+   "icons": [
+    {
+     "src": "icon-192.png",
+     "sizes": "192x192",
+     "type": "image/png"
+    }
+   ]
+  }
  ]
 }

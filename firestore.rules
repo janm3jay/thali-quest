@@ -28,5 +28,9 @@ service cloud.firestore {
         && request.resource.data.uid == request.auth.uid;
       allow update, delete: if false;
     }
+    // Reminder settings and the push address. Only you can read or write yours.
+    match /private/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
   }
 }

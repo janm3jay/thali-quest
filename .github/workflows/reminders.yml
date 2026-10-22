@@ -1,0 +1,40 @@
+name: Send reminders
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+concurrency:
+  group: reminders
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      VAPID_PUBLIC: ${{ secrets.VAPID_PUBLIC }}
+      VAPID_PRIVATE: ${{ secrets.VAPID_PRIVATE }}
+    steps:
+      - name: Check secrets
+        id: chk
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ] || [ -z "$VAPID_PUBLIC" ] || [ -z "$VAPID_PRIVATE" ]; then
+            echo "Secrets are not set yet, nothing to do."
+            echo "ready=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=yes" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@v4
+        if: steps.chk.outputs.ready == 'yes'
+      - uses: actions/setup-node@v4
+        if: steps.chk.outputs.ready == 'yes'
+        with:
+          node-version: 20
+      - name: Install
+        if: steps.chk.outputs.ready == 'yes'
+        run: npm install --prefix scripts --no-audit --no-fund --loglevel=error
+      - name: Send due reminders
+        if: steps.chk.outputs.ready == 'yes'
+        run: node scripts/send-reminders.js

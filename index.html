@@ -180,6 +180,8 @@ svg .ol{fill:none;stroke:#7d8591;stroke-width:1.3;stroke-linejoin:round;vector-e
 .fl.live{transform-origin:50% 90%;animation:flick 1.7s ease-in-out infinite;filter:drop-shadow(0 0 5px var(--pop))}
 @keyframes flick{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.1,1.16) rotate(-4deg)}55%{transform:scale(.95,1.05) rotate(3deg)}80%{transform:scale(1.07,1.1) rotate(-2deg)}}
 @media (prefers-reduced-motion:reduce){.fl.live{animation:none}}
+.rrow2{display:flex;align-items:center;gap:8px;margin:6px 0}.rrow2 .chip{flex:1;text-align:left}
+.rrow2 input[type=time],.rrow2 select{font:700 16px var(--body);padding:6px 8px;border:2.5px solid var(--edge);border-radius:12px;background:var(--surface);color:var(--ink);min-height:40px}
 </style>
 </head><body>
 <div id="app"></div><nav id="nav"></nav><div id="sheetwrap"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -1301,12 +1303,12 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 motion 2';
+const APP_VER='2026.10.23 reminders';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function loadS(){try{const j=localStorage.getItem(KEY);return j?JSON.parse(j):null;}catch(e){return null;}}
-function saveS(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(typeof socSyncSoon==='function')socSyncSoon();}
+function saveS(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(typeof socSyncSoon==='function')socSyncSoon();if(typeof remSyncSoon==='function')remSyncSoon();}
 const pad=n=>String(n).padStart(2,'0');
 const dkey=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 const pkey=k=>{const a=k.split('-').map(Number);return new Date(a[0],a[1]-1,a[2]);};
@@ -1685,7 +1687,7 @@ function viewMe(){
   h+='<section class="card"><h2 style="margin-bottom:10px">Your numbers</h2><div class="stat"><div><b>'+(now/Math.pow(p.h/100,2)).toFixed(1)+'</b><span>BMI · '+bmiCat(now/Math.pow(p.h/100,2))+'</span></div><div><b>'+fmtN(t.tdee)+'</b><span>Maintenance kcal</span></div><div><b>'+fmtN(t.target)+'</b><span>Daily target kcal</span></div><div><b>'+t.deficit+'</b><span>Daily deficit kcal</span></div></div><p class="note" style="margin-top:10px">Protein '+t.protein+' g · Carbs '+t.carbs+' g · Fat '+t.fat+' g a day. Healthy weight for your height: '+t.hmin+' to '+t.hmax+' kg.'+(eta?' At about '+t.rate+' kg a week you reach your goal around <b>'+eta+'</b>.':'')+'</p>'+t.warn.map(w=>'<p class="err" style="margin-top:8px">'+w+'</p>').join('')+'<button class="btn ghost full" style="margin-top:12px" data-a="editprofile">Edit my details</button></section>';
   h+=idealCard(t);
   h+=photoCard();
-  h+=backupCard();
+  h+=remCard();h+=backupCard();
   h+='<section class="card"><h2>About the numbers</h2><div class="col note" style="margin-top:8px"><p><b>Food calories</b> are estimates for typical home-cooked portions. Each is worked out from protein, carbs and fat using 4, 4 and 9 kcal per gram, the same Atwater factors used in ICMR-NIN’s Indian Food Composition Tables 2017. That book lists raw ingredients only, so the cooked-dish values here are not copied from it and are not lab verified. Oil, ghee and portion size change the real figure, so adjust quantities or add a custom food. For packaged food, trust the label.</p><p><b>Fibre</b> values are estimates per serving, and are already part of the carbs. Aim for about 30 g a day. Raise fibre slowly and drink plenty of water, or you may get gas and bloating.</p><p><b>BMI</b> uses Asian cut-offs: healthy is 18.5 to 22.9. <b>Maintenance</b> uses the Mifflin-St Jeor formula times your activity. <b>Deficit</b> assumes about 7,700 kcal per kg of body weight.</p><p><b>Videos</b> open a YouTube search for each exercise, so you can pick a trainer you like.</p><p>This is general guidance, not medical advice. Check with a doctor first if you have a health condition, are pregnant, or are under 18.</p><p>Your data is saved in this browser only.</p></div></section>';
   h+='<section class="card"><button class="btn ghost full" data-a="reset">'+(V.resetAsk?'Tap again to erase everything':'Reset all data')+'</button></section>';
   h+='<p class="note" style="text-align:center">App version '+APP_VER+'</p><p class="note" style="text-align:center;font-size:11px">Body diagram art: react-native-body-highlighter by Hicham Elabbassi, MIT licence.</p>';
@@ -2070,6 +2072,7 @@ function sheetExtra2(s){
   if(s.type==='resto')return restoSheet(s);
   if(s.type==='musc')return muscSheet(s);
   if(s.type==='social')return socSheet(s);
+  if(s.type==='rem')return remSheet(s);
   return null;
 }
 function restoCard(){return '<section class="card"><h2>Eating out?</h2><p class="muted" style="margin:4px 0 10px">Pick what you plan to order, see calories against your day, then log it in one tap.</p><button class="btn" data-a="restosheet" data-s="'+restoSlotGuess()+'">Restaurant mode</button></section>';}
@@ -2137,7 +2140,7 @@ function socErr(e){const c=(e&&e.code)||'',m=(e&&e.message)||'';
   if(c==='permission-denied'||/permission/i.test(m))return 'The database rules are not set up yet. Publish the rules in Firebase, then try again.';
   if(c==='unavailable'||/offline|network/i.test(m))return 'Cannot reach the server. Check your internet and try again.';
   return m||'Something went wrong. Try again.';}
-function socRender(){if(V.sheet&&V.sheet.type==='social'){V.keepSc=1;render();}}
+function socRender(){if(V.sheet&&(V.sheet.type==='social'||V.sheet.type==='rem')){V.keepSc=1;render();}}
 function socOpen(){V.sheet={type:'social'};V.keepSc=0;render();socStart();}
 async function socStart(silent){
   const c=SC();
@@ -2149,7 +2152,7 @@ async function socStart(silent){
       fb.auth.onAuthStateChanged(u=>{socAuth(u);});
       fb.auth.getRedirectResult().catch(e=>{c.msg=socErr(e);});
     }else{const cu=fb.auth.currentUser;if(cu)socAuth(cu);else{c.st='out';socRender();}}
-  }catch(e){if(!silent){c.st='err';c.msg=socErr(e);socRender();}}
+  }catch(e){if(!silent||(V.sheet&&V.sheet.type==='rem')){c.st='err';c.msg=socErr(e);socRender();}}
 }
 async function socAuth(u){
   const c=SC();
@@ -2347,6 +2350,107 @@ function animPop(el){
     n.animate([{transform:'scale(.88)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:300,easing:BOUNCE});
   }catch(e){}
 }
+// ---------- home-screen shortcuts and reminders ----------
+const VAPID_PUB='BKd2WMCVeEwkSiOWXkGv8NpWPN9ENCEab4MN0ubITIylGBaclQKzhN2u8jJT8idm2JRKm95sSvgMzzAOangxNgE';
+const REMDEF={on:false,tOn:{b:1,l:1,d:1,wk:1,cl:1},times:{b:'08:30',l:'13:15',d:'20:00',wk:'18:30',cl:'21:30'},water:{on:1,every:2,from:'09:00',to:'21:00'}};
+const REMNAME={b:'Breakfast',l:'Lunch',d:'Dinner',wk:'Workout',cl:'Close the day'};
+function remS(){if(!S.rem)S.rem=JSON.parse(JSON.stringify(REMDEF));const r=S.rem;for(const k in REMDEF)if(r[k]==null)r[k]=JSON.parse(JSON.stringify(REMDEF[k]));return r;}
+function urlB64(s){const p='='.repeat((4-s.length%4)%4),b=(s+p).replace(/-/g,'+').replace(/_/g,'/'),r=atob(b),a=new Uint8Array(r.length);for(let i=0;i<r.length;i++)a[i]=r.charCodeAt(i);return a;}
+function remSupported(){return typeof window!=='undefined'&&'serviceWorker'in navigator&&'PushManager'in window&&'Notification'in window;}
+function remProgress(){
+  const k=todayK(),dl=DL(k),slots=new Set(dl.items.map(i=>i.slot)),wk=workoutFor(k),tg=T().target,tot=totalsOf(dl).k;
+  let work='none';if(wk&&!wk.rest){const m=wk.items.filter(i=>i.part==='main');work=m.length&&m.every(i=>i.done)?'done':'pending';}else if(wk&&wk.rest)work='rest';
+  return{date:k,meals:{b:slots.has('b')?1:0,l:slots.has('l')?1:0,d:slots.has('d')?1:0},water:dl.water||0,work,closed:dl.q&&dl.q.close?1:0,kcalLeft:Math.round(tg-tot),target:Math.round(tg)};
+}
+function remDoc(extra){const r=remS();return Object.assign({on:!!r.on,tz:(Intl.DateTimeFormat().resolvedOptions().timeZone||'Asia/Kolkata'),tOn:r.tOn,times:r.times,water:r.water,progress:remProgress(),upd:Date.now()},extra||{});}
+let remT=0;
+async function remPush(extra){const c=V.soc;if(!FB||!c||!c.user)return;await FB.db.collection('private').doc(c.user.uid).set(remDoc(extra),{merge:true});}
+function remSyncSoon(){const c=V.soc;if(!S||!S.rem||!S.rem.on||!c||!c.user||!FB)return;clearTimeout(remT);remT=setTimeout(()=>{remPush().catch(()=>{});},6000);}
+const RC=()=>V.remst||(V.remst={msg:'',busy:0});
+function remRender(){if(V.sheet&&V.sheet.type==='rem'){V.keepSc=1;render();}}
+function remOpen(){V.sheet={type:'rem'};V.keepSc=0;render();const c=SC();if(!c.user){if(c.st==='err'||c.st==='idle')c.st='idle';socStart(true);}}
+async function remEnable(){
+  const rc=RC();rc.msg='';
+  if(!remSupported()){rc.msg='This browser cannot show reminders. Use Chrome on Android.';remRender();return;}
+  const c=SC();
+  if(!c.user||!FB){rc.msg='Sign in first (below), then turn reminders on.';remRender();return;}
+  rc.busy=1;remRender();
+  try{
+    const perm=await Notification.requestPermission();
+    if(perm!=='granted'){rc.msg='Notifications are blocked. Allow them for this app in your phone settings, then try again.';rc.busy=0;remRender();return;}
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64(VAPID_PUB)});
+    const r=remS();r.on=true;saveS();
+    await remPush({sub:JSON.parse(JSON.stringify(sub))});
+    rc.msg='Reminders are on.';
+  }catch(e){rc.msg=socErr(e)||'Could not turn on reminders.';const r=remS();r.on=false;saveS();}
+  rc.busy=0;remRender();
+}
+async function remDisable(){
+  const rc=RC(),r=remS();r.on=false;saveS();rc.msg='Reminders are off.';
+  try{await remPush();}catch(e){}
+  try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub)await sub.unsubscribe();}catch(e){}
+  remRender();
+}
+async function remTest(){
+  const rc=RC();
+  try{
+    if(!remSupported())throw new Error('not supported');
+    if(Notification.permission!=='granted'){const p=await Notification.requestPermission();if(p!=='granted'){rc.msg='Notifications are blocked for this app.';remRender();return;}}
+    const reg=await navigator.serviceWorker.ready;
+    await reg.showNotification('Thali Quest',{body:'This is how your reminders will look. Tap to open the app.',icon:'icon-192.png',badge:'icon-192.png',tag:'test',data:{url:'./'}});
+    rc.msg='Test sent. If you did not see it, check your phone notification settings.';
+  }catch(e){rc.msg='Could not show a notification here.';}
+  remRender();
+}
+function remChange(t){
+  const r=remS(),k=t.dataset.rk,v=t.value;
+  if(t.dataset.rt==='time'){if(/^\d\d:\d\d$/.test(v))r.times[k]=v;}
+  else if(t.dataset.rt==='wfrom'){if(/^\d\d:\d\d$/.test(v))r.water.from=v;}
+  else if(t.dataset.rt==='wto'){if(/^\d\d:\d\d$/.test(v))r.water.to=v;}
+  else if(t.dataset.rt==='wevery'){r.water.every=Math.max(1,Math.min(6,+v||2));}
+  saveS();remSyncSoon();
+}
+function remToggle(k){const r=remS();if(k==='water')r.water.on=r.water.on?0:1;else r.tOn[k]=r.tOn[k]?0:1;saveS();remSyncSoon();remRender();}
+function remCard(){const r=remS();
+  return '<section class="card"><h2>Reminders</h2><p class="muted" style="margin:4px 0 10px">'+(r.on?'On. Gentle nudges for meals, water and your workout, skipped when you have already done it.':'Get a nudge for meals, water and your workout. Reminders skip things you have already logged.')+'</p><button class="btn'+(r.on?' ghost':'')+'" data-a="rem">'+(r.on?'Edit reminders':'Set up reminders')+'</button></section>';
+}
+function remSheet(s){
+  const r=remS(),rc=RC(),c=SC(),ok=remSupported(),perm=ok?Notification.permission:'unsupported';
+  let h='<h2>Reminders</h2>';
+  if(rc.msg)h+='<p class="note" style="margin:8px 0;color:var(--pop)">'+esc(rc.msg)+'</p>';
+  if(!ok)return h+'<p class="muted" style="margin:8px 0">This browser cannot show reminders. Open the app in Chrome on Android.</p><div class="row" style="margin-top:12px"><button class="btn ghost" data-a="closesheet" style="flex:1">Close</button></div>';
+  if(!c.user){
+    h+='<p class="muted" style="margin:4px 0 10px">Reminders use the same sign-in as Friends, so the server knows where to send them.</p>';
+    if(c.st==='loading'||c.st==='idle')h+='<p class="muted">Connecting…</p>';
+    else if(c.st==='err')h+='<p class="note" style="color:var(--pop)">'+esc(c.msg)+'</p><button class="btn" data-a="socretry">Try again</button>';
+    else h+='<div class="col"><button class="btn" data-a="socgoogle">Sign in with Google</button><button class="btn ghost" data-a="socguest">Continue as guest</button></div>';
+    return h+'<div class="row" style="margin-top:12px"><button class="btn ghost" data-a="closesheet" style="flex:1">Close</button></div>';
+  }
+  h+='<button class="btn'+(r.on?' ghost':'')+'" data-a="'+(r.on?'remoff':'remon')+'" style="margin:8px 0 4px"'+(rc.busy?' disabled':'')+'>'+(rc.busy?'Working…':r.on?'Turn reminders off':'Turn reminders on')+'</button>';
+  if(perm==='denied')h+='<p class="note" style="color:var(--pop)">Notifications are blocked for this app. Allow them in your phone settings.</p>';
+  const row=(k)=>'<div class="rrow2"><button class="chip'+(r.tOn[k]?' on':'')+'" data-a="remtog" data-k="'+k+'" aria-pressed="'+(r.tOn[k]?'true':'false')+'">'+REMNAME[k]+'</button><input type="time" data-rt="time" data-rk="'+k+'" value="'+r.times[k]+'" aria-label="'+REMNAME[k]+' time"></div>';
+  h+='<p class="part" style="margin-top:14px">Times</p>'+['b','l','d','wk','cl'].map(row).join('')
+   +'<p class="part" style="margin-top:14px">Water</p><div class="rrow2"><button class="chip'+(r.water.on?' on':'')+'" data-a="remtog" data-k="water" aria-pressed="'+(r.water.on?'true':'false')+'">Water nudges</button><span class="note">every</span><select data-rt="wevery" aria-label="Hours between water nudges">'+[1,2,3,4].map(n=>'<option value="'+n+'"'+(r.water.every===n?' selected':'')+'>'+n+' h</option>').join('')+'</select></div>'
+   +'<div class="rrow2"><span class="note">from</span><input type="time" data-rt="wfrom" value="'+r.water.from+'" aria-label="Water from"><span class="note">to</span><input type="time" data-rt="wto" value="'+r.water.to+'" aria-label="Water to"></div>'
+   +'<div class="row" style="margin-top:14px;gap:8px"><button class="btn ghost" data-a="remtest" style="flex:1">Send a test</button><button class="btn ghost" data-a="closesheet" style="flex:1">Close</button></div>'
+   +'<p class="note" style="margin-top:10px">Reminders come from a free scheduler that checks every 10 minutes or so, so one can arrive 10 to 20 minutes after the time you set. If they stop on your phone, turn off battery saving for Chrome and the app.</p>';
+  return h;
+}
+// ----- shortcuts: ?a=water|food|train|weight|me -----
+function runShortcut(){
+  try{
+    const q=new URLSearchParams(location.search),a=q.get('a');if(!a||!S||V.form)return;
+    if(a==='water'){const dl=DL(todayK());if((dl.water||0)<8){dl.water=(dl.water||0)+1;commit();toast('Water: '+dl.water+' of 8');}else toast('Water goal done. Nice.');V.tab='today';render();}
+    else if(a==='food'){V.tab='meals';V.sheet={type:'food',slot:restoSlotGuess(),sel:null,qty:1};V.keepSc=0;render();}
+    else if(a==='train'){V.tab='train';render();}
+    else if(a==='weight'){V.tab='today';V.sheet={type:'weight'};render();}
+    else if(a==='me'){V.tab='me';render();}
+    if(history.replaceState)history.replaceState(null,'',location.pathname);
+  }catch(e){}
+}
+setTimeout(runShortcut,60);
 
 // ---------- actions ----------
 function finishOnb(){
@@ -2370,6 +2474,11 @@ function onClick0(e){
     case 'oncancel':V.form=null;V.editing=false;V.onb=0;V.err='';render();return;
     case 'tab':V.tab=d.t;V.sheet=null;V.resetAsk=false;render();window.scrollTo(0,0);return;
     case 'closesheet':V.sheet=null;V.delAsk=false;render();return;
+    case 'rem':remOpen();return;
+    case 'remon':remEnable();return;
+    case 'remoff':remDisable();return;
+    case 'remtest':remTest();return;
+    case 'remtog':remToggle(d.k);return;
     case 'social':socOpen();return;
     case 'socretry':socStart();return;
     case 'socgoogle':socGoogle();return;
@@ -2502,6 +2611,7 @@ function onInput(e){
 }
 function onChange(e){
   const t=e.target;if(!S)return;
+  if(t.dataset&&t.dataset.rt){remChange(t);return;}
   if(t.id==='socname'){const sd=socS();sd.name=t.value.trim().slice(0,24)||'Player';saveS();socPushNow().catch(()=>{});return;}
   if(t.id==='phin'){const f=t.files&&t.files[0];t.value='';addPhotoFile(f);return;}
   if(t.id==='rsin'){const f=t.files&&t.files[0];t.value='';readRestore(f);return;}

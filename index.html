@@ -638,6 +638,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
+const APP_VER='2026.10.22 ideal weight';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -970,6 +971,7 @@ function viewMe(){
   h+=idealCard(t);
   h+='<section class="card"><h2>About the numbers</h2><div class="col note" style="margin-top:8px"><p><b>Food calories</b> are estimates for typical home-cooked portions. Each is worked out from protein, carbs and fat using 4, 4 and 9 kcal per gram, the same Atwater factors used in ICMR-NIN’s Indian Food Composition Tables 2017. That book lists raw ingredients only, so the cooked-dish values here are not copied from it and are not lab verified. Oil, ghee and portion size change the real figure, so adjust quantities or add a custom food. For packaged food, trust the label.</p><p><b>Fibre</b> values are estimates per serving, and are already part of the carbs. Aim for about 30 g a day. Raise fibre slowly and drink plenty of water, or you may get gas and bloating.</p><p><b>BMI</b> uses Asian cut-offs: healthy is 18.5 to 22.9. <b>Maintenance</b> uses the Mifflin-St Jeor formula times your activity. <b>Deficit</b> assumes about 7,700 kcal per kg of body weight.</p><p><b>Videos</b> open a YouTube search for each exercise, so you can pick a trainer you like.</p><p>This is general guidance, not medical advice. Check with a doctor first if you have a health condition, are pregnant, or are under 18.</p><p>Your data is saved in this browser only.</p></div></section>';
   h+='<section class="card"><button class="btn ghost full" data-a="reset">'+(V.resetAsk?'Tap again to erase everything':'Reset all data')+'</button></section>';
+  h+='<p class="note" style="text-align:center">App version '+APP_VER+'</p>';
   return h;
 }
 

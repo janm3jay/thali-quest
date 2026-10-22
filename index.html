@@ -148,6 +148,13 @@ svg text{font-family:var(--body)}
 .cmp img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
 .cmp figcaption{font:600 13px var(--body);padding:6px 8px;text-align:center}
 .pbig{width:100%;max-height:60vh;object-fit:contain;border-radius:14px;border:2.5px solid var(--edge)}
+.rtot{position:sticky;top:-12px;z-index:2;background:var(--surface);border:2.5px solid var(--edge);border-radius:16px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.rverdict{font:600 13.5px var(--body);color:var(--muted,inherit)}
+.rverdict.over{color:var(--pop)}.rverdict.fit{color:var(--accent)}
+.rrow.sel>.frow{border-color:var(--accent)}
+.rstep{display:flex;align-items:center;justify-content:center;gap:12px;padding:6px 0 2px}
+.rstep button{width:36px;height:36px;border-radius:50%;border:2.5px solid var(--edge);background:var(--surface);font:800 18px var(--display);cursor:pointer}
+.rrow{display:flex;flex-direction:column;gap:2px}
 </style>
 </head><body>
 <div id="app"></div><nav id="nav"></nav><div id="sheetwrap"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -155,7 +162,7 @@ svg text{font-family:var(--body)}
 /*LOGIC_START*/
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const FD={};
-function F(id,name,gu,serv,p,c,f,o){o=o||{};FD[id]={id,name,gu,serv,p,c,f,k:Math.round(4*p+4*c+9*f),step:o.step||0.5,g:!!o.g,nj:!!o.nj,cheat:!!o.cheat,cat:o.cat||'',al:o.al||''};}
+function F(id,name,gu,serv,p,c,f,o){o=o||{};FD[id]={id,name,gu,serv,p,c,f,k:Math.round(4*p+4*c+9*f),step:o.step||0.5,g:!!o.g,nj:!!o.nj,cheat:!!o.cheat,cat:o.cat||'',al:o.al||'',grp:o.grp||'',est:!!o.est};}
 // breads and grains
 F('roti','Roti / phulka','રોટલી','1 roti (30 g flour)',2.6,15,0.6,{step:1,g:1});
 F('rotla','Bajra rotla','બાજરીનો રોટલો','1 rotla (45 g flour)',5,31,2,{step:1,g:1});
@@ -553,6 +560,81 @@ for(const id in FD){if(FD[id].fi==null||FIB[id]!=null)FD[id].fi=FIB[id]||0;}
 for(const id of['banana','apple','papaya','guava','mango','orange','grapes','watermelon','pomegranate','chikoo','dates','raisin'])FD[id].cat='fruit';
 for(const id of['milk','tea','chaas','lassi','coconutw','coffee','whey','cola','soymilk','isabgol'])FD[id].cat='drink';
 for(const id in FD){if(!FD[id].cat&&FD[id].cheat)FD[id].cat='sweet';}
+// ---------- restaurant dishes: estimates for typical restaurant portions (more oil and butter than home cooking) ----------
+// Values are built from standard recipes scaled to restaurant portions and cross-checked against published chain menus. Real dishes vary by 20 to 30 percent.
+function R(id,name,serv,p,c,f,grp,fi,o){o=o||{};F(id,name+' (restaurant)','',serv+', restaurant estimate',p,c,f,Object.assign({cat:'rest',grp,est:1,step:o.step||0.5,nj:o.nj==null?1:o.nj},o));FIB[id]=fi;FD[id].fi=fi;}
+// starters
+R('r_paneertikka','Paneer tikka','6 pieces (150 g)',20,8,22,'start',1.5);
+R('r_harabhara','Hara bhara kebab','4 pieces',8,24,14,'start',4);
+R('r_manchdry','Veg manchurian, dry','1 plate (200 g)',7,30,20,'start',3);
+R('r_crispycorn','Crispy corn','1 plate (150 g)',6,45,22,'start',4);
+R('r_springroll','Veg spring rolls','4 pieces',8,48,22,'start',3);
+R('r_paneerchilli','Paneer chilli, dry','1 plate (200 g)',16,18,26,'start',2);
+R('r_tomsoup','Tomato soup','1 bowl (250 ml)',2,14,5,'start',1.5);
+R('r_cornsoup','Sweet corn veg soup','1 bowl (250 ml)',3,18,3,'start',2);
+R('r_hotsour','Hot and sour veg soup','1 bowl (250 ml)',3,12,3,'start',1.5);
+R('r_papadroast','Roasted papad','1 piece',1.5,5,0.3,'start',1,{step:1});
+R('r_masalapapad','Masala papad','1 piece',3,10,10,'start',2,{step:1});
+R('r_salad','Green salad','1 plate (150 g)',1,6,0.3,'start',2);
+R('r_raita','Boondi or veg raita','1 bowl (120 g)',3.5,6,3.5,'start',0.5);
+R('r_fries','French fries','1 large (200 g)',5,55,22,'start',5);
+// mains
+R('r_pbm','Paneer butter masala','1 bowl (250 g)',16,14,34,'main',2);
+R('r_kadaip','Kadai paneer','1 bowl (250 g)',17,12,28,'main',3);
+R('r_palakp','Palak paneer','1 bowl (250 g)',15,10,24,'main',4);
+R('r_shahip','Shahi paneer','1 bowl (250 g)',15,16,32,'main',2);
+R('r_malai','Malai kofta','1 bowl (250 g, 4 koftas)',10,24,34,'main',3);
+R('r_dalmakh','Dal makhani','1 bowl (250 g)',11,28,20,'main',7);
+R('r_daltadka','Dal tadka','1 bowl (250 g)',9,24,10,'main',6);
+R('r_chana','Chole / chana masala','1 bowl (250 g)',11,34,12,'main',9);
+R('r_rajma','Rajma masala','1 bowl (250 g)',10,32,10,'main',8);
+R('r_mixveg','Mixed veg curry','1 bowl (250 g)',5,16,16,'main',4);
+R('r_kolhapuri','Veg kolhapuri','1 bowl (250 g)',6,16,18,'main',4);
+R('r_aloogobi','Aloo gobi, dry','1 plate (200 g)',4,18,13,'main',4);
+R('r_bhindi','Bhindi masala','1 plate (200 g)',4,12,14,'main',5);
+R('r_bharta','Baingan bharta','1 bowl (200 g)',4,12,14,'main',5);
+R('r_thali','Gujarati thali (typical, unlimited)','1 full thali',24,140,45,'main',12,{g:1,nj:0,step:0.5});
+// breads and rice
+R('r_tandoori','Tandoori roti','1 roti',3,18,0.8,'bread',2.5,{step:1});
+R('r_butterroti','Butter roti','1 roti',3,18,5,'bread',2.5,{step:1});
+R('r_naan','Plain naan','1 naan',7,48,5,'bread',2,{step:1});
+R('r_butternaan','Butter or garlic naan','1 naan',7,48,10,'bread',2,{step:1});
+R('r_lachha','Lachha paratha','1 paratha',6,40,16,'bread',2,{step:1});
+R('r_kulcha','Stuffed kulcha','1 kulcha',9,48,14,'bread',3,{step:1});
+R('r_rice','Steamed rice','1 plate (200 g cooked)',5,56,0.6,'bread',1);
+R('r_jeera','Jeera rice','1 plate (200 g cooked)',5,54,8,'bread',1.5);
+R('r_pulao','Veg pulao','1 plate (300 g)',8,60,14,'bread',3);
+R('r_biryani','Veg biryani','1 plate (350 g)',10,70,18,'bread',5);
+// south indian
+R('r_mdosa','Masala dosa','1 dosa',8,56,18,'south',4,{step:1});
+R('r_dosa','Plain dosa','1 dosa',5,40,8,'south',2,{step:1});
+R('r_idli','Idli with sambar and chutney','2 idli + sides',8,38,6,'south',4);
+R('r_uttapam','Uttapam','1 uttapam',9,50,12,'south',4,{step:1});
+R('r_medu','Medu vada with sambar','2 pieces',8,24,16,'south',4);
+// chinese and fast food
+R('r_noodles','Veg hakka noodles','1 plate (350 g)',12,80,18,'fast',5);
+R('r_friedrice','Veg fried rice','1 plate (350 g)',10,78,16,'fast',4);
+R('r_manchgravy','Veg manchurian, gravy','1 bowl (250 g)',7,26,16,'fast',3);
+R('r_burger','Veg burger','1 burger',12,52,20,'fast',4,{step:1});
+R('r_pizza','Veg pizza','2 slices (regular)',16,64,18,'fast',4);
+R('r_pasta','Pasta, white sauce','1 plate (300 g)',16,70,28,'fast',4);
+R('r_sandwich','Veg grilled sandwich','1 sandwich',12,42,18,'fast',4,{step:1});
+R('r_pavbhaji','Pav bhaji','1 plate (2 pav)',12,80,24,'fast',7);
+R('r_sevpuri','Sev puri','6 pieces',6,45,18,'fast',4);
+R('r_bhel','Bhel puri','1 plate',6,50,12,'fast',4);
+// desserts
+R('r_gulab','Gulab jamun','2 pieces',4,48,12,'dess',0.5,{nj:0});
+R('r_icecream','Ice cream','1 scoop (100 g)',3,24,11,'dess',0.3,{nj:0});
+R('r_brownie','Brownie with ice cream','1 serving',6,62,28,'dess',2,{nj:0});
+R('r_falooda','Kulfi falooda','1 glass',7,60,14,'dess',1,{nj:0});
+R('r_rasmalai','Rasmalai','2 pieces',7,28,10,'dess',0,{nj:0});
+// drinks
+R('r_lassi','Sweet lassi','1 large glass (350 ml)',9,48,8,'drink',0,{nj:0});
+R('r_limesoda','Fresh lime soda, sweet','1 glass (300 ml)',0,25,0,'drink',0,{nj:0});
+R('r_mojito','Virgin mojito','1 glass (300 ml)',0,28,0,'drink',0.5,{nj:0});
+R('r_softdrink','Soft drink','1 glass (300 ml)',0,32,0,'drink',0,{nj:0});
+R('r_dietcoke','Diet cola','1 glass (300 ml)',0,0,0,'drink',0,{nj:0});
+R('r_buttermilk','Masala buttermilk','1 glass (250 ml)',3,6,2,'drink',0,{nj:0});
 // ---------- body numbers ----------
 function calcPlan(p){
   const w=+p.w,h=+p.h,age=+p.age,tw=+p.tw,pace=+p.pace;
@@ -766,7 +848,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 foods, badges, backup';
+const APP_VER='2026.10.23 report, records, restaurant';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -861,6 +943,13 @@ const BADGES=[
  {id:'ph1',n:'Say cheese',d:'Save your first progress photo',i:'camera',t:()=>(S.stats.photos||0)>=1},
  {id:'ph4',n:'Time capsule',d:'Save 4 progress photos',i:'camera',t:()=>(S.stats.photos||0)>=4},
  {id:'bak',n:'Safety first',d:'Save a backup of your data',i:'shield',t:()=>(S.stats.backups||0)>=1},
+ {id:'pr1',n:'Record breaker',d:'Beat your best on a lift',i:'bolt',t:()=>(S.stats.prs||0)>=1},
+ {id:'pr5',n:'PR machine',d:'Break 5 personal records',i:'bolt',t:()=>(S.stats.prs||0)>=5},
+ {id:'pr15',n:'Always improving',d:'Break 15 personal records',i:'trophy',t:()=>(S.stats.prs||0)>=15},
+ {id:'lift10',n:'Lift logger',d:'Log 10 lifts',i:'train',t:()=>(S.stats.lifts||0)>=10},
+ {id:'dine',n:'Smart diner',d:'Plan a restaurant meal in Restaurant mode',i:'meals',t:()=>(S.stats.resto||0)>=1},
+ {id:'dine5',n:'Regular diner',d:'Use Restaurant mode 5 times',i:'meals',t:()=>(S.stats.resto||0)>=5},
+ {id:'wk85',n:'Solid week',d:'Score 85 or more in a finished week',i:'check',t:()=>bestWeekScore()>=85},
  {id:'goal',n:'Goal reached',d:'Reach your target weight',i:'trophy',t:()=>weightNow()<=+S.profile.tw}
 ];
 const waistDrop=()=>{const a=(S.meas||[]).filter(m=>m.v&&m.v.waist!=null);return a.length>1?a[0].v.waist-a[a.length-1].v.waist:0;};
@@ -998,6 +1087,7 @@ function viewMeals(){
     for(const it of x.items){const f=FD[it[0]];h+='<li><span>'+fmtQ(it[1])+' × '+f.name+'<span class="gu">'+f.gu+'</span></span><small>'+f.serv+'</small></li>';}
     h+='</ul><div class="row">'+(x.cheat?'':'<button class="btn sm ghost" data-a="swapmeal" data-i="'+di+'" data-s="'+s+'">'+ic('swap')+' Swap</button>')+(di===td?'<button class="btn sm" data-a="logplan" data-s="'+s+'" data-i="'+di+'">Log this</button>':'')+'</div></article>';
   }
+  h+=restoCard();
   const ch=CHEAT(S.cheat.id),ck=ch?itemsMacro(ch.items).k:0,cd=S.cheat.day>=0?S.mp.days[S.cheat.day]:null;
   h+='<section class="card cheatc"><h2>Cheat meal</h2><p class="muted" style="margin:4px 0 10px">'+(cd&&ch?DAYS[S.cheat.day]+': '+esc(ch.name)+', about '+ck+' kcal. That day lands at '+cd.total.k+' kcal against a target of '+fmtN(tg.target)+'.':'No cheat meal planned this week.')+'</p><div class="row"><button class="btn gold sm" data-a="cheatsheet">'+(cd?'Change cheat meal':'Plan a cheat meal')+'</button><button class="btn sm ghost" data-a="reroll">New week plan</button></div></section>';
   h+='<p class="note">Calories are estimates for typical home-cooked portions. See Me, About the numbers.</p>';
@@ -1011,8 +1101,8 @@ function amtText(it){const e=EX[it.ex];const side=e.side?' each side':'';
   if(it.u==='sec')return it.sets>1?it.sets+' × '+it.amt+' s'+side:it.amt+' s'+side;
   return it.sets+' × '+it.amt+side;}
 function exRow(di,i,it){
-  const e=EX[it.ex],isToday=true;
-  return '<div class="ex'+(it.done?' done':'')+'"><button class="qc" style="'+(it.done?'background:var(--accent);border-color:var(--accent);color:var(--on-accent)':'')+'" data-a="exdone" data-d="'+di+'" data-i="'+i+'" aria-label="Mark done">'+(it.done?ic('check'):'')+'</button><div style="flex:1;min-width:0"><div class="row sp"><span><span class="en">'+e.name+'</span><br><small>'+(MUSCLE[e.pat]||'')+'</small></span><b>'+amtText(it)+'</b></div><div class="row wrap" style="gap:14px;margin-top:2px"><a href="'+yt(e.q)+'" target="_blank" rel="noopener">Watch video</a>'+(it.part==='main'?'<button class="btn sm ghost" data-a="swapex" data-d="'+di+'" data-i="'+i+'">'+ic('swap')+' Swap</button>':'')+'</div><details><summary>How to do it</summary><p style="margin-top:4px">'+e.cue+'</p></details></div></div>';
+  const e=EX[it.ex],isToday=true,lg=(it.part==='main'&&(it.u==='reps'||it.u==='sec'))?liftLast(it.ex):null;
+  return '<div class="ex'+(it.done?' done':'')+'"><button class="qc" style="'+(it.done?'background:var(--accent);border-color:var(--accent);color:var(--on-accent)':'')+'" data-a="exdone" data-d="'+di+'" data-i="'+i+'" aria-label="Mark done">'+(it.done?ic('check'):'')+'</button><div style="flex:1;min-width:0"><div class="row sp"><span><span class="en">'+e.name+'</span><br><small>'+(MUSCLE[e.pat]||'')+'</small></span><b>'+amtText(it)+'</b></div><div class="row wrap" style="gap:14px;margin-top:2px"><a href="'+yt(e.q)+'" target="_blank" rel="noopener">Watch video</a>'+(it.part==='main'&&(it.u==='reps'||it.u==='sec')?'<button class="btn sm ghost" data-a="liftsheet" data-d="'+di+'" data-i="'+i+'">Log'+(lg?' · last '+liftText(lg):'')+'</button>':'')+(it.part==='main'?'<button class="btn sm ghost" data-a="swapex" data-d="'+di+'" data-i="'+i+'">'+ic('swap')+' Swap</button>':'')+'</div><details><summary>How to do it</summary><p style="margin-top:4px">'+e.cue+'</p></details></div></div>';
 }
 function viewTrain(){
   const W=S.W,td=dow(todayK()),inWeek=todayK()>=W.start&&todayK()<=addD(W.start,6),di=V.tday==null?(inWeek?td:0):V.tday;
@@ -1030,6 +1120,7 @@ function viewTrain(){
     for(const pt of parts){const its=w.items.map((it,i)=>[it,i]).filter(a=>a[0].part===pt[0]);if(!its.length)continue;if(!(pt[0]==='main'&&w.type==='recovery'))h+='<p class="part">'+pt[1]+'</p>';else h+='<p class="part">Flow</p>';its.forEach(a=>{h+=exRow(di,a[1],a[0]);});}
     h+='</section>';
   }
+  h+=prCard();
   h+='<section class="card"><h2>Plan settings</h2><div class="col" style="margin-top:10px">'
    +'<label class="field">Sessions per week<select id="s_days">'+[3,4,5,6].map(n=>'<option value="'+n+'"'+(W.days===n?' selected':'')+'>'+n+' days</option>').join('')+'</select></label>'
    +'<label class="field">Equipment<select id="s_equip"><option value="none"'+(W.equip==='none'?' selected':'')+'>No equipment</option><option value="db"'+(W.equip==='db'?' selected':'')+'>Dumbbells at home</option><option value="gym"'+(W.equip==='gym'?' selected':'')+'>Full gym</option></select></label>'
@@ -1130,6 +1221,7 @@ function viewMe(){
   const t=T(),p=S.profile,now=weightNow(),tw=+p.tw,span=Math.max(0.1,S.start.w-tw),pct=clamp((S.start.w-now)/span*100,0,100);
   const eta=isFinite(t.weeks)&&t.toLose>0?pkey(addD(todayK(),Math.round(t.weeks*7))).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):null;
   let h='<h1>Me</h1>';
+  h+=reportCard();
   h+='<section class="card"><div class="row sp"><h2>Weight</h2><button class="btn sm" data-a="weightsheet">Log weight</button></div><div class="row sp" style="margin:10px 0 6px"><span>Start <b>'+S.start.w+' kg</b></span><span>Now <b>'+now+' kg</b></span><span>Goal <b>'+tw+' kg</b></span></div><div class="prog"><i style="width:'+pct.toFixed(0)+'%"></i></div>'+wChart()+'</section>';
   h+=plateauCard();
   h+=measCard();
@@ -1207,7 +1299,7 @@ function sheetBody(){
   const ex=sheetExtra();if(ex)return ex;
   if(s.type==='food'){
     if(s.sel){const f=FD[s.sel],q=s.qty;return '<h2>'+f.name+'<span class="gu">'+f.gu+'</span></h2><p class="muted">1 serving = '+f.serv+'</p>'+qtyPicker(f,q)+'<button class="btn full" data-a="confirmfood">Add to '+SLOTN[s.slot]+'</button><button class="btn ghost full" data-a="unpick">Back to search</button>'+(f.custom?'<button class="btn ghost full" data-a="delcustom">Delete this custom food</button>':'');}
-    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, diet coke, kiwi…" autocomplete="off" value="'+esc(s.q||'')+'"><div class="row wrap">'+[['','All'],['fruit','Fruits'],['drink','Drinks'],['sweet','Sweets and treats'],['custom','My foods']].map(c=>'<button class="chip'+((s.cat||'')===c[0]?' on':'')+'" data-a="fcat" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'</div><div id="fres">'+foodRes(s.q||'')+'</div><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
+    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, diet coke, kiwi…" autocomplete="off" value="'+esc(s.q||'')+'"><div class="row wrap">'+[['','All'],['fruit','Fruits'],['drink','Drinks'],['sweet','Sweets and treats'],['rest','Restaurant'],['custom','My foods']].map(c=>'<button class="chip'+((s.cat||'')===c[0]?' on':'')+'" data-a="fcat" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'</div><div id="fres">'+foodRes(s.q||'')+'</div><button class="btn ghost full" data-a="restosheet" data-s="'+s.slot+'">Eating out? Restaurant mode</button><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
   }
   if(s.type==='custom')return '<h2>Custom food</h2><p class="muted">Enter what is on the label, or your best estimate. If you leave calories blank, they are worked out from protein, carbs and fat.</p><label class="field">Name<input type="text" id="cn" placeholder="e.g. Aunty\u2019s sev puri"></label><label class="field">Serving size<input type="text" id="cs" placeholder="e.g. 1 plate, 100 g" value="1 serving"></label><div class="row"><label class="field" style="flex:1">Protein (g)<input type="number" inputmode="decimal" id="cp" placeholder="0"></label><label class="field" style="flex:1">Carbs (g)<input type="number" inputmode="decimal" id="cc" placeholder="0"></label></div><div class="row"><label class="field" style="flex:1">Fat (g)<input type="number" inputmode="decimal" id="cf" placeholder="0"></label><label class="field" style="flex:1">Calories (kcal)<input type="number" inputmode="decimal" id="ck" placeholder="auto"></label></div><div class="row"><label class="field" style="flex:1">Fibre (g)<input type="number" inputmode="decimal" id="cfi" placeholder="0"></label><div style="flex:1"></div></div><p class="err" id="cerr"></p><button class="btn full" data-a="saveccustom">Save food</button><p class="note">It is saved under My foods, so you can find it by search next time. Fibre is optional, and label carbs already include it.</p>';
   if(s.type==='planswap'){
@@ -1241,13 +1333,14 @@ function sheetBody(){
 function sheetHtml(){return V.sheet?'<div class="ov" data-a="closesheet"></div><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>'+sheetBody()+'</div>':'';}
 const NAVS=[['today','Today','today'],['meals','Meals','meals'],['train','Train','train'],['rewards','Rewards','trophy'],['me','Me','user']];
 function render(){
-  const y=window.scrollY;let h;
+  const y=window.scrollY,shEl=document.querySelector('.sheet'),shY=shEl?shEl.scrollTop:0,keep=V.keepSc;V.keepSc=0;let h;
   if(V.form){h=viewOnb();}
   else h=({today:viewToday,meals:viewMeals,train:viewTrain,rewards:viewRewards,me:viewMe})[V.tab]();
   $('#app').innerHTML=h;
   $('#nav').innerHTML=(S&&!V.form)?'<div class="in">'+NAVS.map(n=>'<button class="'+(V.tab===n[0]?'on':'')+'" data-a="tab" data-t="'+n[0]+'">'+ic(n[2])+n[1]+'</button>').join('')+'</div>':'';
   $('#sheetwrap').innerHTML=sheetHtml();
   window.scrollTo(0,y);
+  if(keep){const e2=document.querySelector('.sheet');if(e2)e2.scrollTop=shY;}
 }
 // ---------- plateau check, progress photos, backup and restore, streak freeze ----------
 function plateauInfo(){
@@ -1382,8 +1475,137 @@ function sheetExtra(){
     return '<h2>Restore this backup?</h2><p class="muted">Saved '+sv+': '+st.weights.length+' weight log'+(st.weights.length===1?'':'s')+', '+fmtN(st.xp||0)+' XP, '+Object.keys(st.log).length+' logged days, '+(o.photos||[]).length+' photo'+((o.photos||[]).length===1?'':'s')+'.</p><p class="note">This replaces everything currently in the app on this phone. Save a backup first if you want to keep the current data.</p><button class="btn full" data-a="dorestore">Replace my data with this backup</button><button class="btn ghost full" data-a="closesheet">Cancel</button>';}
   if(s.type==='photo'){const p=(PH||[])[s.i];if(!p)return '<h2>Photo</h2><button class="btn ghost full" data-a="closesheet">Close</button>';
     return '<h2>'+fmtD(p.d)+'</h2><img class="pbig" src="'+p.img+'" alt="Progress photo"><p class="muted">Weight that day: '+p.kg+' kg</p><button class="btn ghost full" data-a="delphoto">'+(V.delAsk?'Tap again to delete this photo':'Delete photo')+'</button><button class="btn full" data-a="closesheet">Close</button>';}
+  return sheetExtra2(s);
+}
+// ---------- weekly report, personal records, restaurant mode ----------
+function lastBefore(arr,key,lim,strict){let r=null;for(const x of arr){if(strict?x.d<lim:x.d<=lim)r=x;}return r;}
+function weekStats(off){
+  const td=todayK(),mk=addD(monK(td),off*7),tg=T(),goalP=tg.protein;
+  const rows=[];for(let i=0;i<7;i++){const k=addD(mk,i);if(k>td)break;const dl=S.log[k],t=dl?totalsOf(dl):{k:0,p:0,fi:0,c:0,f:0};rows.push({k,dl,t,logged:!!dl&&dl.items.length>=3});}
+  const el=rows.filter(r=>r.logged||r.k<td),L=rows.filter(r=>r.logged),n=L.length,elapsed=el.length;
+  const avg=f=>n?L.reduce((a,r)=>a+f(r),0)/n:0;
+  const calScore=r=>{const x=r.t.k/tg.target;let s=x>1.05?Math.max(0,1-(x-1.05)/0.25):x<0.85?Math.max(0,1-(0.85-x)/0.25):1;if(r.dl&&r.dl.cheatCounted)s=Math.max(s,0.6);return s;};
+  const onT=L.filter(r=>r.t.k<=tg.target*1.05).length,pD=L.filter(r=>r.t.p>=goalP*0.9).length,fD=L.filter(r=>r.t.fi>=tg.fibre*0.9).length;
+  const wD=el.filter(r=>r.dl&&r.dl.water>=8).length,wo=el.filter(r=>r.dl&&r.dl.q&&r.dl.q.workout).length;
+  const woT=Math.max(1,Math.min(S.W.days,elapsed));
+  const parts={log:elapsed?25*L.length/elapsed:0,cal:n?25*avg(calScore):0,pro:n?20*avg(r=>Math.min(1,r.t.p/goalP)):0,fib:n?10*avg(r=>Math.min(1,r.t.fi/tg.fibre)):0,wat:elapsed?10*el.reduce((a,r)=>a+Math.min(1,((r.dl&&r.dl.water)||0)/8),0)/elapsed:0,wor:elapsed?10*Math.min(1,wo/woT):0};
+  const score=Math.round(Object.values(parts).reduce((a,b)=>a+b,0));
+  const end=rows.length?rows[rows.length-1].k:mk,ws=S.weights,wE=lastBefore(ws,'kg',end,false),wS=lastBefore(ws,'kg',mk,true);
+  const wDelta=wE&&wS&&wE.d>wS.d?Math.round((wE.kg-wS.kg)*10)/10:null;
+  const wm=(S.meas||[]).filter(m=>m.v&&m.v.waist!=null),mE=lastBefore(wm,'v',end,false),mS=lastBefore(wm,'v',mk,true);
+  const mDelta=mE&&mS&&mE.d>mS.d&&mE.d>=mk?Math.round((mE.v.waist-mS.v.waist)*10)/10:null;
+  let hi=null;for(const r of L){if(!hi||r.t.k>hi.t.k)hi=r;}
+  return{mk,elapsed,n,rows,avgK:Math.round(avg(r=>r.t.k)),avgP:Math.round(avg(r=>r.t.p)),avgFi:Math.round(avg(r=>r.t.fi)*10)/10,onT,pD,fD,wD,wo,score,parts,wDelta,mDelta,hi,cheats:L.filter(r=>r.dl.cheatCounted).length,frozen:rows.filter(r=>S.frozen&&S.frozen[r.k]).length,tg};
+}
+const bestWeekScore=()=>{let b=0;for(let o=-1;o>=-12;o--){const st=weekStats(o);if(st.elapsed>=5)b=Math.max(b,st.score);}return b;};
+function reportCard(){
+  const off=Math.min(0,Math.max(-12,V.rw||0)),st=weekStats(off),tg=st.tg;
+  const label=off===0?'This week so far':off===-1?'Last week':'Week of '+pkey(st.mk).toLocaleDateString('en-IN',{day:'numeric',month:'short'});
+  let h='<section class="card"><div class="row sp"><h2>Weekly report</h2>'+(st.n?'<span class="pill">Score '+st.score+'/100</span>':'')+'</div>';
+  h+='<div class="row sp" style="margin:8px 0"><button class="btn sm ghost" data-a="rwk" data-d="-1" aria-label="Earlier week"'+(off<=-12?' disabled':'')+'>‹</button><b>'+label+'</b><button class="btn sm ghost" data-a="rwk" data-d="1" aria-label="Later week"'+(off>=0?' disabled':'')+'>›</button></div>';
+  if(!st.n){return h+'<p class="note">Nothing logged '+(off===0?'this week yet. Log 3 or more foods on a day and your report starts building.':'that week.')+'</p></section>';}
+  h+='<div class="prog" style="margin:4px 0 12px"><i style="width:'+st.score+'%"></i></div>';
+  const sg=(v,l)=>'<div><b>'+v+'</b><span>'+l+'</span></div>';
+  h+='<div class="stat">'+sg(fmtN(st.avgK),'Avg kcal (goal '+fmtN(tg.target)+')')+sg(st.onT+'/'+st.n,'Days at or under goal')+sg(st.avgP+' g','Avg protein (goal '+tg.protein+')')+sg(st.avgFi+' g','Avg fibre (goal '+tg.fibre+')')+'</div>';
+  h+='<div class="stat" style="margin-top:10px">'+sg(st.wD+'/'+st.elapsed,'Days with 8 glasses')+sg(st.wo,'Workout or walk days')+sg(st.wDelta==null?'-':(st.wDelta>0?'+':'')+st.wDelta+' kg','Weight change')+sg(st.mDelta==null?'-':(st.mDelta>0?'+':'')+st.mDelta+' cm','Waist change')+'</div>';
+  // win and fix
+  const wins=[],fix=[];
+  if(st.n>=5)wins.push('You logged '+st.n+' days.');
+  if(st.onT>=Math.ceil(st.n*0.8)&&st.n>=3)wins.push('You stayed at or under your calories on '+st.onT+' of '+st.n+' days.');
+  if(st.pD>=Math.ceil(st.n*0.7)&&st.n>=3)wins.push('You hit your protein on '+st.pD+' days.');
+  if(st.fD>=3)wins.push('You reached your fibre goal on '+st.fD+' days.');
+  if(st.wD>=5)wins.push('You drank 8 glasses on '+st.wD+' days.');
+  if(st.wDelta!=null&&st.wDelta<0)wins.push('The scale moved down '+(-st.wDelta)+' kg.');
+  if(st.mDelta!=null&&st.mDelta<0)wins.push('Your waist is down '+(-st.mDelta)+' cm.');
+  if(st.frozen)wins.push('A streak freeze saved your streak.');
+  if(st.n<Math.min(5,Math.max(3,st.elapsed)))fix.push('Log more days. With fewer than 5 logged days this report is a guess, and unlogged snacks hide the real picture.');
+  if(st.avgK>tg.target*1.05)fix.push('You averaged '+fmtN(st.avgK-tg.target)+' kcal over your goal. '+(st.hi?'Your biggest day was '+DAYS[dow(st.hi.k)]+' at '+fmtN(st.hi.t.k)+' kcal. ':'')+'Check oil, sweets and drinks on that day.');
+  if(st.avgP<tg.protein*0.85)fix.push('Protein averaged '+st.avgP+' g against a goal of '+tg.protein+' g. Add dal, paneer, curd, sprouts or a whey shake to breakfast and one snack.');
+  if(st.avgFi<tg.fibre*0.65)fix.push('Fibre averaged '+st.avgFi+' g. Add a salad, a fruit, oats or isabgol in water.');
+  if(st.wD<Math.min(4,st.elapsed))fix.push('Water was low. Keep a bottle with you and tick glasses as you finish them.');
+  if(st.wo<Math.min(3,st.elapsed)&&st.elapsed>=5)fix.push('Few workout days. Even a 20 minute walk counts on rest days.');
+  if(st.avgK<tg.target*0.8)fix.push('You averaged well below your goal. Eating too little slows progress and makes you hungry. Do not drop under your target.');
+  if(wins.length)h+='<p class="part">What went well</p><ul class="note" style="margin:0 0 4px 18px;display:flex;flex-direction:column;gap:4px">'+wins.slice(0,4).map(x=>'<li>'+x+'</li>').join('')+'</ul>';
+  h+='<p class="part">'+(fix.length?'Fix next':'Next week')+'</p><p class="note">'+(fix.length?fix[0]:'Nothing big to fix. Keep the same routine and aim to log every day.')+'</p>';
+  if(st.cheats)h+='<p class="note">Cheat meals this week: '+st.cheats+'. Planned treats are fine.</p>';
+  return h+'</section>';
+}
+// ----- personal records -----
+const liftMode=l=>l.u==='sec'?'sec':(l.w>0?'w':'bw');
+const liftScore=l=>l.u==='sec'?l.r:(l.w>0?l.w*(1+l.r/30):l.r);
+function liftBest(ex,mode){let b=null;for(const l of(S.lifts||[])){if(l.ex!==ex||liftMode(l)!==mode)continue;if(!b||liftScore(l)>liftScore(b))b=l;}return b;}
+function liftLast(ex){let r=null;for(const l of(S.lifts||[])){if(l.ex===ex)r=l;}return r;}
+function liftText(l){return l.u==='sec'?l.r+' s':(l.w>0?fmtQ(l.w)+' kg × '+l.r:l.r+' reps');}
+function saveLift(d,i,w,r){
+  const it=S.W.week[d].items[i],ex=it.ex,l={d:todayK(),ex,w:it.u==='sec'?0:(w>0?w:0),r,u:it.u==='sec'?'sec':'reps'};
+  const prev=liftBest(ex,liftMode(l));
+  if(!S.lifts)S.lifts=[];
+  let pr=false;if(prev&&liftScore(l)>liftScore(prev)+1e-9)pr=true;
+  if(pr)l.pr=1;
+  S.lifts.push(l);if(S.lifts.length>500)S.lifts.shift();
+  S.stats.lifts=(S.stats.lifts||0)+1;
+  if(pr){S.stats.prs=(S.stats.prs||0)+1;addXP(20,'New personal record');}
+  if(!it.done){it.done=true;if(!it.xpd){it.xpd=1;addXP(3,EX[ex].name);}}
+  const k=dkey(new Date(pkey(S.W.start).getTime()+d*864e5+36e5));
+  if(k===todayK())awardQuests();
+  checkBadges();
+  return pr?'prnew':(prev?'ok':'base');
+}
+function prCard(){
+  const L=S.lifts||[];
+  let h='<section class="card"><h2>Personal records</h2>';
+  if(!L.length)return h+'<p class="note" style="margin-top:6px">Tap Log on an exercise to record the weight and reps (or seconds) of your best set. Beat your best and you get a record and 20 XP.</p></section>';
+  const seen={},order=[];
+  for(let j=L.length-1;j>=0;j--){const l=L[j],key=l.ex+'|'+liftMode(l);if(!seen[key]){seen[key]=1;order.push(l);}}
+  h+='<div class="col" style="margin-top:8px;gap:6px">';
+  for(const l of order.slice(0,8)){
+    const mode=liftMode(l),b=liftBest(l.ex,mode),hist=L.filter(x=>x.ex===l.ex&&liftMode(x)===mode),first=hist[0];
+    let gain='';
+    if(hist.length>1){const g=liftScore(b)-liftScore(first);if(g>0.01)gain=mode==='w'?'+'+Math.round(g/liftScore(first)*100)+'% since your first log':'+'+Math.round(g)+(mode==='sec'?' s':' reps')+' since your first log';}
+    h+='<div class="frow" style="cursor:default"><span><b>'+EX[l.ex].name+(l.pr&&l===L[L.length-1]?' · new PR':'')+'</b><small>Best '+liftText(b)+' · '+fmtD(b.d)+(gain?' · '+gain:'')+'</small></span><em>'+hist.length+'×</em></div>';
+  }
+  h+='</div><p class="note" style="margin-top:8px">'+(S.stats.prs||0)+' record'+((S.stats.prs||0)===1?'':'s')+' broken so far.</p></section>';
+  return h;
+}
+function liftSheet(s){
+  const it=S.W.week[s.d].items[s.i],e=EX[it.ex],sec=it.u==='sec',last=liftLast(it.ex),b=liftBest(it.ex,last?liftMode(last):sec?'sec':'bw');
+  let h='<h2>Log '+e.name+'</h2><p class="muted">Plan: '+amtText(it)+'. Enter your best set today.</p>';
+  if(last)h+='<p class="note">Last time: '+liftText(last)+' on '+fmtD(last.d)+(b&&b!==last?' · best '+liftText(b):'')+'</p>';
+  h+=(sec?'':'<label class="field">Weight (kg), leave blank for bodyweight<input type="number" id="lw" inputmode="decimal" step="0.5" min="0" max="500" value="'+(last&&last.w?last.w:'')+'" placeholder="e.g. 20"></label>')
+   +'<label class="field">'+(sec?'Seconds held':'Reps in that set')+'<input type="number" id="lr" inputmode="numeric" min="1" max="'+(sec?600:200)+'" value="'+(last?last.r:'')+'" placeholder="'+(sec?'e.g. 40':'e.g. 10')+'"></label><p class="note" id="lerr" style="color:var(--pop)"></p><button class="btn full" data-a="savelift">Save</button><button class="btn ghost full" data-a="closesheet">Cancel</button>';
+  return h;
+}
+// ----- restaurant mode -----
+const RGROUPS=[['main','Mains'],['start','Starters and soups'],['bread','Breads and rice'],['south','South Indian'],['fast','Chinese and fast food'],['dess','Desserts'],['drink','Drinks']];
+function restoSlotGuess(){const h=new Date().getHours();return h<11?'b':h<15?'l':h<18?'e':'d';}
+function restoBudget(slot){
+  const td=todayK(),tot=totalsOf(DL(td)).k,tg=T().target,day=S.mp&&S.mp.days[dow(td)],pl=day&&day.slots&&day.slots[slot]?day.slots[slot].k:Math.round(tg*0.3);
+  return{plan:pl,left:tg-tot,tot,tg};
+}
+function restoTotal(sel){let k=0,p=0;for(const id in sel){const f=FD[id];if(f){k+=f.k*sel[id];p+=f.p*sel[id];}}return{k:Math.round(k),p:Math.round(p)};}
+function restoSheet(s){
+  const bg=restoBudget(s.slot),tot=restoTotal(s.sel),after=bg.tot+tot.k,over=after-bg.tg,n=Object.keys(s.sel).length;
+  let h='<h2>Restaurant mode</h2><div class="row wrap">'+SLOTS.map(x=>'<button class="chip'+(s.slot===x[0]?' on':'')+'" data-a="rslot" data-v="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>';
+  h+='<div class="rtot"><div class="row sp"><b>Your plate: '+fmtN(tot.k)+' kcal</b><span>'+tot.p+' g protein</span></div><small>Planned for this meal: about '+fmtN(bg.plan)+' kcal · Left today: '+fmtN(Math.max(0,bg.left))+' kcal</small>'
+   +(n?'<div class="rverdict '+(over>0?'over':'fit')+'">'+(over>0?'Over today by about '+fmtN(over)+' kcal. Share a dish, skip dessert or the buttered naan, or keep the next meal light.':'Fits. You would end the day at about '+fmtN(after)+' of '+fmtN(bg.tg)+' kcal.')+'</div>':'<div class="rverdict">Tap a dish to add it to your plate. Tap again for more, or use the half-portion buttons when sharing.</div>')+'</div>';
+  h+='<div class="row wrap">'+RGROUPS.map(g=>'<button class="chip'+(s.grp===g[0]?' on':'')+'" data-a="rgrp" data-v="'+g[0]+'">'+g[1]+'</button>').join('')+'</div>';
+  const list=Object.values(FD).filter(f=>f.cat==='rest'&&f.grp===s.grp);
+  h+=list.map(f=>{const q=s.sel[f.id]||0;
+    return '<div class="rrow'+(q?' sel':'')+'"><button class="frow" data-a="radd" data-id="'+f.id+'"><span><b>'+f.name.replace(' (restaurant)','')+'</b><small>'+f.serv.replace(', restaurant estimate','')+' · '+f.p+' g protein</small></span><em>'+f.k+' kcal</em></button>'
+     +(q?'<div class="rstep"><button data-a="rstep" data-id="'+f.id+'" data-d="-0.5" aria-label="Less">−</button><b>'+fmtQ(q)+' = '+Math.round(f.k*q)+' kcal</b><button data-a="rstep" data-id="'+f.id+'" data-d="0.5" aria-label="More">+</button></div>':'')+'</div>';}).join('');
+  h+='<p class="note">These are estimates for typical restaurant portions, which use more oil and butter than home cooking. Real dishes vary by 20 to 30 percent, so treat the totals as a guide.</p>';
+  h+='<details><summary>Smart ordering tips</summary><ul class="note" style="margin:6px 0 0 18px;display:flex;flex-direction:column;gap:4px"><li>Choose tandoori or grilled starters over fried ones.</li><li>Pick dal, chana or rajma over cream and butter gravies like malai kofta or shahi paneer.</li><li>Plain roti or tandoori roti is about half the calories of butter naan.</li><li>Ask for less oil and butter, and for gravy on the side.</li><li>Share dessert and starters. Half portions are one tap above.</li><li>Have a salad or soup first. It fills you up.</li></ul></details>';
+  h+='<button class="btn full" data-a="rlog"'+(n?'':' disabled')+'>Add '+(n?n+' dish'+(n===1?'':'es')+' ':'')+'to '+SLOTN[s.slot]+'</button><button class="btn ghost full" data-a="closesheet">Close</button>';
+  return h;
+}
+function sheetExtra2(s){
+  if(s.type==='lift')return liftSheet(s);
+  if(s.type==='resto')return restoSheet(s);
   return null;
 }
+function restoCard(){return '<section class="card"><h2>Eating out?</h2><p class="muted" style="margin:4px 0 10px">Pick what you plan to order, see calories against your day, then log it in one tap.</p><button class="btn" data-a="restosheet" data-s="'+restoSlotGuess()+'">Restaurant mode</button></section>';}
+function restoOpen(slot){V.sheet={type:'resto',slot:slot||restoSlotGuess(),grp:'main',sel:{}};V.keepSc=0;render();}
+function restoKeep(){V.keepSc=1;render();}
 
 // ---------- actions ----------
 function finishOnb(){
@@ -1407,6 +1629,20 @@ function onClick(e){
     case 'oncancel':V.form=null;V.editing=false;V.onb=0;V.err='';render();return;
     case 'tab':V.tab=d.t;V.sheet=null;V.resetAsk=false;render();window.scrollTo(0,0);return;
     case 'closesheet':V.sheet=null;V.delAsk=false;render();return;
+    case 'liftsheet':V.sheet={type:'lift',d:+d.d,i:+d.i};render();return;
+    case 'savelift':{
+      const it=S.W.week[V.sheet.d].items[V.sheet.i],sec=it.u==='sec',wEl=$('#lw'),w=wEl&&wEl.value!==''?+wEl.value:0,r=+$('#lr').value;
+      if(!(r>=1&&r<=(sec?600:200))){$('#lerr').textContent=sec?'Enter seconds between 1 and 600.':'Enter reps between 1 and 200.';return;}
+      if(!(w>=0&&w<=500)){$('#lerr').textContent='Weight should be between 0 and 500 kg.';return;}
+      const res=saveLift(V.sheet.d,V.sheet.i,w,r);V.sheet=null;saveS();render();
+      toast(res==='prnew'?'New personal record! +20 XP':res==='base'?'Logged. This is your starting mark.':'Logged');return;}
+    case 'rwk':V.rw=Math.min(0,Math.max(-12,(V.rw||0)+(+d.d)));render();return;
+    case 'restosheet':restoOpen(d.s);return;
+    case 'rslot':V.sheet.slot=d.v;restoKeep();return;
+    case 'rgrp':V.sheet.grp=d.v;V.keepSc=0;render();return;
+    case 'radd':V.sheet.sel[d.id]=(V.sheet.sel[d.id]||0)+1;restoKeep();return;
+    case 'rstep':{const q=Math.round(((V.sheet.sel[d.id]||0)+(+d.d))*100)/100;if(q<=0)delete V.sheet.sel[d.id];else V.sheet.sel[d.id]=Math.min(10,q);restoKeep();return;}
+    case 'rlog':{const sel=V.sheet.sel,slot=V.sheet.slot;if(!Object.keys(sel).length)return;for(const id in sel)addItem(todayK(),slot,id,sel[id]);S.stats.resto=(S.stats.resto||0)+1;V.sheet=null;commit();toast('Added to '+SLOTN[slot]);return;}
     case 'fcat':V.sheet.cat=d.v;render();return;
     case 'addphoto':{const i=$('#phin');if(i)i.click();return;}
     case 'viewphoto':V.sheet={type:'photo',i:+d.i};V.delAsk=false;render();return;

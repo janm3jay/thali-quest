@@ -169,6 +169,12 @@ svg .ol{fill:none;stroke:#7d8591;stroke-width:1.3;stroke-linejoin:round;vector-e
 .lb{display:flex;flex-direction:column;gap:8px}.lbrow{display:flex;align-items:center;gap:10px;background:var(--surface2);border:2px solid var(--edge);border-radius:14px;padding:8px 10px}
 .lbrow.me{background:var(--accent);color:var(--on-accent)}.lbrow.me small{color:var(--on-accent);opacity:.8}
 .lbrow .rk{font:800 18px var(--display);width:24px;text-align:center}.lbrow .nm{flex:1;min-width:0}.lbrow .nm b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* press feedback */
+.chip:active,.dchip:active,.qc:active,#nav button:active,.mthumb:active{transform:scale(.93)}
+.chip,.dchip,.qc,#nav button,.mthumb{transition:transform .12s}
+.card{transition:transform .15s}
+.sheet{will-change:transform}
+@media (prefers-reduced-motion:reduce){.chip,.dchip,.qc,#nav button,.mthumb,.card{transition:none}}
 </style>
 </head><body>
 <div id="app"></div><nav id="nav"></nav><div id="sheetwrap"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -1290,7 +1296,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 friends';
+const APP_VER='2026.10.23 motion';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1780,6 +1786,7 @@ function sheetHtml(){return V.sheet?'<div class="ov" data-a="closesheet"></div><
 const NAVS=[['today','Today','today'],['meals','Meals','meals'],['train','Train','train'],['rewards','Rewards','trophy'],['me','Me','user']];
 function render(){
   const y=window.scrollY,shEl=document.querySelector('.sheet'),shY=shEl?shEl.scrollTop:0,keep=V.keepSc;V.keepSc=0;let h;
+  const prevBars=typeof barSnap==='function'?barSnap():null,hadSh=!!shEl;
   if(V.form){h=viewOnb();}
   else h=({today:viewToday,meals:viewMeals,train:viewTrain,rewards:viewRewards,me:viewMe})[V.tab]();
   $('#app').innerHTML=h;
@@ -1787,6 +1794,7 @@ function render(){
   $('#sheetwrap').innerHTML=sheetHtml();
   window.scrollTo(0,y);
   if(keep){const e2=document.querySelector('.sheet');if(e2)e2.scrollTop=shY;}
+  if(typeof animAfter==='function'){try{animAfter(hadSh,prevBars);}catch(e){}}
 }
 
 function brandBar(s){
@@ -2246,6 +2254,59 @@ function socSheet(s){
   return h;
 }
 setTimeout(()=>{try{if(typeof S!=='undefined'&&S&&S.social&&S.social.on)socStart(true);}catch(e){}},2500);
+// ---------- motion: tab slides, card stagger, sheet slide, press and pop effects ----------
+const EASE='cubic-bezier(.2,.8,.2,1)',BOUNCE='cubic-bezier(.34,1.56,.64,1)';
+function animOK(){try{return !(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)&&typeof Element!=='undefined'&&Element.prototype.animate;}catch(e){return false;}}
+function barSnap(){return [...document.querySelectorAll('.xpbar i,.prog i')].map(e=>parseFloat(e.style.width));}
+// runs before a click is handled. Return true to stop the normal handling (used for the animated close).
+function animBefore(el,e){
+  if(!el||!animOK())return false;
+  const a=el.dataset.a,d=el.dataset;
+  if(a==='tab'&&V.tab!==d.t){const ts=(typeof NAVS!=='undefined'?NAVS.map(n=>n[0]):['today','meals','train','rewards','me']);V.anim={k:'tab',dir:ts.indexOf(d.t)>ts.indexOf(V.tab)?1:-1};return false;}
+  if(a==='onnext'){V.anim={k:'tab',dir:1};return false;}
+  if(a==='onback'){V.anim={k:'tab',dir:-1};return false;}
+  if(a==='tday'){V.anim={k:'fade'};return false;}
+  if(a==='closesheet'){
+    const sh=document.querySelector('.sheet'),ov=document.querySelector('.ov');
+    if(!sh||V.closing)return false;
+    V.closing=1;
+    sh.animate([{transform:'translateY(0)'},{transform:'translateY(105%)'}],{duration:200,easing:'cubic-bezier(.4,0,1,1)',fill:'forwards'});
+    if(ov)ov.animate([{opacity:1},{opacity:0}],{duration:200,fill:'forwards'});
+    setTimeout(()=>{V.closing=0;onClick0(e);},190);
+    return true;
+  }
+  return false;
+}
+function animAfter(hadSh,prev){
+  if(!animOK()){V.anim=null;return;}
+  const an=V.anim;V.anim=null;const app=document.getElementById('app');
+  if(an&&app){
+    if(an.k==='tab'){
+      app.animate([{opacity:0,transform:'translateX('+(an.dir*28)+'px)'},{opacity:1,transform:'none'}],{duration:280,easing:EASE});
+      [...app.children].slice(0,9).forEach((c,i)=>c.animate([{opacity:0,transform:'translateY(14px)'},{opacity:1,transform:'none'}],{duration:340,delay:i*45,easing:EASE,fill:'backwards'}));
+      const ic=document.querySelector('#nav .on svg');if(ic)ic.animate([{transform:'scale(.65) rotate(-8deg)'},{transform:'scale(1.25) rotate(4deg)'},{transform:'scale(1)'}],{duration:380,easing:BOUNCE});
+    }else if(an.k==='fade'){
+      [...app.children].slice(2,9).forEach((c,i)=>c.animate([{opacity:0,transform:'translateY(10px)'},{opacity:1,transform:'none'}],{duration:260,delay:i*35,easing:EASE,fill:'backwards'}));
+    }
+  }else if(!V.booted&&app){V.booted=1;[...app.children].slice(0,9).forEach((c,i)=>c.animate([{opacity:0,transform:'translateY(16px)'},{opacity:1,transform:'none'}],{duration:420,delay:i*60,easing:EASE,fill:'backwards'}));}
+  V.booted=1;
+  const sh=document.querySelector('.sheet');
+  if(sh&&!hadSh){sh.animate([{transform:'translateY(100%)'},{transform:'translateY(0)'}],{duration:320,easing:EASE});const ov=document.querySelector('.ov');if(ov)ov.animate([{opacity:0},{opacity:1}],{duration:260});}
+  if(prev&&!an){const now=[...document.querySelectorAll('.xpbar i,.prog i')];
+    if(now.length===prev.length)now.forEach((e,i)=>{const w=parseFloat(e.style.width);if(!isNaN(w)&&!isNaN(prev[i])&&Math.abs(w-prev[i])>.4)e.animate([{width:prev[i]+'%'},{width:w+'%'}],{duration:600,easing:EASE});});}
+}
+// small pop on the thing you just tapped, if it is still on screen after the redraw
+const POPSKIP={tab:1,closesheet:1,onnext:1,onback:1,social:1,muscsheet:1,liftsheet:1,tday:1};
+function animPop(el){
+  if(!el||!animOK())return;
+  try{
+    const d=el.dataset,a=d.a;if(POPSKIP[a])return;
+    let sel='[data-a="'+a+'"]';
+    for(const k of ['d','i','n','k','v','id','ex','slot','t'])if(d[k]!=null)sel+='[data-'+k+'="'+String(d[k]).replace(/"/g,'')+'"]';
+    const n=document.querySelector(sel);if(!n||n.disabled)return;
+    n.animate([{transform:'scale(.88)'},{transform:'scale(1.12)'},{transform:'scale(1)'}],{duration:300,easing:BOUNCE});
+  }catch(e){}
+}
 
 // ---------- actions ----------
 function finishOnb(){
@@ -2258,7 +2319,7 @@ function finishOnb(){
   }else{createState(p);}
   V.form=null;V.editing=false;V.onb=0;V.tab='today';saveS();render();window.scrollTo(0,0);
 }
-function onClick(e){
+function onClick0(e){
   const el=e.target.closest('[data-a]');if(!el)return;
   const a=el.dataset.a,d=el.dataset;
   switch(a){
@@ -2386,6 +2447,12 @@ function onClick(e){
     case 'editprofile':V.form=Object.assign({},S.profile);V.editing=true;V.onb=0;render();window.scrollTo(0,0);return;
     case 'reset':{if(!V.resetAsk){V.resetAsk=true;render();return;}try{localStorage.removeItem(KEY);}catch(x){}S=null;V.form=blankForm();V.editing=false;V.onb=0;V.resetAsk=false;V.tab='today';render();window.scrollTo(0,0);return;}
   }
+}
+function onClick(e){
+  const el=e.target&&e.target.closest?e.target.closest('[data-a]'):null;
+  if(typeof animBefore==='function'&&animBefore(el,e))return;
+  onClick0(e);
+  if(typeof animPop==='function')animPop(el);
 }
 function onInput(e){
   const t=e.target;

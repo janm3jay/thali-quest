@@ -635,9 +635,9 @@ R('r_mojito','Virgin mojito','1 glass (300 ml)',0,28,0,'drink',0.5,{nj:0});
 R('r_softdrink','Soft drink','1 glass (300 ml)',0,32,0,'drink',0,{nj:0});
 R('r_dietcoke','Diet cola','1 glass (300 ml)',0,0,0,'drink',0,{nj:0});
 R('r_buttermilk','Masala buttermilk','1 glass (250 ml)',3,6,2,'drink',0,{nj:0});
-// ---------- brand items: official nutrition tables where published (checked 22 Oct 2026) ----------
-const BRANDS={"KFC": {"note": "KFC India Nutrition Information, V6 (official booklet, no date given). Fibre not published, so shown as 0.", "al": "kfc"}, "Burger King": {"note": "Burger King India Nutritional Information Per Serve, current as of 12 Feb 2026 (official). Fibre not published, so shown as 0.", "al": "bk burgerking burger king"}, "Pizza Hut": {"note": "Pizza Hut India nutrition booklet (official, copyright 2022, current formulations as of posting). Per-slice values are the whole pizza divided by its slices.", "al": "pizzahut pizza hut"}, "McDonald's": {"note": "McDonald's India (McDelivery) nutrition PDF, no date given. Calories and serving are official. Protein, carbs and fat are my estimates from the official split of similar items at KFC and Burger King, because the PDF's macro columns could not be read reliably.", "al": "mcdonalds mcd mac maccas"}, "Havmor": {"note": "Havmor India product page (official), per 125 ml serving.", "al": "havmor"}};
-function B(id,brand,name,serv,k,p,c,f,fi,src){F(id,brand+' '+name,'',serv,p,c,f,{cat:'brand',step:1,al:BRANDS[brand].al,grp:brand});const x=FD[id];x.k=k;x.brand=brand;x.src=src;x.fi=fi;x.est=src.indexOf('estimated')>=0;FIB[id]=fi;}
+// ---------- brand items: official nutrition tables where readable, otherwise tagged Estimated (checked 22 Oct 2026) ----------
+const BRANDS={"KFC": {"note": "KFC India Nutrition Information, V6 (official booklet, no date given). Fibre is not published, so it shows as 0.", "al": "kfc"}, "Burger King": {"note": "Burger King India Nutritional Information Per Serve, current as of 12 Feb 2026 (official). Fibre is not published, so it shows as 0.", "al": "bk burgerking burger king"}, "Pizza Hut": {"note": "Pizza Hut India nutrition booklet (official, copyright 2022, current formulations as of posting). Per-slice values are the whole pizza divided by its slices.", "al": "pizzahut pizza hut"}, "McDonald's": {"note": "McDonald's India (McDelivery) nutrition PDF, no date given. Calories and serving are official. Protein, carbs and fat are estimated from the official split of similar KFC and Burger King items, because the PDF's macro columns could not be read reliably.", "al": "mcdonalds mcd mac maccas"}, "Domino's": {"note": "ESTIMATED. Domino's India has no readable official nutrition table. Slice calories use a kcal-per-gram figure for each pizza type, anchored to user-submitted listings and to Pizza Hut India's official data for similar pizzas. Macros use Pizza Hut's official split for similar pizzas. Expect 25% or more error.", "al": "dominos domino"}, "Subway": {"note": "ESTIMATED. Subway India's official PDF could not be opened. Calories are anchored to user-submitted Subway India listings, and macros use typical sandwich ratios (one listing had full macros). Sauces and extras change the numbers. Expect about 20% error.", "al": "subway"}, "Starbucks": {"note": "Latte and Frappuccino rows come from Tata Starbucks India's nutrition guide (official). That table was partly garbled, so only rows whose calories match their own protein, carbs and fat are used, with the guide's default milk. Items tagged Estimated are my estimates from milk, sugar and syrup content.", "al": "starbucks sbux"}, "Cafe Coffee Day": {"note": "ESTIMATED. CCD publishes a nutrition page but blocks automated access. These are estimates from typical recipes (milk, sugar, ice cream, bread, fillings). Expect 25% or more error.", "al": "ccd cafe coffee day"}, "Amul": {"note": "Amul's shop pages publish calories and protein per pack for High Protein products, but carbs and fat are in images that could not be read, so those are estimated. Items tagged Estimated use FSSAI milk composition standards or typical label values. Check the pack.", "al": "amul"}, "Havmor": {"note": "Havmor India product page (official), per 125 ml serving.", "al": "havmor"}};
+function B(id,brand,name,serv,k,p,c,f,fi,src){F(id,brand+' '+name,'',serv,p,c,f,{cat:'brand',step:1,al:BRANDS[brand].al,grp:brand});const x=FD[id];x.k=k;x.brand=brand;x.src=src;x.fi=fi;x.tag=src==='official'?'official':src==='estimated'?'Estimated':/macros estimated/.test(src)?'macros estimated':'carbs and fat estimated';x.est=x.tag!=='official';FIB[id]=fi;}
 B("b_kfc_vegzingerburger","KFC","Veg Zinger Burger","1 serving (230 g)",619,14,83,25,0,"official");
 B("b_kfc_classicvegkrisper","KFC","Classic Veg Krisper","1 serving (145 g)",496,9,54,28,0,"official");
 B("b_kfc_spicyvegkrisper","KFC","Spicy Veg Krisper","1 serving (145 g)",436,9,58,19,0,"official");
@@ -790,6 +790,100 @@ B("b_mcdo_smallsprite","McDonald's","Small Sprite","1 serving (299 ml)",120,0.0,
 B("b_mcdo_smallfantaorange","McDonald's","Small Fanta Orange","1 serving (299 ml)",129,0.0,32.2,0.0,0,"kcal official, macros estimated");
 B("b_mcdo_lemonicedtea14oz","McDonald's","Lemon Iced Tea (14 oz)","1 serving (303 ml)",147,0.0,36.8,0.0,0,"kcal official, macros estimated");
 B("b_mcdo_icedamericano14oz","McDonald's","Iced Americano (14 oz)","1 serving (337 ml)",23,0.0,5.8,0.0,0,"kcal official, macros estimated");
+B("b_domi_margheritapizza","Domino's","Margherita Pizza","1 slice (medium, ~85 g)",204,8.8,29.1,5.8,1.0,"estimated");
+B("b_domi_doublecheesemarghe","Domino's","Double Cheese Margherita Pizza","1 slice (medium, ~85 g)",221,9.6,31.5,6.3,1.0,"estimated");
+B("b_domi_cheesencornpizza","Domino's","Cheese n Corn Pizza","1 slice (medium, ~85 g)",208,9.0,29.7,5.9,1.2,"estimated");
+B("b_domi_farmhousepizza","Domino's","Farmhouse Pizza","1 slice (medium, ~85 g)",187,8.1,26.7,5.3,1.3,"estimated");
+B("b_domi_vegextravaganzapiz","Domino's","Veg Extravaganza Pizza","1 slice (medium, ~85 g)",204,8.8,29.1,5.8,1.4,"estimated");
+B("b_domi_deluxeveggiepizza","Domino's","Deluxe Veggie Pizza","1 slice (medium, ~85 g)",191,8.3,27.3,5.4,1.4,"estimated");
+B("b_domi_freshveggiepizza","Domino's","Fresh Veggie Pizza","1 slice (medium, ~85 g)",178,7.7,25.5,5.1,1.4,"estimated");
+B("b_domi_mexicangreenwavepi","Domino's","Mexican Green Wave Pizza","1 slice (medium, ~85 g)",195,8.5,27.9,5.6,1.4,"estimated");
+B("b_domi_5pepperpizza","Domino's","5 Pepper Pizza","1 slice (medium, ~85 g)",195,8.5,27.9,5.6,1.4,"estimated");
+B("b_domi_veggieparadisepizz","Domino's","Veggie Paradise Pizza","1 slice (medium, ~85 g)",195,8.5,27.9,5.6,1.4,"estimated");
+B("b_domi_peppypaneerpizza","Domino's","Peppy Paneer Pizza","1 slice (medium, ~85 g)",212,8.7,27.7,7.5,1.3,"estimated");
+B("b_domi_paneermakhanipizza","Domino's","Paneer Makhani Pizza","1 slice (medium, ~85 g)",217,8.9,28.2,7.6,1.3,"estimated");
+B("b_domi_inditandooripaneer","Domino's","Indi Tandoori Paneer Pizza","1 slice (medium, ~85 g)",212,8.7,27.7,7.5,1.3,"estimated");
+B("b_domi_garlicbread4pieces","Domino's","Garlic Bread (4 pieces)","1 serving (122 g)",340,6.5,35.9,18.9,1.5,"estimated");
+B("b_domi_stuffedgarlicbread","Domino's","Stuffed Garlic Bread","1 serving (190 g)",540,10.3,57.0,30.1,2,"estimated");
+B("b_domi_paneertikkastuffed","Domino's","Paneer Tikka Stuffed Garlic Bread","1 serving (200 g)",429,8.2,45.3,23.9,2,"estimated");
+B("b_domi_tacomexicanaveg","Domino's","Taco Mexicana Veg","1 serving (91 g)",327,6.5,42.5,14.5,1.5,"estimated");
+B("b_domi_zingyparcelveg","Domino's","Zingy Parcel Veg","1 serving (180 g)",620,15.5,69.8,31.0,2,"estimated");
+B("b_domi_chocolavacake","Domino's","Choco Lava Cake","1 serving (60 g)",350,6.1,37.6,19.4,1,"estimated");
+B("b_subw_6inchveggiedelites","Subway","6-inch Veggie Delite Sandwich","1 sandwich (~164 g)",242,9.1,43.6,3.5,4,"estimated");
+B("b_subw_6inchaloopattysand","Subway","6-inch Aloo Patty Sandwich","1 sandwich (~220 g)",451,12.4,67.6,14.5,4,"estimated");
+B("b_subw_6inchclassicveggie","Subway","6-inch Classic Veggie Sandwich","1 sandwich (~167 g)",346,10.4,51.9,10.8,4,"estimated");
+B("b_subw_6inchcornandpeassa","Subway","6-inch Corn and Peas Sandwich","1 sandwich (~200 g)",392,11.8,60.8,11.3,4,"estimated");
+B("b_subw_6inchpaneertikkasa","Subway","6-inch Paneer Tikka Sandwich","1 sandwich (~224 g)",410,17.4,51.2,15.0,4,"estimated");
+B("b_subw_6inchpaneertikkach","Subway","6-inch Paneer Tikka Cheese Pull Sandwich","1 sandwich (6 inch)",547,23,58,24,4,"estimated");
+B("b_subw_paneertikkawrap","Subway","Paneer Tikka Wrap","1 wrap (~349 g)",719,27.0,75.5,34.4,4,"estimated");
+B("b_subw_paneertikkasalad","Subway","Paneer Tikka Salad","1 bowl (~411 g)",397,18.9,29.8,22.5,6,"estimated");
+B("b_subw_paneertikkaricebow","Subway","Paneer Tikka Rice Bowl","1 bowl (~404 g)",621,21.7,80.7,23.5,5,"estimated");
+B("b_subw_darkchunkcookieegg","Subway","Dark Chunk Cookie (eggless)","1 cookie (45 g)",204,2.6,25.5,10.2,1,"estimated");
+B("b_subw_cheeseslice","Subway","Cheese Slice","1 slice (11 g)",38,2.4,0.4,2.9,0,"estimated");
+B("b_star_caffelatteshort","Starbucks","Caffe Latte Short","1 drink, Short (237 ml)",104,5.7,8.3,5.3,0,"official");
+B("b_star_caffelattetall","Starbucks","Caffe Latte Tall","1 drink, Tall (355 ml)",173,9.5,13.8,8.8,0,"official");
+B("b_star_caffelattegrande","Starbucks","Caffe Latte Grande","1 drink, Grande (473 ml)",220,12.1,17.6,11.2,0,"official");
+B("b_star_caffelatteventi","Starbucks","Caffe Latte Venti","1 drink, Venti (591 ml)",289,15.9,23.1,14.8,0,"official");
+B("b_star_coffeefrappuccinot","Starbucks","Coffee Frappuccino Tall","1 drink, Tall (355 ml)",209,2.8,43.3,2.7,0,"official");
+B("b_star_coffeefrappuccinog","Starbucks","Coffee Frappuccino Grande","1 drink, Grande (473 ml)",307,3.9,64.4,3.7,0,"official");
+B("b_star_coffeefrappuccinov","Starbucks","Coffee Frappuccino Venti","1 drink, Venti (591 ml)",392,4.3,84.5,4.1,0,"official");
+B("b_star_caramelfrappuccino","Starbucks","Caramel Frappuccino Tall","1 drink, Tall (355 ml)",365,3.5,59.1,12.8,0,"official");
+B("b_star_caramelfrappuccino2","Starbucks","Caramel Frappuccino Grande","1 drink, Grande (473 ml)",485,4.6,83.3,15.0,0,"official");
+B("b_star_caramelfrappuccino3","Starbucks","Caramel Frappuccino Venti","1 drink, Venti (591 ml)",602,5.1,108.6,16.5,0,"official");
+B("b_star_mochafrappuccinota","Starbucks","Mocha Frappuccino Tall","1 drink, Tall (355 ml)",342,4.3,53.3,12.1,0,"official");
+B("b_star_mochafrappuccinogr","Starbucks","Mocha Frappuccino Grande","1 drink, Grande (473 ml)",470,5.8,78.0,14.6,0,"official");
+B("b_star_mochafrappuccinove","Starbucks","Mocha Frappuccino Venti","1 drink, Venti (591 ml)",585,6.7,101.6,16.4,0,"official");
+B("b_star_cappuccinotall","Starbucks","Cappuccino Tall","1 drink, Tall (355 ml)",109,6.0,8.7,5.6,0,"estimated");
+B("b_star_cappuccinogrande","Starbucks","Cappuccino Grande","1 drink, Grande (473 ml)",145,8.0,11.5,7.4,0,"estimated");
+B("b_star_americanotall","Starbucks","Americano Tall","1 drink, Tall (355 ml)",10,0.6,1.8,0.1,0,"estimated");
+B("b_star_icedamericanotall","Starbucks","Iced Americano Tall","1 drink, Tall (355 ml)",10,0.6,1.8,0.1,0,"estimated");
+B("b_star_icedcaffelattetall","Starbucks","Iced Caffe Latte Tall","1 drink, Tall (355 ml)",120,6.5,10,6.0,0,"estimated");
+B("b_star_coldcoffeetall","Starbucks","Cold Coffee Tall","1 drink, Tall (355 ml)",207,6,30,7,0,"estimated");
+B("b_star_chaitealattetall","Starbucks","Chai Tea Latte Tall","1 drink, Tall (355 ml)",196,6,34,4,0,"estimated");
+B("b_star_hotchocolatetall","Starbucks","Hot Chocolate Tall","1 drink, Tall (355 ml)",253,10,33,9,0,"estimated");
+B("b_star_icedtealemontall","Starbucks","Iced Tea (lemon) Tall","1 drink, Tall (355 ml)",88,0,22,0,0,"estimated");
+B("b_star_buttercroissant","Starbucks","Butter Croissant","1 piece (~70 g)",271,5,29,15,1,"estimated");
+B("b_star_chocolatemuffin","Starbucks","Chocolate Muffin","1 piece (~110 g)",426,5,52,22,2,"estimated");
+B("b_star_paneertikkasandwic","Starbucks","Paneer Tikka Sandwich","1 sandwich (~200 g)",377,14,42,17,3,"estimated");
+B("b_star_chocolatebrownie","Starbucks","Chocolate Brownie","1 piece (~90 g)",401,5,48,21,2,"estimated");
+B("b_cafe_cafelatte","Cafe Coffee Day","Cafe Latte","1 cup (~240 ml)",127,7,9,7,0,"estimated");
+B("b_cafe_cappuccino","Cafe Coffee Day","Cappuccino","1 cup (~200 ml)",101,6,8,5,0,"estimated");
+B("b_cafe_coldcoffee","Cafe Coffee Day","Cold Coffee","1 glass (~250 ml)",207,6,30,7,0,"estimated");
+B("b_cafe_coldcoffeewithicec","Cafe Coffee Day","Cold Coffee with Ice Cream","1 glass (~330 ml)",338,8,45,14,0,"estimated");
+B("b_cafe_cafefrappe","Cafe Coffee Day","Cafe Frappe","1 glass (~300 ml)",273,6,42,9,0,"estimated");
+B("b_cafe_icedamericano","Cafe Coffee Day","Iced Americano","1 glass (~300 ml)",10,0.6,1.8,0.1,0,"estimated");
+B("b_cafe_hotchocolate","Cafe Coffee Day","Hot Chocolate","1 cup (~220 ml)",232,8,32,8,0,"estimated");
+B("b_cafe_masalachai","Cafe Coffee Day","Masala Chai","1 cup (~150 ml)",66,2,9,2.5,0,"estimated");
+B("b_cafe_vegpuff","Cafe Coffee Day","Veg Puff","1 piece (~90 g)",229,4,24,13,1.5,"estimated");
+B("b_cafe_paneertikkasandwic","Cafe Coffee Day","Paneer Tikka Sandwich","1 sandwich (~180 g)",351,14,40,15,3,"estimated");
+B("b_cafe_veggrilledsandwich","Cafe Coffee Day","Veg Grilled Sandwich","1 sandwich (~170 g)",296,9,38,12,3,"estimated");
+B("b_cafe_vegburger","Cafe Coffee Day","Veg Burger","1 burger (~200 g)",405,11,52,17,3,"estimated");
+B("b_cafe_chocolatebrownie","Cafe Coffee Day","Chocolate Brownie","1 piece (~80 g)",355,4,42,19,2,"estimated");
+B("b_amul_highproteinmilk","Amul","High Protein Milk","1 pack (250 ml)",225,35,21,0,0,"kcal and protein official, carbs and fat estimated");
+B("b_amul_highproteinbutterm","Amul","High Protein Buttermilk","1 pack (200 ml)",107,15,8.4,1.5,0,"kcal and protein official, carbs and fat estimated");
+B("b_amul_highproteinplainla","Amul","High Protein Plain Lassi","1 pack (200 ml)",107,15,8.4,1.5,0,"kcal and protein official, carbs and fat estimated");
+B("b_amul_highproteinblueber","Amul","High Protein Blueberry Shake","1 pack (200 ml)",138,20,10,2.0,0,"kcal and protein official, carbs and fat estimated");
+B("b_amul_koolproteinmilksha","Amul","Kool Protein Milkshake","1 pack (180 ml)",133,10,17.8,2.5,0,"kcal and protein official, carbs and fat estimated");
+B("b_amul_highproteinpaneer","Amul","High Protein Paneer","1 serving (50 g)",85,12.5,2,3,0,"kcal and protein official, carbs and fat estimated");
+B("b_amul_butterkhakhraplain","Amul","Butter Khakhra (plain)","1 khakhra (~20 g)",102,2.1,12.4,4.8,2,"kcal and protein official, carbs and fat estimated");
+B("b_amul_taazatonedmilk","Amul","Taaza Toned Milk","1 glass (200 ml)",116,6.2,9.4,6.0,0,"estimated");
+B("b_amul_goldfullcreammilk","Amul","Gold Full Cream Milk","1 glass (200 ml)",173,6.6,9.6,12.0,0,"estimated");
+B("b_amul_shaktistandardmilk","Amul","Shakti Standard Milk","1 glass (200 ml)",144,6.4,9.4,9.0,0,"estimated");
+B("b_amul_slimntrimdoubleton","Amul","Slim n Trim Double Toned Milk","1 glass (200 ml)",92,6.6,9.6,3.0,0,"estimated");
+B("b_amul_mastidahicurd","Amul","Masti Dahi (curd)","1 katori (100 g)",62,3.2,4.5,3.5,0,"estimated");
+B("b_amul_mishtidoi","Amul","Mishti Doi","1 katori (100 g)",108,3.2,16,3.5,0,"estimated");
+B("b_amul_shrikhand","Amul","Shrikhand","1 katori (100 g)",194,5,30,6,0,"estimated");
+B("b_amul_freshpaneer","Amul","Fresh Paneer","100 g",264,18,3,20,0,"estimated");
+B("b_amul_cheeseslice","Amul","Cheese Slice","1 slice (20 g)",68,3.9,0.7,5.5,0,"estimated");
+B("b_amul_butter","Amul","Butter","1 portion (10 g)",72,0.1,0,8.0,0,"estimated");
+B("b_amul_pureghee","Amul","Pure Ghee","1 tsp (5 g)",45,0,0,5.0,0,"estimated");
+B("b_amul_koolcafe","Amul","Kool Cafe","1 pack (200 ml)",113,3.5,18,3,0,"estimated");
+B("b_amul_koolkokoflavouredm","Amul","Kool Koko (flavoured milk)","1 pack (200 ml)",149,5.5,25,3,0,"estimated");
+B("b_amul_sweetlassi","Amul","Sweet Lassi","1 pack (200 ml)",136,5,20,4,0,"estimated");
+B("b_amul_mastispicedbutterm","Amul","Masti Spiced Buttermilk","1 pack (200 ml)",38,2,4,1.5,0,"estimated");
+B("b_amul_vanillamagicicecre","Amul","Vanilla Magic Ice Cream Cup","1 cup (~60 g)",130,2,17,6,0,"estimated");
+B("b_amul_triconebutterscotc","Amul","Tricone Butterscotch","1 cone (120 ml)",204,2.5,26,10,0,"estimated");
+B("b_amul_kulfi","Amul","Kulfi","1 stick (~60 g)",131,3,14,7,0,"estimated");
 // ---------- body numbers ----------
 function calcPlan(p){
   const w=+p.w,h=+p.h,age=+p.age,tw=+p.tw,pace=+p.pace;
@@ -1003,7 +1097,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 brands';
+const APP_VER='2026.10.23 brands 2';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1443,7 +1537,7 @@ function foodRes(q){
   else if(!q)list.sort((a,b)=>((b.custom?1:0)-(a.custom?1:0))||((b.g?1:0)-(a.g?1:0))||((a.cheat?1:0)-(b.cheat?1:0)));
   list=list.slice(0,q||cat?90:60);
   if(!list.length)return '<p class="note">Nothing found. Add it as a custom food.</p>';
-  return list.map(f=>'<button class="frow" data-a="pickfood" data-id="'+f.id+'"><span><b>'+f.name+'</b><span class="gu">'+f.gu+'</span><small>'+f.serv+(f.brand?' · '+(f.est?'macros estimated':'official'):'')+'</small></span><em>'+f.k+' kcal</em></button>').join('');
+  return list.map(f=>'<button class="frow" data-a="pickfood" data-id="'+f.id+'"><span><b>'+f.name+'</b><span class="gu">'+f.gu+'</span><small>'+f.serv+(f.brand?' · '+f.tag:'')+'</small></span><em>'+f.k+' kcal</em></button>').join('');
 }
 function qsum(u,q){return '<b>'+Math.round(u.k*q)+' kcal</b> · '+(u.p*q).toFixed(1)+' g protein · '+(u.c*q).toFixed(0)+' g carbs · '+(u.f*q).toFixed(1)+' g fat · '+((u.fi||0)*q).toFixed(1)+' g fibre';}
 function qtyPicker(u,q){
@@ -1501,8 +1595,8 @@ function render(){
 function brandBar(s){
   const names=Object.keys(BRANDS);
   let h='<div class="row wrap"><button class="chip'+(!s.brand?' on':'')+'" data-a="fbrand" data-v="">All brands</button>'+names.map(n=>'<button class="chip'+(s.brand===n?' on':'')+'" data-a="fbrand" data-v="'+esc(n)+'">'+esc(n)+'</button>').join('')+'</div>';
-  h+='<p class="note">'+(s.brand?esc(BRANDS[s.brand].note):'Official nutrition tables published by each brand in India. Items tagged "macros estimated" have official calories but estimated protein, carbs and fat.')+'</p>';
-  if(!s.brand)h+='<p class="note">Not added yet (no readable official table found): Domino\u2019s, Subway, Starbucks, Cafe Coffee Day, Haldiram\u2019s, Amul, Baskin Robbins, Wow! Momo. For these, use Restaurant mode or a custom food with the label values.</p>';
+  h+='<p class="note">'+(s.brand?esc(BRANDS[s.brand].note):'Official nutrition tables where I could read them. Anything tagged "Estimated", "macros estimated" or "carbs and fat estimated" is partly or fully my estimate, so treat it as a guide.')+'</p>';
+  if(!s.brand)h+='<p class="note">Not added yet: Haldiram\u2019s, Baskin Robbins, Wow! Momo and others. Use Restaurant mode or a custom food with the label values.</p>';
   return h;
 }
 // ---------- plateau check, progress photos, backup and restore, streak freeze ----------

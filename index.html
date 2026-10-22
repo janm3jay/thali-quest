@@ -62,7 +62,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .rbg{fill:none;stroke:var(--surface2);stroke-width:14}.rfg{fill:none;stroke:var(--accent);stroke-width:14;stroke-linecap:round}.rfg.over{stroke:var(--chili)}
 .rnum{font:800 34px var(--display);fill:var(--ink)}.rsub{font:600 11px var(--body);fill:var(--muted)}
 .macros{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
-.mb{display:grid;gap:2px;font:600 12.5px var(--body)}.mb .bar{height:10px;border-radius:9px;background:var(--surface2);border:2px solid var(--edge);overflow:hidden}.mb .bar i{display:block;height:100%;background:var(--accent)}.mb.f .bar i{background:var(--gold)}.mb.c .bar i{background:var(--cyan)}
+.mb{display:grid;gap:2px;font:600 12.5px var(--body)}.mb .bar{height:10px;border-radius:9px;background:var(--surface2);border:2px solid var(--edge);overflow:hidden}.mb .bar i{display:block;height:100%;background:var(--accent)}.mb.f .bar i{background:var(--gold)}.mb.c .bar i{background:var(--cyan)}.mb.fi .bar i{background:var(--pop)}
 .left{font-size:13.5px}.left b{font:800 22px var(--display)}
 /* quests */
 .q{display:flex;gap:10px;align-items:center;padding:10px 0;border-top:2px dashed var(--line)}.q:first-of-type{border-top:0}
@@ -294,12 +294,27 @@ F('dalvada','Dal vada','દાળ વડા','3 pieces',8,24,14,{cheat:1,g:1});
 F('dabeli','Dabeli','દાબેલી','1 piece',5,40,12,{cheat:1,step:1,g:1,nj:1});
 F('panipuri','Pani puri','પાણીપુરી','6 pieces',3,28,8,{cheat:1,nj:1});
 
+F('isabgol','Isabgol (psyllium husk) in water','ઇસબગુલ','1 tsp (5 g) in a glass of water',0.15,1,0.05);
+// estimated dietary fibre (g) per serving
+const FIB={roti:3,rotla:5,thepla:2.5,khakhra:2,paratha:3,rice:0.6,pulao:2,poha:2,upma:3,oats:4,idli:1.5,sambar:4,chilla:4,dhokla:2.5,handvo:3.5,muthiya:3.5,khandvi:1.5,sandwich:4,
+gdal:5,mdal:5,kadhi:1,khichdi:4,rajma:8,chole:8,usal:7,dalDhokli:9,soya:6,sprouts:3,chana:5,
+bhindi:4,ringan:4,bataka:3,dudhi:4,tindora:3,sevtameta:3,undhiyu:7,palak:4,bhurji:1,mixveg:3,salad:2,raita:0.5,soup:2,
+curd:0,chaas:0,milk:0,tea:0,paneer:0,banana:3,apple:3.6,papaya:2.5,guava:5,almond:1.5,peanut:1.7,makhana:3,
+pavbhaji:6,pizza:4,vadapav:3,samosa:3,mdosa:4,gulab:1,fafda:4,jalebi:0.5,thaliR:12,shrikhand:0,icecream:0.5,chholebh:8,biryani:5,cola:0,
+puri:2,bhakri:4,naan:2.5,dosa:1,uttapam:2.5,brownrice:2.5,jeerarice:1,curdrice:1,daliya:5,sabudana:1,khichu:2,patra:4,sevkhamani:3,ganthiya:2,chakri:1,mathri:1,chevdo:2,popcorn:3,bhelpuri:3,
+gavar:4,turia:3,kobi:3,karela:3.5,cauli:3.5,valnu:7,mug:8,mutter:5,paneermasala:3,toor:5,chanadal:6,dalfry:5,dalmakhani:6,
+lassi:0,coconutw:0,coffee:0,whey:0,soymilk:1,cheese:0,ghee:0,pbutter:1,cashew:0.5,walnut:0.8,raisin:0.5,dates:1.5,
+mango:2.6,orange:3,grapes:1.4,watermelon:1.2,pomegranate:3.5,chikoo:5,cucumber:1,corn:4,bpotato:3,sweetpot:4,biscuit:0.7,
+ladoo:1.5,mohanthal:1,sukhdi:2,basundi:0,rasgulla:0,kajukatli:0.8,halwa:2,puranpoli:3,chocolate:1.5,burger:3,fries:3.5,noodles:3,manchurian:3,bhajiya:3,dalvada:5,dabeli:3,panipuri:2,
+isabgol:4};
+for(const id in FD){FD[id].fi=FIB[id]||0;}
+
 const SLOTS=[['b','Breakfast'],['m','Mid-morning'],['l','Lunch'],['e','Evening'],['d','Dinner']];
 const SLOTN=Object.fromEntries(SLOTS);
 const OPTS=[];
 function M(slot,id,name,items,o){o=o||{};OPTS.push({slot,id,name,items,g:!!o.g,hp:!!o.hp,fam:o.fam||id,nj:items.some(a=>FD[a[0]].nj)});}
 const OPT=id=>OPTS.find(o=>o.id===id);
-function itemsMacro(items){let k=0,p=0,c=0,f=0;for(const a of items){const x=FD[a[0]],q=a[1];k+=x.k*q;p+=x.p*q;c+=x.c*q;f+=x.f*q;}return{k:Math.round(k),p:Math.round(p*10)/10,c:Math.round(c),f:Math.round(f*10)/10};}
+function itemsMacro(items){let k=0,p=0,c=0,f=0,fi=0;for(const a of items){const x=FD[a[0]],q=a[1];k+=x.k*q;p+=x.p*q;c+=x.c*q;f+=x.f*q;fi+=(x.fi||0)*q;}return{k:Math.round(k),p:Math.round(p*10)/10,c:Math.round(c),f:Math.round(f*10)/10,fi:Math.round(fi*10)/10};}
 // breakfast
 M('b','b_thepla','Thepla & curd',[['thepla',2],['curd',1]],{g:1,fam:'thepla'});
 M('b','b_dhokla','Khaman dhokla & chaas',[['dhokla',1],['chaas',1]],{g:1,fam:'dhokla'});
@@ -371,7 +386,7 @@ function shuffle(a,r){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.flo
 const snap=(x,st)=>Math.max(st,Math.round(x/st)*st);
 const LOCK=new Set(['tea','chaas','salad','raita','banana','apple','guava','papaya','curd','milk']);
 function scaleOpt(opt,desired){const base=itemsMacro(opt.items).k;const s=desired/base;return opt.items.map(a=>[a[0],LOCK.has(a[0])?a[1]:snap(a[1]*s,FD[a[0]].step)]);}
-function dayTotal(slots){let k=0,p=0,c=0,f=0;for(const s in slots){const x=slots[s];k+=x.k;p+=x.p;c+=x.c;f+=x.f;}return{k:Math.round(k),p:Math.round(p),c:Math.round(c),f:Math.round(f)};}
+function dayTotal(slots){let k=0,p=0,c=0,f=0,fi=0;for(const s in slots){const x=slots[s];k+=x.k;p+=x.p;c+=x.c;f+=x.f;fi+=(x.fi||0);}return{k:Math.round(k),p:Math.round(p),c:Math.round(c),f:Math.round(f),fi:Math.round(fi)};}
 function planDay(target,picks,cheat){
   const share={b:.25,m:.08,l:.32,e:.10,d:.25};
   let rem=target,slots=SLOTS.map(s=>s[0]);const out={};
@@ -432,7 +447,7 @@ function calcPlan(p){
   const fat=Math.round(0.27*target/9);
   const carbs=Math.max(0,Math.round((target-protein*4-fat*9)/4));
   const cat=bmi<18.5?'Underweight':bmi<23?'Healthy':bmi<25?'Overweight':'Obese';
-  return{bmi:Math.round(bmi*10)/10,cat,bmr:Math.round(bmr),tdee,target,deficit,rate:Math.round(rate*100)/100,weeks,protein,fat,carbs,hmin,hmax,toLose:Math.round(toLose*10)/10,mode,warn};
+  return{bmi:Math.round(bmi*10)/10,cat,bmr:Math.round(bmr),tdee,target,deficit,rate:Math.round(rate*100)/100,weeks,protein,fat,carbs,fibre:30,hmin,hmax,toLose:Math.round(toLose*10)/10,mode,warn};
 }
 
 // ---------- exercises ----------
@@ -639,7 +654,7 @@ const fmtQ=q=>String(Math.round(q*100)/100);
 const fmtN=n=>Math.round(n).toLocaleString('en-IN');
 const T=()=>calcPlan(S.profile);
 const DL=k=>S.log[k]||(S.log[k]={items:[],water:0,q:{},walk:false});
-function totalsOf(dl){let k=0,p=0,c=0,f=0;for(const i of dl.items){k+=i.k;p+=i.p;c+=i.c;f+=i.fa;}return{k:Math.round(k),p:Math.round(p),c:Math.round(c),f:Math.round(f)};}
+function totalsOf(dl){let k=0,p=0,c=0,f=0,fi=0;for(const i of dl.items){k+=i.k;p+=i.p;c+=i.c;f+=i.fa;fi+=(i.fi||0);}return{k:Math.round(k),p:Math.round(p),c:Math.round(c),f:Math.round(f),fi:Math.round(fi)};}
 const paths={
  today:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16M9 15l2 2 4-4"/>',
  meals:'<path d="M6 3v7a2 2 0 0 0 4 0V3M8 3v18M16 21V3c-2 1-3 4-3 8h3"/>',
@@ -756,10 +771,10 @@ function createState(p){
    seed:Math.floor(Math.random()*1e9),cheat:{day:6,id:'pavbhaji'},mp:null,W:newW(p)};
   ensurePlans();
 }
-function regCustom(c){FD[c.id]={id:c.id,name:c.name,gu:'my food',serv:c.serv,p:c.p,c:c.c,f:c.f,k:c.k,step:0.5,g:false,nj:false,cheat:false,custom:true};}
+function regCustom(c){FD[c.id]={id:c.id,name:c.name,gu:'my food',serv:c.serv,p:c.p,c:c.c,f:c.f,fi:c.fi||0,k:c.k,step:0.5,g:false,nj:false,cheat:false,custom:true};}
 function addItem(k,slot,fid,qty){
   const x=FD[fid],dl=DL(k);
-  dl.items.push({id:uid(),f:fid,n:x.name,sv:x.serv,q:qty,k:Math.round(x.k*qty),p:+(x.p*qty).toFixed(1),c:+(x.c*qty).toFixed(1),fa:+(x.f*qty).toFixed(1),slot});
+  dl.items.push({id:uid(),f:fid,n:x.name,sv:x.serv,q:qty,k:Math.round(x.k*qty),p:+(x.p*qty).toFixed(1),c:+(x.c*qty).toFixed(1),fa:+(x.f*qty).toFixed(1),fi:+((x.fi||0)*qty).toFixed(1),slot});
   S.stats.logs++;
   if(x.cheat&&!dl.cheatCounted){dl.cheatCounted=1;S.stats.cheats++;}
 }
@@ -798,7 +813,7 @@ function slotBlock(s,n,k,dl){
 function viewToday(){
   const k=todayK(),dl=DL(k),tg=T(),t=totalsOf(dl),left=tg.target-t.k;
   let h=hdr();
-  h+='<section class="card ringcard">'+ring(t.k,tg.target)+'<div class="macros">'+mbar('Protein',t.p,tg.protein,'p')+mbar('Carbs',t.c,tg.carbs,'c')+mbar('Fat',t.f,tg.fat,'f')+'<p class="left">'+(left>=0?'<b>'+left+'</b> kcal left':'<b>'+(-left)+'</b> kcal over')+'</p></div></section>';
+  h+='<section class="card ringcard">'+ring(t.k,tg.target)+'<div class="macros">'+mbar('Protein',t.p,tg.protein,'p')+mbar('Carbs',t.c,tg.carbs,'c')+mbar('Fat',t.f,tg.fat,'f')+mbar('Fibre',t.fi,tg.fibre,'fi')+'<p class="left">'+(left>=0?'<b>'+left+'</b> kcal left':'<b>'+(-left)+'</b> kcal over')+'</p></div></section>';
   h+=questsCard(k);
   h+='<section class="card"><h2 style="margin-bottom:10px">Food log</h2>'+SLOTS.map(s=>slotBlock(s[0],s[1],k,dl)).join('')+'</section>';
   let d='';for(let i=1;i<=8;i++)d+='<button class="drop'+(dl.water>=i?' on':'')+'" data-a="water" data-n="'+i+'" aria-label="Glass '+i+'">'+ic('drop')+'</button>';
@@ -810,7 +825,7 @@ function viewMeals(){
   let h='<div class="col"><h1>This week’s meals</h1><p class="muted">Target '+fmtN(tg.target)+' kcal a day. Portions are scaled to hit it.</p></div>';
   h+='<div class="row wrap"><button class="chip'+(p.style==='gu'?' on':'')+'" data-a="pref" data-k="style" data-v="gu">Gujarati focus</button><button class="chip'+(p.style==='pan'?' on':'')+'" data-a="pref" data-k="style" data-v="pan">All-India veg</button><button class="chip'+(p.jain?' on':'')+'" data-a="prefb" data-k="jain">Jain-friendly</button><button class="chip'+(p.hp?' on':'')+'" data-a="prefb" data-k="hp">High protein</button></div>';
   h+='<div class="days">'+DAYS.map((d,i)=>'<button class="dchip'+(i===di?' on':'')+(i===td?' now':'')+'" data-a="day" data-i="'+i+'">'+d+(S.mp.days[i].cheat?'<i class="dot"></i>':'')+'</button>').join('')+'</div>';
-  h+='<div class="row sp"><b>'+DAYS[di]+(di===td?' (today)':'')+'</b><span class="pill">'+day.total.k+' kcal · '+day.total.p+' g protein</span></div>';
+  h+='<div class="row sp"><b>'+DAYS[di]+(di===td?' (today)':'')+'</b><span class="pill">'+day.total.k+' kcal · '+day.total.p+' g protein'+(day.total.fi!=null?' · '+day.total.fi+' g fibre':'')+'</span></div>';
   for(const sl of SLOTS){
     const s=sl[0],x=day.slots[s];
     h+='<article class="card meal'+(x.cheat?' cheatc':'')+'"><div class="row sp"><span class="slotname">'+sl[1]+(x.cheat?' · cheat meal':'')+'</span><small>'+x.k+' kcal · '+x.p+' g protein</small></div><h3 style="margin-top:4px">'+esc(x.name)+'</h3><ul>';
@@ -924,7 +939,7 @@ function viewMe(){
   h+='<section class="card"><div class="row sp"><h2>Weight</h2><button class="btn sm" data-a="weightsheet">Log weight</button></div><div class="row sp" style="margin:10px 0 6px"><span>Start <b>'+S.start.w+' kg</b></span><span>Now <b>'+now+' kg</b></span><span>Goal <b>'+tw+' kg</b></span></div><div class="prog"><i style="width:'+pct.toFixed(0)+'%"></i></div>'+wChart()+'</section>';
   h+=measCard();
   h+='<section class="card"><h2 style="margin-bottom:10px">Your numbers</h2><div class="stat"><div><b>'+t.bmi+'</b><span>BMI · '+t.cat+'</span></div><div><b>'+fmtN(t.tdee)+'</b><span>Maintenance kcal</span></div><div><b>'+fmtN(t.target)+'</b><span>Daily target kcal</span></div><div><b>'+t.deficit+'</b><span>Daily deficit kcal</span></div></div><p class="note" style="margin-top:10px">Protein '+t.protein+' g · Carbs '+t.carbs+' g · Fat '+t.fat+' g a day. Healthy weight for your height: '+t.hmin+' to '+t.hmax+' kg.'+(eta?' At about '+t.rate+' kg a week you reach your goal around <b>'+eta+'</b>.':'')+'</p>'+t.warn.map(w=>'<p class="err" style="margin-top:8px">'+w+'</p>').join('')+'<button class="btn ghost full" style="margin-top:12px" data-a="editprofile">Edit my details</button></section>';
-  h+='<section class="card"><h2>About the numbers</h2><div class="col note" style="margin-top:8px"><p><b>Food calories</b> are estimates for typical home-cooked portions. Each is worked out from protein, carbs and fat using 4, 4 and 9 kcal per gram, the same Atwater factors used in ICMR-NIN’s Indian Food Composition Tables 2017. That book lists raw ingredients only, so the cooked-dish values here are not copied from it and are not lab verified. Oil, ghee and portion size change the real figure, so adjust quantities or add a custom food. For packaged food, trust the label.</p><p><b>BMI</b> uses Asian cut-offs: healthy is 18.5 to 22.9. <b>Maintenance</b> uses the Mifflin-St Jeor formula times your activity. <b>Deficit</b> assumes about 7,700 kcal per kg of body weight.</p><p><b>Videos</b> open a YouTube search for each exercise, so you can pick a trainer you like.</p><p>This is general guidance, not medical advice. Check with a doctor first if you have a health condition, are pregnant, or are under 18.</p><p>Your data is saved in this browser only.</p></div></section>';
+  h+='<section class="card"><h2>About the numbers</h2><div class="col note" style="margin-top:8px"><p><b>Food calories</b> are estimates for typical home-cooked portions. Each is worked out from protein, carbs and fat using 4, 4 and 9 kcal per gram, the same Atwater factors used in ICMR-NIN’s Indian Food Composition Tables 2017. That book lists raw ingredients only, so the cooked-dish values here are not copied from it and are not lab verified. Oil, ghee and portion size change the real figure, so adjust quantities or add a custom food. For packaged food, trust the label.</p><p><b>Fibre</b> values are estimates per serving, and are already part of the carbs. Aim for about 30 g a day. Raise fibre slowly and drink plenty of water, or you may get gas and bloating.</p><p><b>BMI</b> uses Asian cut-offs: healthy is 18.5 to 22.9. <b>Maintenance</b> uses the Mifflin-St Jeor formula times your activity. <b>Deficit</b> assumes about 7,700 kcal per kg of body weight.</p><p><b>Videos</b> open a YouTube search for each exercise, so you can pick a trainer you like.</p><p>This is general guidance, not medical advice. Check with a doctor first if you have a health condition, are pregnant, or are under 18.</p><p>Your data is saved in this browser only.</p></div></section>';
   h+='<section class="card"><button class="btn ghost full" data-a="reset">'+(V.resetAsk?'Tap again to erase everything':'Reset all data')+'</button></section>';
   return h;
 }
@@ -982,7 +997,7 @@ function foodRes(q){
   if(!list.length)return '<p class="note">Nothing found. Add it as a custom food.</p>';
   return list.map(f=>'<button class="frow" data-a="pickfood" data-id="'+f.id+'"><span><b>'+f.name+'</b><span class="gu">'+f.gu+'</span><small>'+f.serv+'</small></span><em>'+f.k+' kcal</em></button>').join('');
 }
-function qsum(u,q){return '<b>'+Math.round(u.k*q)+' kcal</b> · '+(u.p*q).toFixed(1)+' g protein · '+(u.c*q).toFixed(0)+' g carbs · '+(u.f*q).toFixed(1)+' g fat';}
+function qsum(u,q){return '<b>'+Math.round(u.k*q)+' kcal</b> · '+(u.p*q).toFixed(1)+' g protein · '+(u.c*q).toFixed(0)+' g carbs · '+(u.f*q).toFixed(1)+' g fat · '+((u.fi||0)*q).toFixed(1)+' g fibre';}
 function qtyPicker(u,q){
   return '<div class="stepper"><button data-a="qty" data-d="-1" aria-label="Less">−</button><b id="qnum">'+fmtQ(q)+'</b><button data-a="qty" data-d="1" aria-label="More">+</button></div><div class="row wrap" style="justify-content:center">'+[0.5,1,1.5,2,3].map(n=>'<button class="chip'+(q===n?' on':'')+'" data-a="qset" data-v="'+n+'">'+n+'</button>').join('')+'</div><label class="field">Or type any amount<input type="number" inputmode="decimal" step="0.1" id="qin" placeholder="e.g. 2.5"></label><p style="text-align:center" id="qsum">'+qsum(u,q)+'</p>';
 }
@@ -992,7 +1007,7 @@ function sheetBody(){
     if(s.sel){const f=FD[s.sel],q=s.qty;return '<h2>'+f.name+'<span class="gu">'+f.gu+'</span></h2><p class="muted">1 serving = '+f.serv+'</p>'+qtyPicker(f,q)+'<button class="btn full" data-a="confirmfood">Add to '+SLOTN[s.slot]+'</button><button class="btn ghost full" data-a="unpick">Back to search</button>'+(f.custom?'<button class="btn ghost full" data-a="delcustom">Delete this custom food</button>':'');}
     return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, paneer…" autocomplete="off"><div id="fres">'+foodRes('')+'</div><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
   }
-  if(s.type==='custom')return '<h2>Custom food</h2><p class="muted">Enter what is on the label, or your best estimate. If you leave calories blank, they are worked out from protein, carbs and fat.</p><label class="field">Name<input type="text" id="cn" placeholder="e.g. Aunty\u2019s sev puri"></label><label class="field">Serving size<input type="text" id="cs" placeholder="e.g. 1 plate, 100 g" value="1 serving"></label><div class="row"><label class="field" style="flex:1">Protein (g)<input type="number" inputmode="decimal" id="cp" placeholder="0"></label><label class="field" style="flex:1">Carbs (g)<input type="number" inputmode="decimal" id="cc" placeholder="0"></label></div><div class="row"><label class="field" style="flex:1">Fat (g)<input type="number" inputmode="decimal" id="cf" placeholder="0"></label><label class="field" style="flex:1">Calories (kcal)<input type="number" inputmode="decimal" id="ck" placeholder="auto"></label></div><p class="err" id="cerr"></p><button class="btn full" data-a="saveccustom">Save food</button><p class="note">It is saved under My foods, so you can find it by search next time.</p>';
+  if(s.type==='custom')return '<h2>Custom food</h2><p class="muted">Enter what is on the label, or your best estimate. If you leave calories blank, they are worked out from protein, carbs and fat.</p><label class="field">Name<input type="text" id="cn" placeholder="e.g. Aunty\u2019s sev puri"></label><label class="field">Serving size<input type="text" id="cs" placeholder="e.g. 1 plate, 100 g" value="1 serving"></label><div class="row"><label class="field" style="flex:1">Protein (g)<input type="number" inputmode="decimal" id="cp" placeholder="0"></label><label class="field" style="flex:1">Carbs (g)<input type="number" inputmode="decimal" id="cc" placeholder="0"></label></div><div class="row"><label class="field" style="flex:1">Fat (g)<input type="number" inputmode="decimal" id="cf" placeholder="0"></label><label class="field" style="flex:1">Calories (kcal)<input type="number" inputmode="decimal" id="ck" placeholder="auto"></label></div><div class="row"><label class="field" style="flex:1">Fibre (g)<input type="number" inputmode="decimal" id="cfi" placeholder="0"></label><div style="flex:1"></div></div><p class="err" id="cerr"></p><button class="btn full" data-a="saveccustom">Save food</button><p class="note">It is saved under My foods, so you can find it by search next time. Fibre is optional, and label carbs already include it.</p>';
   if(s.type==='planswap'){
     const day=S.mp.days[s.i],cur=day.slots[s.slot];
     const o=OPTS.filter(x=>x.slot===s.slot&&x.id!==cur.opt&&!(S.profile.jain&&x.nj));
@@ -1068,19 +1083,19 @@ function onClick(e){
     case 'unpick':V.sheet.sel=null;render();return;
     case 'qty':{V.sheet.qty=Math.max(0.5,Math.round((V.sheet.qty+(+d.d)*0.5)*100)/100);render();return;}
     case 'qset':V.sheet.qty=+d.v;render();return;
-    case 'editqty':{const it=DL(todayK()).items.find(x=>x.id===d.id);if(!it)return;V.sheet={type:'editqty',id:it.id,name:it.n,sv:it.sv,qty:it.q,u:{k:it.k/it.q,p:it.p/it.q,c:it.c/it.q,f:it.fa/it.q}};render();return;}
-    case 'saveqty':{const sh=V.sheet,it=DL(todayK()).items.find(x=>x.id===sh.id);if(it&&sh.qty>0){it.q=sh.qty;it.k=Math.round(sh.u.k*sh.qty);it.p=+(sh.u.p*sh.qty).toFixed(1);it.c=+(sh.u.c*sh.qty).toFixed(1);it.fa=+(sh.u.f*sh.qty).toFixed(1);}V.sheet=null;commit();toast('Amount updated');return;}
+    case 'editqty':{const it=DL(todayK()).items.find(x=>x.id===d.id);if(!it)return;V.sheet={type:'editqty',id:it.id,name:it.n,sv:it.sv,qty:it.q,u:{k:it.k/it.q,p:it.p/it.q,c:it.c/it.q,f:it.fa/it.q,fi:(it.fi||0)/it.q}};render();return;}
+    case 'saveqty':{const sh=V.sheet,it=DL(todayK()).items.find(x=>x.id===sh.id);if(it&&sh.qty>0){it.q=sh.qty;it.k=Math.round(sh.u.k*sh.qty);it.p=+(sh.u.p*sh.qty).toFixed(1);it.c=+(sh.u.c*sh.qty).toFixed(1);it.fa=+(sh.u.f*sh.qty).toFixed(1);it.fi=+((sh.u.fi||0)*sh.qty).toFixed(1);}V.sheet=null;commit();toast('Amount updated');return;}
     case 'confirmfood':{addItem(todayK(),V.sheet.slot,V.sheet.sel,V.sheet.qty);V.sheet=null;commit();return;}
     case 'customsheet':V.sheet={type:'custom',slot:V.sheet.slot};render();return;
     case 'saveccustom':{
-      const n=$('#cn').value.trim(),sv=($('#cs').value||'').trim()||'1 serving',p=+$('#cp').value||0,c=+$('#cc').value||0,f=+$('#cf').value||0;let k=+$('#ck').value||0;
+      const n=$('#cn').value.trim(),sv=($('#cs').value||'').trim()||'1 serving',p=+$('#cp').value||0,c=+$('#cc').value||0,f=+$('#cf').value||0,fi=+($('#cfi')?$('#cfi').value:0)||0;let k=+$('#ck').value||0;
       if(!n){$('#cerr').textContent='Enter a name for the food.';return;}
-      if(p<0||c<0||f<0||k<0){$('#cerr').textContent='Values cannot be negative.';return;}
+      if(p<0||c<0||f<0||k<0||fi<0){$('#cerr').textContent='Values cannot be negative.';return;}
       if(!k)k=Math.round(4*p+4*c+9*f);
       if(!(k>0)){$('#cerr').textContent='Enter the calories, or at least one of protein, carbs or fat.';return;}
-      if(k>3000||p>300||c>600||f>300){$('#cerr').textContent='That looks too large for one serving. Check the numbers.';return;}
+      if(k>3000||p>300||c>600||f>300||fi>100){$('#cerr').textContent='That looks too large for one serving. Check the numbers.';return;}
       if(!S.custom)S.custom=[];
-      const cf={id:'c_'+uid(),name:n,serv:sv,p,c,f,k};S.custom.push(cf);regCustom(cf);
+      const cf={id:'c_'+uid(),name:n,serv:sv,p,c,f,fi,k};S.custom.push(cf);regCustom(cf);
       V.sheet={type:'food',slot:V.sheet.slot,sel:cf.id,qty:1};saveS();render();return;}
     case 'delcustom':{const id=V.sheet.sel;S.custom=(S.custom||[]).filter(x=>x.id!==id);delete FD[id];V.sheet.sel=null;saveS();render();toast('Food deleted');return;}
     case 'delitem':{const dl=DL(todayK());dl.items=dl.items.filter(i=>i.id!==d.id);saveS();render();return;}

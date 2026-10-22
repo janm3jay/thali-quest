@@ -175,6 +175,11 @@ svg .ol{fill:none;stroke:#7d8591;stroke-width:1.3;stroke-linejoin:round;vector-e
 .card{transition:transform .15s}
 .sheet{will-change:transform}
 @media (prefers-reduced-motion:reduce){.chip,.dchip,.qc,#nav button,.mthumb,.card{transition:none}}
+/* live streak flame */
+.fl{display:inline-flex}
+.fl.live{transform-origin:50% 90%;animation:flick 1.7s ease-in-out infinite;filter:drop-shadow(0 0 5px var(--pop))}
+@keyframes flick{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.1,1.16) rotate(-4deg)}55%{transform:scale(.95,1.05) rotate(3deg)}80%{transform:scale(1.07,1.1) rotate(-2deg)}}
+@media (prefers-reduced-motion:reduce){.fl.live{animation:none}}
 </style>
 </head><body>
 <div id="app"></div><nav id="nav"></nav><div id="sheetwrap"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -1296,7 +1301,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 motion';
+const APP_VER='2026.10.23 motion 2';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1343,7 +1348,7 @@ const TITLES=['Chai Starter','Roti Rookie','Dal Defender','Khichdi Knight','Thep
 const lvlOf=xp=>Math.floor(Math.sqrt(xp/60))+1;
 const xpAt=L=>60*(L-1)*(L-1);
 const titleOf=L=>TITLES[Math.min(L-1,TITLES.length-1)];
-function addXP(n,why){if(n<0){S.xp=Math.max(0,S.xp+n);toast(n+' XP  '+why);return;}const a=lvlOf(S.xp);S.xp+=n;const b=lvlOf(S.xp);if(b>a)toast('Level '+b+': '+titleOf(b)+'!');else toast('+'+n+' XP  '+why);}
+function addXP(n,why){if(n<0){S.xp=Math.max(0,S.xp+n);toast(n+' XP  '+why);return;}const a=lvlOf(S.xp);S.xp+=n;const b=lvlOf(S.xp);if(b>a){toast('Level '+b+': '+titleOf(b)+'!');if(typeof celebrate==='function')celebrate('level');}else toast('+'+n+' XP  '+why);}
 const weightNow=()=>S.weights[S.weights.length-1].kg;
 const lostKg=()=>S.start.w-weightNow();
 const bestNow=()=>Math.max(S.best,streakNow());
@@ -1402,7 +1407,7 @@ const BADGES=[
  {id:'goal',n:'Goal reached',d:'Reach your target weight',i:'trophy',t:()=>weightNow()<=+S.profile.tw}
 ];
 const waistDrop=()=>{const a=(S.meas||[]).filter(m=>m.v&&m.v.waist!=null);return a.length>1?a[0].v.waist-a[a.length-1].v.waist:0;};
-function checkBadges(){for(const b of BADGES){const has=S.badges[b.id],ok=b.t();if(!has&&ok){S.badges[b.id]=todayK();addXP(25,'Badge: '+b.n);}else if(has&&!ok&&has===todayK()){delete S.badges[b.id];addXP(-25,'Badge removed: '+b.n);}}}
+function checkBadges(){for(const b of BADGES){const has=S.badges[b.id],ok=b.t();if(!has&&ok){S.badges[b.id]=todayK();addXP(25,'Badge: '+b.n);if(typeof celebrate==='function')celebrate('badge');}else if(has&&!ok&&has===todayK()){delete S.badges[b.id];addXP(-25,'Badge removed: '+b.n);}}}
 function workoutFor(k){const W=S.W;if(!W)return null;const d=dow(k);if(k<W.start||k>addD(W.start,6))return null;return W.week[d];}
 function closeOK(dl){const t=totalsOf(dl),tg=T().target,slots=new Set(dl.items.map(i=>i.slot));return slots.size>=3&&t.k>=tg*0.7&&t.k<=tg*1.05;}
 function quests(k){
@@ -1423,7 +1428,7 @@ function awardQuests(){
   const k=todayK(),dl=DL(k);
   for(const q of quests(k)){
     if(q.close)continue;
-    if(q.done&&!dl.q[q.id]){dl.q[q.id]=1;addXP(q.xp,q.label);
+    if(q.done&&!dl.q[q.id]){dl.q[q.id]=1;addXP(q.xp,q.label);if(typeof celebrate==='function')celebrate(q.id==='workout'?'workout':'quest');
       if(q.id==='water')S.stats.waterDays++;if(q.id==='protein')S.stats.proteinDays++;if(q.id==='workout'&&!q.manual)S.stats.workouts++;}
     else if(!q.done&&dl.q[q.id]){delete dl.q[q.id];addXP(-q.xp,'Undone: '+q.label);
       if(q.id==='water')S.stats.waterDays=Math.max(0,S.stats.waterDays-1);if(q.id==='protein')S.stats.proteinDays=Math.max(0,S.stats.proteinDays-1);if(q.id==='workout'&&!q.manual)S.stats.workouts=Math.max(0,S.stats.workouts-1);}
@@ -1460,7 +1465,7 @@ function ensurePlans(){
   const mk=monK(todayK());
   if(S.mp&&S.mp.start!==mk){
     const prev=S.mp.start;if(!S.chestDone)S.chestDone={};
-    if(!S.chestDone[prev]){S.chestDone[prev]=1;const n=S.weekQual[prev]||0;if(n>=5){S.stats.chests++;S.xp+=150;V.sheet={type:'chest',n};}}
+    if(!S.chestDone[prev]){S.chestDone[prev]=1;const n=S.weekQual[prev]||0;if(n>=5){S.stats.chests++;S.xp+=150;V.sheet={type:'chest',n};if(typeof celebrate==='function')celebrate('level');}}
   }
   const sig=mpSig();
   if(!S.mp||S.mp.start!==mk||S.mp.sig!==sig){
@@ -1490,7 +1495,7 @@ function commit(){awardQuests();saveS();render();}
 // ---------- views: today and meals ----------
 function hdr(){
   const L=lvlOf(S.xp),a=xpAt(L),b=xpAt(L+1),pct=Math.min(100,(S.xp-a)/(b-a)*100);
-  return '<header class="top"><div class="lvl"><span class="lv">'+L+'</span></div><div class="who"><b>'+titleOf(L)+'</b><div class="xpbar"><i style="width:'+pct.toFixed(0)+'%"></i></div><small>'+(S.xp-a)+' of '+(b-a)+' XP to level '+(L+1)+'</small></div><div class="streak" title="Day streak">'+ic('flame')+'<b>'+streakNow()+'</b></div></header>';
+  return '<header class="top"><div class="lvl"><span class="lv">'+L+'</span></div><div class="who"><b>'+titleOf(L)+'</b><div class="xpbar"><i style="width:'+pct.toFixed(0)+'%"></i></div><small>'+(S.xp-a)+' of '+(b-a)+' XP to level '+(L+1)+'</small></div><div class="streak" title="Day streak"><span class="fl'+(streakNow()>0?' live':'')+'">'+ic('flame')+'</span><b>'+streakNow()+'</b></div></header>';
 }
 function ring(k,target){
   const R=54,C=2*Math.PI*R,pct=clamp(k/target,0,1),over=k>target*1.05;
@@ -2257,7 +2262,7 @@ setTimeout(()=>{try{if(typeof S!=='undefined'&&S&&S.social&&S.social.on)socStart
 // ---------- motion: tab slides, card stagger, sheet slide, press and pop effects ----------
 const EASE='cubic-bezier(.2,.8,.2,1)',BOUNCE='cubic-bezier(.34,1.56,.64,1)';
 function animOK(){try{return !(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)&&typeof Element!=='undefined'&&Element.prototype.animate;}catch(e){return false;}}
-function barSnap(){return [...document.querySelectorAll('.xpbar i,.prog i')].map(e=>parseFloat(e.style.width));}
+function barSnap(){return {b:[...document.querySelectorAll('.xpbar i,.prog i')].map(e=>parseFloat(e.style.width)),n:[...document.querySelectorAll('.stat b')].map(e=>e.textContent)};}
 // runs before a click is handled. Return true to stop the normal handling (used for the animated close).
 function animBefore(el,e){
   if(!el||!animOK())return false;
@@ -2292,8 +2297,43 @@ function animAfter(hadSh,prev){
   V.booted=1;
   const sh=document.querySelector('.sheet');
   if(sh&&!hadSh){sh.animate([{transform:'translateY(100%)'},{transform:'translateY(0)'}],{duration:320,easing:EASE});const ov=document.querySelector('.ov');if(ov)ov.animate([{opacity:0},{opacity:1}],{duration:260});}
-  if(prev&&!an){const now=[...document.querySelectorAll('.xpbar i,.prog i')];
-    if(now.length===prev.length)now.forEach((e,i)=>{const w=parseFloat(e.style.width);if(!isNaN(w)&&!isNaN(prev[i])&&Math.abs(w-prev[i])>.4)e.animate([{width:prev[i]+'%'},{width:w+'%'}],{duration:600,easing:EASE});});}
+  if(prev&&!an){
+    const now=[...document.querySelectorAll('.xpbar i,.prog i')];
+    if(now.length===prev.b.length)now.forEach((e,i)=>{const w=parseFloat(e.style.width);if(!isNaN(w)&&!isNaN(prev.b[i])&&Math.abs(w-prev.b[i])>.4)e.animate([{width:prev.b[i]+'%'},{width:w+'%'}],{duration:600,easing:EASE});});
+    countUp(prev.n);
+  }
+}
+function countUp(prev){
+  const now=[...document.querySelectorAll('.stat b')];if(now.length!==prev.length)return;
+  now.forEach((e,i)=>{const t=e.textContent,a=prev[i];
+    if(/^\d+$/.test(t)&&/^\d+$/.test(a)&&+t!==+a){
+      const from=+a,to=+t,t0=performance.now();
+      const step=ts=>{const k=Math.min(1,(ts-t0)/700);if(k>=1){e.textContent=String(to);return;}e.textContent=String(Math.round(from+(to-from)*(1-Math.pow(1-k,3))));requestAnimationFrame(step);};
+      requestAnimationFrame(step);
+      e.animate([{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:420,easing:BOUNCE});
+    }});
+}
+// confetti: bigger for level-ups and chests, smaller for quests
+let celT=0,celRank=0;const CELR={quest:1,workout:2,badge:2,level:3};
+function celebrate(kind){
+  if(!animOK())return;
+  celRank=Math.max(celRank,CELR[kind]||1);clearTimeout(celT);
+  celT=setTimeout(()=>{const r=celRank;celRank=0;confetti(r);},90);
+}
+function confetti(rank){
+  const n=rank>=3?72:rank===2?46:22,cols=['var(--accent)','var(--pop)','var(--gold)','var(--cyan)','#ffffff'];
+  const box=document.createElement('div');box.setAttribute('aria-hidden','true');
+  box.style.cssText='position:fixed;inset:0;pointer-events:none;z-index:70;overflow:hidden';
+  const W=window.innerWidth,Hh=window.innerHeight,ox=W/2,oy=rank>=3?Hh*.4:Hh*.62;
+  for(let i=0;i<n;i++){
+    const p=document.createElement('i'),s=6+Math.random()*7,ang=(-90+(Math.random()-.5)*(rank>=3?150:110))*Math.PI/180,v=(rank>=3?260:190)+Math.random()*240;
+    p.style.cssText='position:absolute;left:'+ox+'px;top:'+oy+'px;width:'+s+'px;height:'+(s*(Math.random()<.5?1:.5))+'px;background:'+cols[i%5]+';border-radius:'+(Math.random()<.3?'50%':'2px');
+    box.appendChild(p);
+    const dx=Math.cos(ang)*v,dy=Math.sin(ang)*v,fall=Hh*.45+Math.random()*180;
+    p.animate([{transform:'translate(0,0) rotate(0deg)',opacity:1},{transform:'translate('+dx*.8+'px,'+dy*.8+'px) rotate('+Math.round(Math.random()*360)+'deg)',opacity:1,offset:.45},{transform:'translate('+dx*1.1+'px,'+(dy+fall)+'px) rotate('+Math.round(Math.random()*720)+'deg)',opacity:0}],{duration:1100+Math.random()*700,easing:'cubic-bezier(.2,.7,.4,1)',fill:'forwards'});
+  }
+  document.body.appendChild(box);setTimeout(()=>box.remove(),2100);
+  if(rank>=3){const l=document.querySelector('.lvl');if(l)l.animate([{transform:'scale(1)'},{transform:'scale(1.35) rotate(-6deg)'},{transform:'scale(1)'}],{duration:600,easing:BOUNCE});}
 }
 // small pop on the thing you just tapped, if it is still on screen after the redraw
 const POPSKIP={tab:1,closesheet:1,onnext:1,onback:1,social:1,muscsheet:1,liftsheet:1,tday:1};

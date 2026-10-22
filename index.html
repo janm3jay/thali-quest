@@ -139,6 +139,15 @@ nav button.on{background:var(--accent);color:var(--on-accent)}
 .note{font-size:13px;color:var(--muted)}
 .band{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:2px dashed var(--line)}.band:first-child{border-top:0}.band i{width:14px;height:14px;border-radius:50%;border:2.5px solid var(--edge);flex:none}
 svg text{font-family:var(--body)}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.pgrid button{position:relative;padding:0;border:2.5px solid var(--edge);border-radius:14px;overflow:hidden;background:var(--surface);aspect-ratio:3/4;cursor:pointer}
+.pgrid img{width:100%;height:100%;object-fit:cover;display:block}
+.pgrid small{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);color:#fff;font:700 12px var(--display);padding:3px 0;text-align:center}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.cmp figure{margin:0;border:2.5px solid var(--edge);border-radius:14px;overflow:hidden;background:var(--surface)}
+.cmp img{width:100%;aspect-ratio:3/4;object-fit:cover;display:block}
+.cmp figcaption{font:600 13px var(--body);padding:6px 8px;text-align:center}
+.pbig{width:100%;max-height:60vh;object-fit:contain;border-radius:14px;border:2.5px solid var(--edge)}
 </style>
 </head><body>
 <div id="app"></div><nav id="nav"></nav><div id="sheetwrap"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -146,7 +155,7 @@ svg text{font-family:var(--body)}
 /*LOGIC_START*/
 const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 const FD={};
-function F(id,name,gu,serv,p,c,f,o){o=o||{};FD[id]={id,name,gu,serv,p,c,f,k:Math.round(4*p+4*c+9*f),step:o.step||0.5,g:!!o.g,nj:!!o.nj,cheat:!!o.cheat};}
+function F(id,name,gu,serv,p,c,f,o){o=o||{};FD[id]={id,name,gu,serv,p,c,f,k:Math.round(4*p+4*c+9*f),step:o.step||0.5,g:!!o.g,nj:!!o.nj,cheat:!!o.cheat,cat:o.cat||'',al:o.al||''};}
 // breads and grains
 F('roti','Roti / phulka','રોટલી','1 roti (30 g flour)',2.6,15,0.6,{step:1,g:1});
 F('rotla','Bajra rotla','બાજરીનો રોટલો','1 rotla (45 g flour)',5,31,2,{step:1,g:1});
@@ -219,7 +228,7 @@ F('shrikhand','Shrikhand','શ્રીખંડ','1 katori (100 g)',5,30,8,{che
 F('icecream','Ice cream','આઈસક્રીમ','2 scoops (100 g)',3,24,11,{cheat:1});
 F('chholebh','Chole bhature','છોલે ભટૂરે','1 plate',16,80,28,{cheat:1,nj:1});
 F('biryani','Veg biryani','બિરયાની','1 plate',10,75,16,{cheat:1,nj:1});
-F('cola','Cold drink','કોલ્ડ ડ્રિંક','300 ml',0,32,0,{cheat:1});
+F('cola','Cold drink (Coke / Pepsi / Thums Up / Sprite)','કોલ્ડ ડ્રિંક','300 ml',0,32,0,{cheat:1});
 
 // more foods (per serving: protein g, carbs g, fat g; kcal is calculated)
 F('puri','Puri','પૂરી','2 puri (50 g)',3.4,26,11,{step:1,g:1});
@@ -425,6 +434,125 @@ function swapOpt(day,slot,optId){
   const cur=day.slots[slot],o=OPT(optId),items=scaleOpt(o,cur.k);
   day.slots[slot]=Object.assign({opt:o.id,name:o.name,items},itemsMacro(items));day.total=dayTotal(day.slots);
 }
+// ---------- extra foods: fruits, drinks, snacks, meals (values per stated serving; USDA / IFCT / label averages) ----------
+// fruits
+F('pineapple','Pineapple','અનાનસ','1 cup (165 g)',0.9,22,0.2,{cat:'fruit'});
+F('kiwi','Kiwi','કીવી','1 medium (70 g)',0.8,10,0.4,{cat:'fruit',step:1});
+F('pear','Pear','નાશપતી','1 medium (180 g)',1,27,0.2,{cat:'fruit',step:1});
+F('muskmelon','Muskmelon (kharbuja)','ટેટી','1 cup (160 g)',1.3,12,0.3,{cat:'fruit'});
+F('strawberry','Strawberries','સ્ટ્રોબેરી','1 cup (150 g)',1,11.5,0.5,{cat:'fruit'});
+F('lychee','Lychee','લીચી','10 pieces (95 g)',0.8,16,0.4,{cat:'fruit'});
+F('sitaphal','Custard apple (sitaphal)','સીતાફળ','1 medium (100 g pulp)',2.1,23.6,0.3,{cat:'fruit'});
+F('jamun','Jamun','જાંબુ','1 cup (100 g)',0.7,14,0.2,{cat:'fruit'});
+F('plum','Plum','આલુ બુખારા','2 medium (130 g)',1,15,0.4,{cat:'fruit',step:1});
+F('peach','Peach','આલૂ','1 medium (150 g)',1.4,14.4,0.4,{cat:'fruit',step:1});
+F('mosambi','Sweet lime (mosambi)','મોસંબી','1 medium (100 g)',0.8,9,0.3,{cat:'fruit',step:1});
+F('dragonfruit','Dragon fruit','ડ્રેગન ફ્રૂટ','1 cup (150 g)',1.5,18,0.5,{cat:'fruit'});
+F('avocado','Avocado','એવોકાડો','Half (100 g)',2,9,15,{cat:'fruit'});
+F('figfresh','Fresh fig (anjeer)','અંજીર','2 medium (100 g)',0.8,19,0.3,{cat:'fruit',step:1});
+F('figdry','Dried fig (anjeer)','સૂકા અંજીર','2 pieces (20 g)',0.6,13,0.2,{cat:'fruit',step:1});
+F('coconutf','Fresh coconut','નાળિયેર','1 small piece (30 g)',1,4.5,10,{cat:'fruit'});
+F('amla','Amla','આમળા','2 medium (40 g)',0.5,6.5,0.1,{cat:'fruit',step:1});
+F('cherry','Cherries','ચેરી','10 pieces (80 g)',0.8,10,0.2,{cat:'fruit'});
+F('jackfruit','Jackfruit (ripe)','ફણસ','1 cup (150 g)',2.8,35,0.5,{cat:'fruit'});
+F('fruitsalad','Mixed fruit salad','ફ્રૂટ સલાડ','1 bowl (200 g)',1.5,26,0.5,{cat:'fruit'});
+// drinks
+F('dietcoke','Diet Coke / Coke Zero / Pepsi Max / Sprite Zero','ડાયેટ કોક','1 can (330 ml)',0,0,0,{cat:'drink',step:1,al:'diet coke zero sugar free soda'});
+F('soda','Soda water / sparkling water','સોડા','1 glass (250 ml)',0,0,0,{cat:'drink',step:1});
+F('blackcoffee','Black coffee (no sugar)','બ્લેક કોફી','1 cup (150 ml)',0.3,0,0,{cat:'drink',step:1});
+F('greentea','Green tea (no sugar)','ગ્રીન ટી','1 cup (200 ml)',0,0,0,{cat:'drink',step:1});
+F('chainosugar','Masala chai, no sugar','ચા (ખાંડ વગર)','1 cup (150 ml)',1.5,3.5,2,{cat:'drink',step:1});
+F('nimbusugar','Nimbu pani with sugar','લીંબુ પાણી','1 glass (250 ml, 2 tsp sugar)',0,10,0,{cat:'drink',step:1});
+F('nimbusalt','Nimbu pani, salted, no sugar','લીંબુ પાણી (ખાંડ વગર)','1 glass (250 ml)',0,1,0,{cat:'drink',step:1});
+F('sugarcane','Sugarcane juice','શેરડીનો રસ','1 glass (250 ml)',0.3,45,0,{cat:'drink'});
+F('orangejuice','Fresh orange juice','ઓરેન્જ જ્યુસ','1 glass (250 ml)',1.7,26,0.5,{cat:'drink'});
+F('packjuice','Packaged fruit juice','પેક્ડ જ્યુસ','1 glass (200 ml)',0.4,25,0,{cat:'drink',al:'real tropicana'});
+F('frooti','Frooti / Maaza (mango drink)','ફ્રૂટી','1 small pack (200 ml)',0.2,28,0,{cat:'drink',step:1});
+F('mangoshake','Mango milkshake','મેંગો શેક','1 glass (300 ml)',8,40,8,{cat:'drink',cheat:1});
+F('coldcoffee','Cold coffee with sugar','કોલ્ડ કોફી','1 glass (250 ml)',6,24,6,{cat:'drink',cheat:1});
+F('malted','Horlicks / Bournvita in milk','હોર્લિક્સ','1 glass (200 ml milk + 20 g powder)',7.5,25,6.5,{cat:'drink',al:'horlicks bournvita boost complan'});
+F('haldimilk','Haldi doodh (turmeric milk)','હળદરવાળું દૂધ','1 glass (200 ml, 1 tsp honey)',6.5,13.5,6.3,{cat:'drink'});
+F('badammilk','Badam / rose milk (sweet)','બદામ દૂધ','1 glass (200 ml)',6,22,6,{cat:'drink'});
+F('buffalomilk','Full-cream buffalo milk','ભેંસનું દૂધ','1 glass (250 ml)',9,13,16.5,{cat:'drink'});
+F('almondmilk','Almond milk, unsweetened','બદામ મિલ્ક','1 glass (250 ml)',1,1,2.5,{cat:'drink'});
+F('oatmilk','Oat milk','ઓટ મિલ્ક','1 glass (250 ml)',3,16,3.5,{cat:'drink'});
+F('jaljeera','Jaljeera','જલજીરા','1 glass (200 ml)',0.3,6,0,{cat:'drink'});
+F('kokum','Kokum sharbat','કોકમ શરબત','1 glass (200 ml)',0,18,0,{cat:'drink'});
+F('aampanna','Aam panna','આમ પન્ના','1 glass (200 ml)',0.3,22,0,{cat:'drink'});
+F('roohafza','Rooh Afza sharbat','રૂહ અફઝા','1 glass (200 ml)',0,25,0,{cat:'drink'});
+F('energy','Energy drink (Red Bull etc.)','એનર્જી ડ્રિંક','1 can (250 ml)',0,27,0,{cat:'drink',cheat:1});
+F('energyzero','Sugar-free energy drink','એનર્જી ડ્રિંક (શુગર ફ્રી)','1 can (250 ml)',0,1,0,{cat:'drink',step:1});
+F('sattu','Sattu drink','સત્તુ','1 glass (30 g sattu in water)',6,17,1.2,{cat:'drink'});
+F('ragimalt','Ragi malt / java','રાગી','1 glass (30 g flour)',3.5,24,1,{cat:'drink'});
+// breads, grains, rice
+F('missi','Missi roti','મિસ્સી રોટી','1 roti (50 g dough)',4,20,4,{step:1});
+F('makai','Makai (corn) roti','મકાઈનો રોટલો','1 roti (50 g flour)',4.5,36,2,{step:1,g:1});
+F('jowar','Jowar roti','જુવારનો રોટલો','1 roti (45 g flour)',4.5,31.5,1,{step:1,g:1});
+F('ragiroti','Ragi roti','રાગી રોટલી','1 roti (40 g flour)',3,29,0.8,{step:1});
+F('brownbread','Brown bread (whole wheat)','બ્રાઉન બ્રેડ','1 slice (30 g)',3,13,1,{step:1});
+F('whitebread','White bread','બ્રેડ','1 slice (25 g)',2,12.5,0.9,{step:1});
+F('pav','Pav (bread roll)','પાવ','1 pav (40 g)',3.5,20,1.5,{step:1});
+F('butter','Butter','માખણ','1 tsp (5 g)',0,0,4.1,{step:1});
+F('jam','Jam','જામ','1 tbsp (20 g)',0,13,0,{step:1});
+F('lemonrice','Lemon rice','લેમન રાઈસ','1 cup (200 g)',4,45,7);
+F('friedrice','Veg fried rice','ફ્રાઈડ રાઈસ','1 plate (250 g)',8,60,12,{nj:1,cheat:1});
+F('cornflakes','Cornflakes with milk','કોર્નફ્લેક્સ','1 bowl (30 g + 150 ml toned milk)',7.2,33,4.7);
+F('granola','Granola','ગ્રેનોલા','40 g',4,26,8);
+// sabzi and mains
+F('palakpaneer','Palak paneer','પાલક પનીર','1 katori (150 g)',10,8,16);
+F('aloogobi','Aloo gobi','આલુ ગોબી','1 katori (150 g)',3,14,7);
+F('bharta','Baingan bharta','રીંગણનો ઓળો','1 katori (150 g)',3,10,7,{g:1});
+F('mushroom','Mushroom masala','મશરૂમ','1 katori (150 g)',4,8,8);
+F('paneertikka','Paneer tikka','પનીર ટિક્કા','6 pieces (120 g)',18,5,16,{nj:1});
+F('tofu','Tofu','ટોફુ','100 g',8,1.9,4.8);
+F('greekyogurt','Greek yogurt (plain, low fat)','ગ્રીક યોગર્ટ','1 cup (150 g)',15,5.5,0.5);
+F('hummus','Hummus','હમસ','2 tbsp (30 g)',2.4,3.6,4.8);
+F('falafel','Falafel','ફલાફલ','3 pieces (50 g)',5,16,9,{nj:1});
+// Gujarati extras
+F('dhebra','Bajra dhebra','ઢેબરા','1 piece (40 g)',3,15,5,{step:1,g:1});
+F('locho','Surti locho','લોચો','1 plate (100 g)',6,25,6,{g:1});
+F('bhakarwadi','Bhakarwadi','ભાખરવડી','5 pieces (50 g)',3,25,12,{cheat:1,g:1,cat:'sweet'});
+F('farsipuri','Farsi puri','ફરસી પુરી','2 pieces (30 g)',2,16,10,{cheat:1,g:1,step:1});
+F('lilvakachori','Lilva kachori','લીલવા કચોરી','2 pieces',5,30,14,{cheat:1,g:1,nj:1});
+F('magas','Magas','મગસ','2 pieces (40 g)',3,25,11,{cheat:1,g:1,cat:'sweet'});
+F('chikki','Peanut chikki','ચીક્કી','1 piece (30 g)',3,18,7,{step:1,g:1,cat:'sweet'});
+// snacks and cafe
+F('roastedchana','Roasted chana','શેકેલા ચણા','30 g',6,17,1.5);
+F('pistachio','Pistachios','પિસ્તા','20 g',4,6,10);
+F('pumpkinseed','Pumpkin seeds','કોળાના બીજ','15 g',4.5,2,7.5);
+F('chia','Chia seeds','ચિયા સીડ્સ','1 tbsp (12 g)',2,5,3.7,{step:1});
+F('flax','Flax seeds','અળસી','1 tbsp (10 g)',1.8,2.9,4.2,{step:1});
+F('darkchoc','Dark chocolate (70%)','ડાર્ક ચોકલેટ','2 squares (20 g)',1.6,9,6.5,{step:1,cat:'sweet'});
+F('rusk','Rusk','રસ્ક','2 pieces (20 g)',3,24,3,{step:1});
+F('marie','Marie biscuits','મેરી બિસ્કિટ','4 pieces (28 g)',2,20,3,{step:1});
+F('proteinbar','Protein bar','પ્રોટીન બાર','1 bar (60 g)',20,22,8,{step:1});
+F('meduvada','Medu vada','મેંદુ વડા','2 pieces (80 g)',7,20,12,{cheat:1});
+F('misal','Misal pav','મિસળ પાવ','1 plate',14,60,18,{cheat:1,nj:1});
+F('dahipuri','Dahi puri','દહીં પુરી','6 pieces',6,38,10,{cheat:1,nj:1});
+F('maggi','Instant noodles (Maggi)','મેગી','1 packet (70 g)',7,44,12,{cheat:1,nj:1});
+F('chips','Potato chips','વેફર્સ','1 small packet (30 g)',1.8,16,10,{cheat:1});
+F('momos','Veg steamed momos','મોમોઝ','6 pieces',7,36,5,{nj:1});
+F('springroll','Veg spring roll','સ્પ્રિંગ રોલ','2 pieces',6,36,14,{cheat:1,nj:1});
+F('wrap','Veg wrap / frankie','ફ્રેન્કી','1 wrap',9,45,12,{cheat:1,nj:1});
+F('pastawhite','Pasta, white sauce','પાસ્તા','1 plate (250 g)',12,58,22,{cheat:1,nj:1});
+F('pastared','Pasta, red sauce','પાસ્તા (રેડ સોસ)','1 plate (250 g)',10,62,12,{cheat:1,nj:1});
+F('garlicbread','Garlic bread','ગાર્લિક બ્રેડ','2 slices',5,30,10,{cheat:1,nj:1});
+// sweets
+F('kulfi','Kulfi','કુલ્ફી','1 stick (80 g)',5,22,10,{cheat:1,cat:'sweet'});
+F('rasmalai','Rasmalai','રસમલાઈ','2 pieces',7,28,10,{cheat:1,cat:'sweet'});
+F('kheer','Kheer','ખીર','1 katori (120 g)',5,30,8,{cheat:1,g:1,cat:'sweet'});
+F('peda','Peda','પેંડા','2 pieces (40 g)',3,26,7,{cheat:1,step:1,cat:'sweet'});
+// estimated dietary fibre (g) per serving
+Object.assign(FIB,{pineapple:2.3,kiwi:2.1,pear:5.5,muskmelon:1.5,strawberry:3,lychee:1.3,sitaphal:4.4,jamun:1,plum:1.8,peach:2.3,mosambi:2,dragonfruit:2.5,avocado:6.7,figfresh:3,figdry:2.5,coconutf:2.7,amla:1.9,cherry:1.6,jackfruit:2.5,fruitsalad:3,
+ almondmilk:0.5,oatmilk:1,malted:0.5,sattu:5,ragimalt:3,mangoshake:1,
+ missi:3,makai:4,jowar:3.5,ragiroti:3,brownbread:1.5,whitebread:0.6,pav:1,lemonrice:1.5,friedrice:2,cornflakes:0.8,granola:3,
+ palakpaneer:3,aloogobi:3.5,bharta:4,mushroom:2,tofu:0.3,hummus:1.5,falafel:3.5,dhebra:2,locho:2,bhakarwadi:2,farsipuri:1,lilvakachori:3,magas:1.5,chikki:1.2,
+ roastedchana:5,pistachio:2,pumpkinseed:1,chia:4.1,flax:2.7,darkchoc:2,rusk:0.8,marie:0.7,proteinbar:4,meduvada:3,misal:8,dahipuri:3,maggi:2,chips:1,momos:2,springroll:3,wrap:4,pastawhite:3,pastared:4,garlicbread:2,peda:0.2,kheer:0.3});
+for(const id in FD){if(FD[id].fi==null||FIB[id]!=null)FD[id].fi=FIB[id]||0;}
+// categories for the older foods
+for(const id of['banana','apple','papaya','guava','mango','orange','grapes','watermelon','pomegranate','chikoo','dates','raisin'])FD[id].cat='fruit';
+for(const id of['milk','tea','chaas','lassi','coconutw','coffee','whey','cola','soymilk','isabgol'])FD[id].cat='drink';
+for(const id in FD){if(!FD[id].cat&&FD[id].cheat)FD[id].cat='sweet';}
 // ---------- body numbers ----------
 function calcPlan(p){
   const w=+p.w,h=+p.h,age=+p.age,tw=+p.tw,pace=+p.pace;
@@ -638,7 +766,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.22 ideal weight';
+const APP_VER='2026.10.23 foods, badges, backup';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -671,6 +799,9 @@ const paths={
  scale:'<rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 9a5 5 0 0 1 8 0M12 9l2-2"/>',
  leaf:'<path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15M5 19l7-7"/>',
  bolt:'<path d="M13 3L5 13h6l-1 8 8-10h-6z"/>',
+ camera:'<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+ shield:'<path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/><path d="M9 12l2 2 4-4"/>',
+ snow:'<path d="M12 3v18M4.5 7.5l15 9M19.5 7.5l-15 9"/>',
  gift:'<rect x="4" y="9" width="16" height="11" rx="2"/><path d="M12 9v11M4 13h16M12 9c-2 0-4-1-4-3s3-2 4 3c1-5 4-5 4-3s-2 3-4 3"/>'
 };
 const ic=n=>'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+paths[n]+'</svg>';
@@ -704,8 +835,35 @@ const BADGES=[
  {id:'ci',n:'Weekly check-in',d:'Tell the plan how your week went',i:'check',t:()=>S.stats.checkins>=1},
  {id:'chest',n:'Weekly chest',d:'Open a weekly chest',i:'gift',t:()=>S.stats.chests>=1},
  {id:'l5',n:'Level 5',d:'Reach level 5',i:'star',t:()=>lvlOf(S.xp)>=5},
- {id:'l10',n:'Level 10',d:'Reach level 10',i:'star',t:()=>lvlOf(S.xp)>=10}
+ {id:'l10',n:'Level 10',d:'Reach level 10',i:'star',t:()=>lvlOf(S.xp)>=10},
+ {id:'l15',n:'Level 15',d:'Reach level 15',i:'star',t:()=>lvlOf(S.xp)>=15},
+ {id:'s60',n:'60-day streak',d:'Two months of good days',i:'flame',t:()=>S.best>=60},
+ {id:'s100',n:'100-day streak',d:'A hundred good days',i:'flame',t:()=>S.best>=100},
+ {id:'frz',n:'Ice cold',d:'A streak freeze saved your streak',i:'snow',t:()=>(S.stats.frozen||0)>=1},
+ {id:'hyd15',n:'Hydration hero',d:'Drink 8 glasses on 15 days',i:'drop',t:()=>S.stats.waterDays>=15},
+ {id:'pro20',n:'Protein machine',d:'Hit your protein goal on 20 days',i:'bolt',t:()=>S.stats.proteinDays>=20},
+ {id:'fib3',n:'Fibre fan',d:'Reach your fibre goal on 3 days',i:'leaf',t:()=>(S.stats.fibreDays||0)>=3},
+ {id:'fib15',n:'Gut guardian',d:'Reach your fibre goal on 15 days',i:'leaf',t:()=>(S.stats.fibreDays||0)>=15},
+ {id:'lg100',n:'100 foods logged',d:'Log 100 food items',i:'meals',t:()=>S.stats.logs>=100},
+ {id:'lg500',n:'500 foods logged',d:'Log 500 food items',i:'meals',t:()=>S.stats.logs>=500},
+ {id:'chef',n:'Home chef',d:'Add your own custom food',i:'meals',t:()=>(S.custom||[]).length>=1},
+ {id:'w15',n:'15 sessions',d:'Finish 15 workouts',i:'train',t:()=>S.stats.workouts>=15},
+ {id:'w30',n:'30 sessions',d:'Finish 30 workouts',i:'train',t:()=>S.stats.workouts>=30},
+ {id:'iron3',n:'Iron x3',d:'Three perfect workout weeks',i:'trophy',t:()=>S.stats.iron>=3},
+ {id:'swap5',n:'Swap master',d:'Swap 5 exercises',i:'swap',t:()=>S.stats.swaps>=5},
+ {id:'ci4',n:'Reflective',d:'Do 4 weekly check-ins',i:'check',t:()=>S.stats.checkins>=4},
+ {id:'chest3',n:'Chest collector',d:'Open 3 weekly chests',i:'gift',t:()=>S.stats.chests>=3},
+ {id:'d75',n:'7.5 kg down',d:'Lose 7.5 kg',i:'scale',t:()=>lostKg()>=7.5},
+ {id:'d10',n:'10 kg down',d:'Lose 10 kg',i:'scale',t:()=>lostKg()>=10},
+ {id:'wg10',n:'Scale regular',d:'Log your weight 10 times',i:'scale',t:()=>S.weights.length>=10},
+ {id:'tape',n:'Tape master',d:'Save body measurements 3 times',i:'user',t:()=>(S.meas||[]).length>=3},
+ {id:'inch',n:'First inch',d:'Waist down 2.5 cm from your first reading',i:'user',t:()=>waistDrop()>=2.5},
+ {id:'ph1',n:'Say cheese',d:'Save your first progress photo',i:'camera',t:()=>(S.stats.photos||0)>=1},
+ {id:'ph4',n:'Time capsule',d:'Save 4 progress photos',i:'camera',t:()=>(S.stats.photos||0)>=4},
+ {id:'bak',n:'Safety first',d:'Save a backup of your data',i:'shield',t:()=>(S.stats.backups||0)>=1},
+ {id:'goal',n:'Goal reached',d:'Reach your target weight',i:'trophy',t:()=>weightNow()<=+S.profile.tw}
 ];
+const waistDrop=()=>{const a=(S.meas||[]).filter(m=>m.v&&m.v.waist!=null);return a.length>1?a[0].v.waist-a[a.length-1].v.waist:0;};
 function checkBadges(){for(const b of BADGES){if(!S.badges[b.id]&&b.t()){S.badges[b.id]=todayK();addXP(25,'Badge: '+b.n);}}}
 function workoutFor(k){const W=S.W;if(!W)return null;const d=dow(k);if(k<W.start||k>addD(W.start,6))return null;return W.week[d];}
 function closeOK(dl){const t=totalsOf(dl),tg=T().target,slots=new Set(dl.items.map(i=>i.slot));return slots.size>=3&&t.k>=tg*0.7&&t.k<=tg*1.05;}
@@ -730,18 +888,22 @@ function awardQuests(){
     if(q.done&&!dl.q[q.id]){dl.q[q.id]=1;addXP(q.xp,q.label);
       if(q.id==='water')S.stats.waterDays++;if(q.id==='protein')S.stats.proteinDays++;if(q.id==='workout'&&!q.manual)S.stats.workouts++;}
   }
+  if(!dl.fibCounted&&totalsOf(dl).fi>=T().fibre){dl.fibCounted=1;S.stats.fibreDays=(S.stats.fibreDays||0)+1;}
   S.best=Math.max(S.best,streakNow());
   checkBadges();
 }
 const streakNow=()=>S.streak+(Object.keys(DL(todayK()).q).length>=3?1:0);
 function finalizePast(){
+  if(S.freezes==null){S.freezes=1;S.frozen={};}
   const y=addD(todayK(),-1);let k=addD(S.lastFinal,1),n=0;
   if(k<addD(y,-89)){k=addD(y,-89);S.streak=0;}
   while(k<=y&&n<95){
     const dl=S.log[k];
     if(dl&&!dl.q.close&&closeOK(dl)){dl.q.close=1;addXP(30,'Day closed');}
     const cnt=dl?Object.keys(dl.q).length:0;
-    if(cnt>=3){S.streak++;S.best=Math.max(S.best,S.streak);const mk=monK(k);S.weekQual[mk]=(S.weekQual[mk]||0)+1;}else S.streak=0;
+    if(cnt>=3){S.streak++;S.best=Math.max(S.best,S.streak);const mk=monK(k);S.weekQual[mk]=(S.weekQual[mk]||0)+1;if(S.streak%7===0&&S.freezes<3){S.freezes++;}}
+    else if(S.streak>0&&S.freezes>0){S.freezes--;S.frozen[k]=1;S.stats.frozen=(S.stats.frozen||0)+1;}
+    else S.streak=0;
     S.lastFinal=k;k=addD(k,1);n++;
   }
 }
@@ -751,6 +913,8 @@ function rebuildWeek(){S.W.week=buildWorkout(S.W,weightNow());}
 function mpSig(){const t=T();return JSON.stringify([t.target,S.profile.style,!!S.profile.jain,!!S.profile.hp,S.cheat.day,S.cheat.id,S.seed]);}
 function ensurePlans(){
   if(!S.custom)S.custom=[];
+  if(S.freezes==null){S.freezes=1;S.frozen={};}
+  if(!S.frozen)S.frozen={};
   if(!S.meas)S.meas=(S.waists||[]).map(x=>({d:x.d,v:{waist:x.cm}}));
   const mk=monK(todayK());
   if(S.mp&&S.mp.start!==mk){
@@ -770,7 +934,7 @@ function createState(p){
   const t=todayK();
   S={v:1,profile:p,start:{w:+p.w,d:t},weights:[{d:t,kg:+p.w}],meas:[],custom:[],log:{},xp:0,streak:0,best:0,lastFinal:addD(t,-1),badges:{},
    stats:{logs:0,waterDays:0,proteinDays:0,workouts:0,swaps:0,cheats:0,checkins:0,chests:0,iron:0},weekQual:{},chestDone:{},
-   seed:Math.floor(Math.random()*1e9),cheat:{day:6,id:'pavbhaji'},mp:null,W:newW(p)};
+   freezes:1,frozen:{},seed:Math.floor(Math.random()*1e9),cheat:{day:6,id:'pavbhaji'},mp:null,W:newW(p)};
   ensurePlans();
 }
 function regCustom(c){FD[c.id]={id:c.id,name:c.name,gu:'my food',serv:c.serv,p:c.p,c:c.c,f:c.f,fi:c.fi||0,k:c.k,step:0.5,g:false,nj:false,cheat:false,custom:true};}
@@ -879,6 +1043,7 @@ function viewRewards(){
   const L=lvlOf(S.xp),mk=monK(todayK()),q=S.weekQual[mk]||0+0,todayQ=Object.keys(DL(todayK()).q).length>=3?1:0,wq=Math.min(5,(S.weekQual[mk]||0)+todayQ);
   let h=hdr()+'<div class="stat"><div><b>'+S.xp+'</b><span>Total XP</span></div><div><b>'+streakNow()+'</b><span>Day streak (best '+S.best+')</span></div><div><b>'+Object.keys(S.badges).length+'/'+BADGES.length+'</b><span>Badges</span></div><div><b>'+S.stats.workouts+'</b><span>Workouts finished</span></div></div>';
   h+='<section class="card"><div class="row sp"><h2>Weekly chest</h2><span class="pill">'+wq+' of 5 days</span></div><div class="prog" style="margin:10px 0 6px"><i style="width:'+(wq/5*100)+'%"></i></div><p class="note">A good day means 3 or more quests done. Get 5 good days between Monday and Sunday to open the chest next Monday: 150 bonus XP.</p></section>';
+  h+=freezeCard();
   h+='<section class="card"><h2 style="margin-bottom:12px">Badges</h2><div class="badges">'+BADGES.map(b=>'<div class="bd'+(S.badges[b.id]?'':' lock')+'"><i>'+ic(b.i)+'</i><b>'+b.n+'</b><small>'+b.d+'</small></div>').join('')+'</div></section>';
   h+='<section class="card"><h2>How XP works</h2><p class="note" style="margin-top:6px">Quests give 15 to 40 XP each, every exercise you tick gives 3, and each badge gives 25. Levels get steadily harder: level 5 needs 960 XP and level 10 needs 4,860 XP.</p></section>';
   return h;
@@ -966,9 +1131,12 @@ function viewMe(){
   const eta=isFinite(t.weeks)&&t.toLose>0?pkey(addD(todayK(),Math.round(t.weeks*7))).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):null;
   let h='<h1>Me</h1>';
   h+='<section class="card"><div class="row sp"><h2>Weight</h2><button class="btn sm" data-a="weightsheet">Log weight</button></div><div class="row sp" style="margin:10px 0 6px"><span>Start <b>'+S.start.w+' kg</b></span><span>Now <b>'+now+' kg</b></span><span>Goal <b>'+tw+' kg</b></span></div><div class="prog"><i style="width:'+pct.toFixed(0)+'%"></i></div>'+wChart()+'</section>';
+  h+=plateauCard();
   h+=measCard();
   h+='<section class="card"><h2 style="margin-bottom:10px">Your numbers</h2><div class="stat"><div><b>'+(now/Math.pow(p.h/100,2)).toFixed(1)+'</b><span>BMI · '+bmiCat(now/Math.pow(p.h/100,2))+'</span></div><div><b>'+fmtN(t.tdee)+'</b><span>Maintenance kcal</span></div><div><b>'+fmtN(t.target)+'</b><span>Daily target kcal</span></div><div><b>'+t.deficit+'</b><span>Daily deficit kcal</span></div></div><p class="note" style="margin-top:10px">Protein '+t.protein+' g · Carbs '+t.carbs+' g · Fat '+t.fat+' g a day. Healthy weight for your height: '+t.hmin+' to '+t.hmax+' kg.'+(eta?' At about '+t.rate+' kg a week you reach your goal around <b>'+eta+'</b>.':'')+'</p>'+t.warn.map(w=>'<p class="err" style="margin-top:8px">'+w+'</p>').join('')+'<button class="btn ghost full" style="margin-top:12px" data-a="editprofile">Edit my details</button></section>';
   h+=idealCard(t);
+  h+=photoCard();
+  h+=backupCard();
   h+='<section class="card"><h2>About the numbers</h2><div class="col note" style="margin-top:8px"><p><b>Food calories</b> are estimates for typical home-cooked portions. Each is worked out from protein, carbs and fat using 4, 4 and 9 kcal per gram, the same Atwater factors used in ICMR-NIN’s Indian Food Composition Tables 2017. That book lists raw ingredients only, so the cooked-dish values here are not copied from it and are not lab verified. Oil, ghee and portion size change the real figure, so adjust quantities or add a custom food. For packaged food, trust the label.</p><p><b>Fibre</b> values are estimates per serving, and are already part of the carbs. Aim for about 30 g a day. Raise fibre slowly and drink plenty of water, or you may get gas and bloating.</p><p><b>BMI</b> uses Asian cut-offs: healthy is 18.5 to 22.9. <b>Maintenance</b> uses the Mifflin-St Jeor formula times your activity. <b>Deficit</b> assumes about 7,700 kcal per kg of body weight.</p><p><b>Videos</b> open a YouTube search for each exercise, so you can pick a trainer you like.</p><p>This is general guidance, not medical advice. Check with a doctor first if you have a health condition, are pregnant, or are under 18.</p><p>Your data is saved in this browser only.</p></div></section>';
   h+='<section class="card"><button class="btn ghost full" data-a="reset">'+(V.resetAsk?'Tap again to erase everything':'Reset all data')+'</button></section>';
   h+='<p class="note" style="text-align:center">App version '+APP_VER+'</p>';
@@ -1022,9 +1190,11 @@ function validStep(){
 // ---------- sheets ----------
 function foodRes(q){
   q=(q||'').trim().toLowerCase();
-  let list=Object.values(FD).filter(f=>!q||f.name.toLowerCase().includes(q)||f.gu.includes(q));
-  if(!q)list.sort((a,b)=>((b.custom?1:0)-(a.custom?1:0))||((b.g?1:0)-(a.g?1:0))||((a.cheat?1:0)-(b.cheat?1:0)));
-  list=list.slice(0,q?80:60);
+  const cat=(V.sheet&&V.sheet.cat)||'';
+  let list=Object.values(FD).filter(f=>(!q||f.name.toLowerCase().includes(q)||f.gu.includes(q)||(f.al&&f.al.includes(q))||f.serv.toLowerCase().includes(q))&&(!cat||(cat==='custom'?f.custom:cat==='sweet'?(f.cat==='sweet'||f.cheat):f.cat===cat)));
+  if(cat&&!q)list.sort((a,b)=>a.name<b.name?-1:1);
+  else if(!q)list.sort((a,b)=>((b.custom?1:0)-(a.custom?1:0))||((b.g?1:0)-(a.g?1:0))||((a.cheat?1:0)-(b.cheat?1:0)));
+  list=list.slice(0,q||cat?90:60);
   if(!list.length)return '<p class="note">Nothing found. Add it as a custom food.</p>';
   return list.map(f=>'<button class="frow" data-a="pickfood" data-id="'+f.id+'"><span><b>'+f.name+'</b><span class="gu">'+f.gu+'</span><small>'+f.serv+'</small></span><em>'+f.k+' kcal</em></button>').join('');
 }
@@ -1034,9 +1204,10 @@ function qtyPicker(u,q){
 }
 function sheetBody(){
   const s=V.sheet;
+  const ex=sheetExtra();if(ex)return ex;
   if(s.type==='food'){
     if(s.sel){const f=FD[s.sel],q=s.qty;return '<h2>'+f.name+'<span class="gu">'+f.gu+'</span></h2><p class="muted">1 serving = '+f.serv+'</p>'+qtyPicker(f,q)+'<button class="btn full" data-a="confirmfood">Add to '+SLOTN[s.slot]+'</button><button class="btn ghost full" data-a="unpick">Back to search</button>'+(f.custom?'<button class="btn ghost full" data-a="delcustom">Delete this custom food</button>':'');}
-    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, paneer…" autocomplete="off"><div id="fres">'+foodRes('')+'</div><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
+    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, diet coke, kiwi…" autocomplete="off" value="'+esc(s.q||'')+'"><div class="row wrap">'+[['','All'],['fruit','Fruits'],['drink','Drinks'],['sweet','Sweets and treats'],['custom','My foods']].map(c=>'<button class="chip'+((s.cat||'')===c[0]?' on':'')+'" data-a="fcat" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'</div><div id="fres">'+foodRes(s.q||'')+'</div><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
   }
   if(s.type==='custom')return '<h2>Custom food</h2><p class="muted">Enter what is on the label, or your best estimate. If you leave calories blank, they are worked out from protein, carbs and fat.</p><label class="field">Name<input type="text" id="cn" placeholder="e.g. Aunty\u2019s sev puri"></label><label class="field">Serving size<input type="text" id="cs" placeholder="e.g. 1 plate, 100 g" value="1 serving"></label><div class="row"><label class="field" style="flex:1">Protein (g)<input type="number" inputmode="decimal" id="cp" placeholder="0"></label><label class="field" style="flex:1">Carbs (g)<input type="number" inputmode="decimal" id="cc" placeholder="0"></label></div><div class="row"><label class="field" style="flex:1">Fat (g)<input type="number" inputmode="decimal" id="cf" placeholder="0"></label><label class="field" style="flex:1">Calories (kcal)<input type="number" inputmode="decimal" id="ck" placeholder="auto"></label></div><div class="row"><label class="field" style="flex:1">Fibre (g)<input type="number" inputmode="decimal" id="cfi" placeholder="0"></label><div style="flex:1"></div></div><p class="err" id="cerr"></p><button class="btn full" data-a="saveccustom">Save food</button><p class="note">It is saved under My foods, so you can find it by search next time. Fibre is optional, and label carbs already include it.</p>';
   if(s.type==='planswap'){
@@ -1078,6 +1249,141 @@ function render(){
   $('#sheetwrap').innerHTML=sheetHtml();
   window.scrollTo(0,y);
 }
+// ---------- plateau check, progress photos, backup and restore, streak freeze ----------
+function plateauInfo(){
+  const t=T(),today=todayK(),since=addD(today,-28);
+  if(weightNow()<=+S.profile.tw)return{s:'goal'};
+  const pts=S.weights.filter(x=>x.d>=since).map(x=>({x:pkey(x.d).getTime()/864e5,y:x.kg}));
+  const days=pts.length?pts[pts.length-1].x-pts[0].x:0;
+  if(pts.length<3||days<12)return{s:'few',n:pts.length,days:Math.round(days)};
+  const n=pts.length,mx=pts.reduce((a,p)=>a+p.x,0)/n,my=pts.reduce((a,p)=>a+p.y,0)/n;
+  let sxx=0,sxy=0;for(const p of pts){sxx+=(p.x-mx)*(p.x-mx);sxy+=(p.x-mx)*(p.y-my);}
+  const slope=sxx?sxy/sxx*7:0;
+  let logged=0;for(let i=1;i<=14;i++){const dl=S.log[addD(today,-i)];if(dl&&dl.items.length>=3)logged++;}
+  const ms=(S.meas||[]).filter(m=>m.v&&m.v.waist!=null&&m.d>=since);
+  const wd=ms.length>1?ms[0].v.waist-ms[ms.length-1].v.waist:0;
+  const exp=t.rate||0;
+  let st;
+  if(slope<=-0.15)st='ok';else if(slope<0.1)st='plateau';else st='up';
+  return{s:st,slope:Math.round(slope*100)/100,exp,logged,wd:Math.round(wd*10)/10,days:Math.round(days),tdee:t.tdee,target:t.target};
+}
+function plateauCard(){
+  const p=plateauInfo();let h='<section class="card"><h2>Progress check</h2>';
+  if(p.s==='goal')return h+'<p class="note" style="margin-top:6px">You have reached your target weight. Nicely done. Edit your profile to set a new goal or switch to maintaining.</p></section>';
+  if(p.s==='few')return h+'<p class="note" style="margin-top:6px">Log your weight at least 3 times over 2 weeks (once a week is fine) and I will check whether the scale is moving. So far: '+p.n+' log'+(p.n===1?'':'s')+' in the last 4 weeks.</p></section>';
+  const per=Math.abs(p.slope).toFixed(2);
+  if(p.s==='ok')return h+'<div class="row" style="margin-top:8px"><span class="pill">On track</span></div><p class="note" style="margin-top:8px">Over the last '+p.days+' days your weight trend is down about '+per+' kg a week (plan: about '+p.exp+' kg). Keep going.</p></section>';
+  if(p.s==='up')h+='<div class="row" style="margin-top:8px"><span class="pill">Trending up</span></div><p class="note" style="margin-top:8px">Over the last '+p.days+' days your weight trend is up about '+per+' kg a week. Day-to-day swings of 1 kg are normal water, but a steady rise means intake is above your needs.</p>';
+  else h+='<div class="row" style="margin-top:8px"><span class="pill">Plateau</span></div><p class="note" style="margin-top:8px">Over the last '+p.days+' days your weight has barely moved (about '+per+' kg a week, plan: '+p.exp+' kg). Plateaus are normal. Before changing anything, check these:</p>';
+  const tips=[];
+  if(p.wd>=1)tips.push('Your waist is down '+p.wd+' cm over the same time, so you are likely losing fat while water hides it on the scale. Be patient.');
+  if(p.logged<10)tips.push('You logged 3 or more foods on only '+p.logged+' of the last 14 days. Unlogged snacks, chai sugar and extra oil are the usual leaks. Aim for at least 5 logged days a week.');
+  tips.push('Weigh at the same time each day, after the toilet and before eating. Compare weekly averages, not single days.');
+  tips.push('Add a 20 to 30 minute walk after dinner. That is roughly 100 to 150 kcal a day without touching your food.');
+  if(p.target>(S.profile.sex==='f'?1300:1650))tips.push('If logging is accurate, trim about 100 kcal a day (one roti or one chai). Do not go below the minimum floor.');
+  tips.push('Been dieting more than 8 weeks? Try one week at maintenance (about '+fmtN(p.tdee)+' kcal) to reset, then return to your target.');
+  return h+'<ul class="note" style="margin:8px 0 0 18px;display:flex;flex-direction:column;gap:6px">'+tips.map(x=>'<li>'+x+'</li>').join('')+'</ul></section>';
+}
+// ----- streak freeze -----
+function freezeCard(){
+  const n=S.freezes||0,last=Object.keys(S.frozen||{}).sort().pop();
+  let h='<section class="card"><div class="row sp"><h2>Streak freezes</h2><span class="pill">'+'❄ '.repeat(n)+(n?'':'none')+'</span></div>';
+  h+='<p class="note" style="margin-top:6px">A freeze saves your streak when you miss a day. It is used automatically, so there is nothing to tap. You start with 1 and earn another at every 7th good day in a row. You can hold up to 3.</p>';
+  if(last)h+='<p class="note" style="margin-top:6px">Last used: '+pkey(last).toLocaleDateString('en-IN',{day:'numeric',month:'short'})+' · '+(S.stats.frozen||0)+' used in total.</p>';
+  return h+'</section>';
+}
+// ----- progress photos (stored on this phone in IndexedDB) -----
+let PH=null;
+function idbOpen(){return new Promise((res,rej)=>{try{const r=indexedDB.open('thali-photos',1);r.onupgradeneeded=()=>{r.result.createObjectStore('p',{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e);}});}
+function idbRun(mode,fn){return idbOpen().then(db=>new Promise((res,rej)=>{const tx=db.transaction('p',mode),st=tx.objectStore('p'),rq=fn(st);tx.oncomplete=()=>res(rq&&rq.result);tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error);}));}
+const idbAll=()=>idbRun('readonly',st=>st.getAll()).then(a=>a||[]);
+const idbPut=o=>idbRun('readwrite',st=>st.put(o));
+const idbDel=id=>idbRun('readwrite',st=>st.delete(id));
+const idbClear=()=>idbRun('readwrite',st=>st.clear());
+function loadPhotos(){V.phLoading=1;idbAll().then(a=>{PH=a.sort((x,y)=>x.id<y.id?-1:1);render();}).catch(()=>{PH=[];V.phErr=1;render();});}
+function shrinkImg(file){return new Promise((res,rej)=>{const u=URL.createObjectURL(file),im=new Image();
+  im.onload=()=>{const m=800,k=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',0.72));};
+  im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('img'));};im.src=u;});}
+function addPhotoFile(file){
+  if(!file)return;
+  shrinkImg(file).then(img=>{
+    const o={id:String(Date.now()),d:todayK(),kg:weightNow(),img};
+    if(PH===null)PH=[];
+    return idbPut(o).catch(()=>{V.phErr=1;}).then(()=>{PH.push(o);S.stats.photos=(S.stats.photos||0)+1;addXP(10,'Progress photo');checkBadges();saveS();render();});
+  }).catch(()=>toast('Could not read that photo'));
+}
+const fmtD=d=>pkey(d).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+function photoCard(){
+  if(PH===null&&!V.phLoading)loadPhotos();
+  const L=PH||[];
+  let h='<section class="card"><div class="row sp"><h2>Progress photos</h2><button class="btn sm" data-a="addphoto">Add photo</button></div><input type="file" id="phin" accept="image/*" hidden>';
+  h+='<p class="note" style="margin-top:6px">Photos stay on this phone only and are included in your backup file. Same spot, same light, same pose every 2 to 4 weeks works best.</p>';
+  if(V.phErr)h+='<p class="note" style="margin-top:6px">This browser would not let the app store photos permanently, so photos may vanish when you close the app.</p>';
+  if(PH===null)return h+'<p class="note">Loading photos…</p></section>';
+  if(!L.length)return h+'</section>';
+  if(L.length>=2){const a=L[0],b=L[L.length-1],dk=(b.kg-a.kg);
+    h+='<div class="cmp"><figure><img src="'+a.img+'" alt="First photo"><figcaption>First · '+fmtD(a.d)+'<br>'+a.kg+' kg</figcaption></figure><figure><img src="'+b.img+'" alt="Latest photo"><figcaption>Latest · '+fmtD(b.d)+'<br>'+b.kg+' kg</figcaption></figure></div><p class="note" style="text-align:center">'+(Math.abs(dk)<0.05?'Same weight':(dk<0?(-dk).toFixed(1)+' kg lighter':dk.toFixed(1)+' kg heavier'))+' between these two photos</p>';}
+  const show=V.phAll?L.length:Math.min(9,L.length),start=L.length-show;
+  h+='<div class="pgrid">'+L.slice(start).reverse().map((p,j)=>{const i=L.length-1-j;return '<button data-a="viewphoto" data-i="'+i+'" aria-label="Photo from '+fmtD(p.d)+'"><img src="'+p.img+'" alt=""><small>'+pkey(p.d).toLocaleDateString('en-IN',{day:'numeric',month:'short'})+'</small></button>';}).join('')+'</div>';
+  if(L.length>9)h+='<button class="btn ghost full" data-a="phall">'+(V.phAll?'Show fewer':'Show all '+L.length)+'</button>';
+  return h+'</section>';
+}
+// ----- backup and restore -----
+let RESTORE=null;
+async function makeBackup(){let ph=[];try{ph=await idbAll();}catch(e){}return JSON.stringify({app:'thali-quest',ver:1,saved:new Date().toISOString(),state:S,photos:ph});}
+function backupName(){return 'thali-quest-backup-'+todayK()+'.json';}
+function markBackup(){S.lastBackup=todayK();S.stats.backups=(S.stats.backups||0)+1;checkBadges();saveS();render();toast('Backup saved');}
+async function doBackup(share){
+  try{
+    const txt=await makeBackup(),blob=new Blob([txt],{type:'application/json'}),name=backupName();
+    if(share){
+      const f=new File([blob],name,{type:'application/json'});
+      if(typeof navigator!=='undefined'&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Thali Quest backup'});markBackup();return;}
+      toast('Sharing is not available here, saving a file instead');
+    }
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+    setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},2000);markBackup();
+  }catch(e){if(!(e&&e.name==='AbortError'))toast('Backup failed. Try again.');}
+}
+function readRestore(file){
+  if(!file)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const o=JSON.parse(r.result);
+      if(!o||o.app!=='thali-quest'||!o.state||!o.state.profile||!Array.isArray(o.state.weights)||!o.state.weights.length||typeof o.state.log!=='object')throw new Error('bad');
+      RESTORE=o;V.sheet={type:'restore'};render();
+    }catch(e){toast('That is not a Thali Quest backup file');}
+  };
+  r.onerror=()=>toast('Could not read that file');
+  r.readAsText(file);
+}
+async function applyRestore(){
+  const o=RESTORE;if(!o)return;
+  try{
+    try{localStorage.setItem(KEY+'-prev',JSON.stringify(S));}catch(e){}
+    try{await idbClear();for(const p of(o.photos||[]))await idbPut(p);}catch(e){V.phErr=1;}
+    S=o.state;S.custom=S.custom||[];FD_resetCustom();S.custom.forEach(regCustom);
+    PH=null;V.phLoading=0;RESTORE=null;V.sheet=null;V.tab='today';V.day=null;V.tday=null;
+    finalizePast();ensurePlans();awardQuests();saveS();render();window.scrollTo(0,0);toast('Backup restored');
+  }catch(e){console.error(e);toast('Restore failed. Your old data is unchanged on this phone.');}
+}
+function FD_resetCustom(){for(const id in FD){if(FD[id].custom)delete FD[id];}}
+function backupCard(){
+  const lb=S.lastBackup,old=!lb||pkey(addD(lb,14))<=pkey(todayK());
+  let h='<section class="card"><h2>Backup and restore</h2><p class="note" style="margin-top:6px">Your progress lives only on this phone. A backup file holds everything: logs, weights, measurements, custom foods, badges and photos. Save one every couple of weeks and before reinstalling or switching phones.</p>';
+  h+='<p class="note" style="margin-top:6px">Last backup: <b>'+(lb?fmtD(lb):'never')+'</b>'+(old?' · time for a new one':'')+'</p>';
+  h+='<div class="row wrap" style="margin-top:10px"><button class="btn sm" data-a="backup">Save backup file</button>'+(typeof navigator!=='undefined'&&navigator.share?'<button class="btn sm ghost" data-a="backupshare">Share backup</button>':'')+'<button class="btn sm ghost" data-a="restorepick">Restore from file</button></div><input type="file" id="rsin" accept=".json,application/json" hidden></section>';
+  return h;
+}
+function sheetExtra(){
+  const s=V.sheet;
+  if(s.type==='restore'){const o=RESTORE,st=o.state,sv=o.saved?new Date(o.saved).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'}):'unknown date';
+    return '<h2>Restore this backup?</h2><p class="muted">Saved '+sv+': '+st.weights.length+' weight log'+(st.weights.length===1?'':'s')+', '+fmtN(st.xp||0)+' XP, '+Object.keys(st.log).length+' logged days, '+(o.photos||[]).length+' photo'+((o.photos||[]).length===1?'':'s')+'.</p><p class="note">This replaces everything currently in the app on this phone. Save a backup first if you want to keep the current data.</p><button class="btn full" data-a="dorestore">Replace my data with this backup</button><button class="btn ghost full" data-a="closesheet">Cancel</button>';}
+  if(s.type==='photo'){const p=(PH||[])[s.i];if(!p)return '<h2>Photo</h2><button class="btn ghost full" data-a="closesheet">Close</button>';
+    return '<h2>'+fmtD(p.d)+'</h2><img class="pbig" src="'+p.img+'" alt="Progress photo"><p class="muted">Weight that day: '+p.kg+' kg</p><button class="btn ghost full" data-a="delphoto">'+(V.delAsk?'Tap again to delete this photo':'Delete photo')+'</button><button class="btn full" data-a="closesheet">Close</button>';}
+  return null;
+}
 
 // ---------- actions ----------
 function finishOnb(){
@@ -1100,7 +1406,16 @@ function onClick(e){
     case 'onback':V.err='';V.onb=Math.max(0,V.onb-1);render();window.scrollTo(0,0);return;
     case 'oncancel':V.form=null;V.editing=false;V.onb=0;V.err='';render();return;
     case 'tab':V.tab=d.t;V.sheet=null;V.resetAsk=false;render();window.scrollTo(0,0);return;
-    case 'closesheet':V.sheet=null;render();return;
+    case 'closesheet':V.sheet=null;V.delAsk=false;render();return;
+    case 'fcat':V.sheet.cat=d.v;render();return;
+    case 'addphoto':{const i=$('#phin');if(i)i.click();return;}
+    case 'viewphoto':V.sheet={type:'photo',i:+d.i};V.delAsk=false;render();return;
+    case 'delphoto':{if(!V.delAsk){V.delAsk=true;render();return;}const p=(PH||[])[V.sheet.i];if(p){idbDel(p.id).catch(()=>{});PH.splice(V.sheet.i,1);}V.delAsk=false;V.sheet=null;render();toast('Photo deleted');return;}
+    case 'phall':V.phAll=!V.phAll;render();return;
+    case 'backup':doBackup(false);return;
+    case 'backupshare':doBackup(true);return;
+    case 'restorepick':{const i=$('#rsin');if(i)i.click();return;}
+    case 'dorestore':applyRestore();return;
     case 'day':V.day=+d.i;render();return;
     case 'tday':V.tday=+d.i;render();return;
     case 'pref':S.profile[d.k]=d.v;ensurePlans();saveS();render();return;
@@ -1182,11 +1497,13 @@ function onClick(e){
 function onInput(e){
   const t=e.target;
   if(t.dataset&&t.dataset.f&&V.form){V.form[t.dataset.f]=t.value;return;}
-  if(t.id==='fq'){$('#fres').innerHTML=foodRes(t.value);}
+  if(t.id==='fq'){if(V.sheet)V.sheet.q=t.value;$('#fres').innerHTML=foodRes(t.value);}
   if(t.id==='qin'&&V.sheet){const q=Math.round(+t.value*100)/100;if(q>0&&q<=50){V.sheet.qty=q;const uu=V.sheet.type==='editqty'?V.sheet.u:FD[V.sheet.sel];$('#qnum').textContent=fmtQ(q);$('#qsum').innerHTML=qsum(uu,q);}}
 }
 function onChange(e){
   const t=e.target;if(!S)return;
+  if(t.id==='phin'){const f=t.files&&t.files[0];t.value='';addPhotoFile(f);return;}
+  if(t.id==='rsin'){const f=t.files&&t.files[0];t.value='';readRestore(f);return;}
   if(t.id==='s_days'||t.id==='s_equip'||t.id==='s_body'){
     S.W.days=+$('#s_days').value;S.W.equip=$('#s_equip').value;S.W.body=$('#s_body').value;
     S.profile.days=S.W.days;S.profile.equip=S.W.equip;S.profile.body=S.W.body;

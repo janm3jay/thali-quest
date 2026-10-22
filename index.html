@@ -635,6 +635,161 @@ R('r_mojito','Virgin mojito','1 glass (300 ml)',0,28,0,'drink',0.5,{nj:0});
 R('r_softdrink','Soft drink','1 glass (300 ml)',0,32,0,'drink',0,{nj:0});
 R('r_dietcoke','Diet cola','1 glass (300 ml)',0,0,0,'drink',0,{nj:0});
 R('r_buttermilk','Masala buttermilk','1 glass (250 ml)',3,6,2,'drink',0,{nj:0});
+// ---------- brand items: official nutrition tables where published (checked 22 Oct 2026) ----------
+const BRANDS={"KFC": {"note": "KFC India Nutrition Information, V6 (official booklet, no date given). Fibre not published, so shown as 0.", "al": "kfc"}, "Burger King": {"note": "Burger King India Nutritional Information Per Serve, current as of 12 Feb 2026 (official). Fibre not published, so shown as 0.", "al": "bk burgerking burger king"}, "Pizza Hut": {"note": "Pizza Hut India nutrition booklet (official, copyright 2022, current formulations as of posting). Per-slice values are the whole pizza divided by its slices.", "al": "pizzahut pizza hut"}, "McDonald's": {"note": "McDonald's India (McDelivery) nutrition PDF, no date given. Calories and serving are official. Protein, carbs and fat are my estimates from the official split of similar items at KFC and Burger King, because the PDF's macro columns could not be read reliably.", "al": "mcdonalds mcd mac maccas"}, "Havmor": {"note": "Havmor India product page (official), per 125 ml serving.", "al": "havmor"}};
+function B(id,brand,name,serv,k,p,c,f,fi,src){F(id,brand+' '+name,'',serv,p,c,f,{cat:'brand',step:1,al:BRANDS[brand].al,grp:brand});const x=FD[id];x.k=k;x.brand=brand;x.src=src;x.fi=fi;x.est=src.indexOf('estimated')>=0;FIB[id]=fi;}
+B("b_kfc_vegzingerburger","KFC","Veg Zinger Burger","1 serving (230 g)",619,14,83,25,0,"official");
+B("b_kfc_classicvegkrisper","KFC","Classic Veg Krisper","1 serving (145 g)",496,9,54,28,0,"official");
+B("b_kfc_spicyvegkrisper","KFC","Spicy Veg Krisper","1 serving (145 g)",436,9,58,19,0,"official");
+B("b_kfc_paneerzinger","KFC","Paneer Zinger","1 serving (215 g)",643,24,56,37,0,"official");
+B("b_kfc_chatptachannaburge","KFC","Chatpta Channa Burger","1 serving (130 g)",366,9,51,14,0,"official");
+B("b_kfc_veglonger","KFC","Veg Longer","1 serving (110 g)",259,8,39,8,0,"official, fat worked out from calories");
+B("b_kfc_vegroll","KFC","Veg Roll","1 serving (145 g)",447,8,55,22,0,"official");
+B("b_kfc_singlevegpatty","KFC","Single Veg Patty","1 serving (55 g)",133,4,17,6,0,"official");
+B("b_kfc_doublevegpatty","KFC","Double Veg Patty","1 serving (110 g)",266,7,34,11,0,"official");
+B("b_kfc_plainricebowl","KFC","Plain Rice Bowl","1 serving (250 g)",418,10,65,13,0,"official");
+B("b_kfc_vegricebowl","KFC","Veg Rice Bowl","1 serving (305 g)",418,9,76,9,0,"official");
+B("b_kfc_friesregular","KFC","Fries Regular","1 serving (75 g)",224,5,28,11,0,"official");
+B("b_kfc_friesmedium","KFC","Fries Medium","1 serving (100 g)",299,7,37,14,0,"official");
+B("b_kfc_frieslarge","KFC","Fries Large","1 serving (135 g)",404,9,50,19,0,"official");
+B("b_kfc_chocolavacake","KFC","Choco Lava Cake","1 serving (60 g)",343,6,34,21,0,"official");
+B("b_kfc_chocomudpie","KFC","Choco Mud Pie","1 serving (93 g)",241,3,37,9,0,"official");
+B("b_kfc_moussecakecoffee","KFC","Mousse Cake (coffee)","1 serving (70 g)",135,2,17,7,0,"official");
+B("b_kfc_minidessertbucket","KFC","Mini Dessert Bucket","1 serving (85 g)",250,4,34,11,0,"official");
+B("b_burg_crispyveg","Burger King","Crispy Veg","1 serving (131 g)",306,7.1,47.2,10.0,0,"official");
+B("b_burg_crispyvegdoublepat","Burger King","Crispy Veg Double Patty","1 serving (195 g)",454,9.8,67.6,16.2,0,"official");
+B("b_burg_makhaniburstveg","Burger King","Makhani Burst Veg","1 serving (131 g)",389,7.5,47.3,19.0,0,"official");
+B("b_burg_bkveggie","Burger King","BK Veggie","1 serving (150 g)",288,6.1,38.2,12.4,0,"official");
+B("b_burg_extracrunchyvegwho","Burger King","Extra Crunchy Veg Whopper Deluxe","1 serving (197 g)",326,10.1,55.0,8.3,0,"official");
+B("b_burg_crunchyvegwhopper","Burger King","Crunchy Veg Whopper","1 serving (303 g)",367,16.0,47.7,13.0,0,"official");
+B("b_burg_hotncheesyburger","Burger King","Hot N Cheesy Burger","1 serving (257 g)",643,17.4,62.1,36.6,0,"official");
+B("b_burg_paneerroyaleburger","Burger King","Paneer Royale Burger","1 serving (253 g)",600,18.5,58.1,33.1,0,"official");
+B("b_burg_bkveggiedoublepatt","Burger King","BK Veggie Double Patty","1 serving (209 g)",520,16.6,84.0,19.3,0,"official");
+B("b_burg_spicykoreanpaneerb","Burger King","Spicy Korean Paneer Burger","1 serving (231 g)",599,19.1,64.3,30.1,0,"official");
+B("b_burg_crunchysoftpaneerw","Burger King","Crunchy Soft Paneer Whopper Deluxe","1 serving (197 g)",472,16.4,42.7,26.7,0,"official");
+B("b_burg_moltencheeselavawh","Burger King","Molten Cheese Lava Whopper Deluxe","1 serving (201 g)",516,15.3,46.7,30.0,0,"official");
+B("b_burg_vegcrunchytaco","Burger King","Veg Crunchy Taco","1 serving (111 g)",331,1.5,38.9,17.7,0,"official");
+B("b_burg_vegstrips5pcs","Burger King","Veg Strips (5 pcs)","1 serving (81 g)",247,5.0,30.1,11.9,0,"official");
+B("b_burg_regularfries","Burger King","Regular Fries","1 serving (72 g)",204,3.6,27.4,8.9,0,"official");
+B("b_burg_mediumfries","Burger King","Medium Fries","1 serving (114 g)",333,5.9,43.3,14.4,0,"official");
+B("b_burg_kingfries","Burger King","King Fries","1 serving (156 g)",455,8.0,59.3,19.7,0,"official");
+B("b_burg_periperifriesregul","Burger King","Peri Peri Fries Regular","1 serving (79 g)",220,3.6,29.3,9.8,0,"official");
+B("b_burg_hashbrown","Burger King","Hash Brown","1 serving (54 g)",158,1.6,19.7,8.1,0,"official");
+B("b_burg_pizzapuffveg","Burger King","Pizza Puff Veg","1 serving (72 g)",208,6.3,27.6,8.0,0,"official");
+B("b_burg_spicykoreanfries","Burger King","Spicy Korean Fries","1 serving (174 g)",497,7,54,28,0,"official");
+B("b_burg_cheeseslice","Burger King","Cheese Slice","1 serving (12 g)",41,2.4,0.5,3.2,0,"official");
+B("b_burg_vanillasoftie","Burger King","Vanilla Softie","1 serving (80 g)",77,1.8,10.7,3.3,0,"official");
+B("b_burg_chocodipsoftie","Burger King","Choco Dip Softie","1 serving (95 g)",172,2.4,17.1,10.5,0,"official");
+B("b_burg_bksundaemango","Burger King","BK Sundae Mango","1 serving (90 g)",107,1.8,10.7,6.4,0,"official");
+B("b_burg_bksundaechocolate","Burger King","BK Sundae Chocolate","1 serving (90 g)",125,1.9,21.8,3.4,0,"official");
+B("b_burg_loadedsundaeblackc","Burger King","Loaded Sundae Black Currant","1 serving (90 g)",115,1.8,20.2,3.0,0,"official");
+B("b_burg_loadedsundaecookie","Burger King","Loaded Sundae Cookie Crumble","1 serving (100 g)",159,2.7,29.5,3.4,0,"official");
+B("b_burg_chocolatemoussecup","Burger King","Chocolate Mousse Cup","1 serving (80 g)",200,1.8,35.0,5.7,0,"official");
+B("b_burg_kitkatfusionsundae","Burger King","KitKat Fusion Sundae","1 serving (102 g)",175,2.9,26.1,6.6,0,"official");
+B("b_burg_cocacolaregular","Burger King","Coca-Cola Regular","1 serving (300 ml)",132,0,32.7,0,0,"official");
+B("b_burg_thumsupregular","Burger King","Thums Up Regular","1 serving (300 ml)",126,0,31.8,0,0,"official");
+B("b_burg_spriteregular","Burger King","Sprite Regular","1 serving (300 ml)",147,0,36.6,0,0,"official");
+B("b_burg_fantaregular","Burger King","Fanta Regular","1 serving (300 ml)",168,0,42,0,0,"official");
+B("b_burg_cocacolazeroregula","Burger King","Coca-Cola Zero Regular","1 serving (300 ml)",0,0,0,0,0,"official");
+B("b_burg_thickshakemango","Burger King","Thick Shake Mango","1 serving (295 ml)",245,5.8,35.2,9.0,0,"official");
+B("b_burg_thickshakechocolat","Burger King","Thick Shake Chocolate","1 serving (300 ml)",351,7.5,54.2,11.5,0,"official");
+B("b_burg_thickshakeberrybla","Burger King","Thick Shake Berry Blast","1 serving (300 ml)",382,7.5,63.8,10.8,0,"official");
+B("b_burg_kitkatshake","Burger King","KitKat Shake","1 serving (378 ml)",591,10.6,91.6,20.3,0,"official");
+B("b_burg_cappuccinoregular","Burger King","Cappuccino Regular","1 serving (235 ml)",139,4.9,13.5,7.9,0,"official");
+B("b_burg_caffelatteregular","Burger King","Caffe Latte Regular","1 serving (240 ml)",105,5.0,9.0,5.4,0,"official");
+B("b_burg_mochaccinoregular","Burger King","Mochaccino Regular","1 serving (285 ml)",264,5.5,46.1,6.5,0,"official");
+B("b_burg_hotchocolate","Burger King","Hot Chocolate","1 serving (200 ml)",97,2.0,19.6,1.2,0,"official");
+B("b_burg_masalachai","Burger King","Masala Chai","1 serving (205 ml)",84,0.0,15.8,2.7,0,"official");
+B("b_burg_classiccoldcoffee","Burger King","Classic Cold Coffee","1 serving (310 ml)",197,4.3,29.8,6.7,0,"official");
+B("b_burg_mochafrappe","Burger King","Mocha Frappe","1 serving (355 ml)",293,4.3,52.2,7.5,0,"official");
+B("b_burg_icedlatte","Burger King","Iced Latte","1 serving (330 ml)",125,3.4,19.7,3.6,0,"official");
+B("b_burg_americanoregular","Burger King","Americano Regular","1 serving (310 ml)",15,0.3,0,1.7,0,"official");
+B("b_pizz_margheritapanpizza","Pizza Hut","Margherita Pan Pizza (Personal)","1 personal pizza (4 slices)",725,31.9,101.6,21.2,8.2,"official");
+B("b_pizz_schezwanmargherita","Pizza Hut","Schezwan Margherita Pan Pizza (Personal)","1 personal pizza (4 slices)",744,31.7,104.0,22.3,9.0,"official");
+B("b_pizz_cornncheesepanpizz","Pizza Hut","Corn n Cheese Pan Pizza (Personal)","1 personal pizza (4 slices)",869,36.0,131.9,22.0,7.7,"official");
+B("b_pizz_veggiefeastpanpizz","Pizza Hut","Veggie Feast Pan Pizza (Personal)","1 personal pizza (4 slices)",823,35.8,122.1,21.2,8.5,"official");
+B("b_pizz_spicedpaneerpanpiz","Pizza Hut","Spiced Paneer Pan Pizza (Personal)","1 personal pizza (4 slices)",816,43.3,95.0,29.1,13.8,"official");
+B("b_pizz_mexicanfiestavegpa","Pizza Hut","Mexican Fiesta Veg Pan Pizza (Personal)","1 personal pizza (4 slices)",856,36.9,108.9,30.3,9.8,"official");
+B("b_pizz_tandooripaneerpanp","Pizza Hut","Tandoori Paneer Pan Pizza (Personal)","1 personal pizza (4 slices)",1065,35.7,152.8,34.5,14.1,"official");
+B("b_pizz_countryfeastpanpiz","Pizza Hut","Country Feast Pan Pizza (Personal)","1 personal pizza (4 slices)",815,33.5,134.2,16.1,14.4,"official");
+B("b_pizz_ultimatetandoorive","Pizza Hut","Ultimate Tandoori Veggie Pan Pizza (Personal)","1 personal pizza (4 slices)",1068,32.3,156.4,34.7,11.2,"official");
+B("b_pizz_veggiesupremepanpi","Pizza Hut","Veggie Supreme Pan Pizza (Personal)","1 personal pizza (4 slices)",853,35.5,110.8,28.8,8.9,"official");
+B("b_pizz_mazedarmakhnipanee","Pizza Hut","Mazedar Makhni Paneer Pan Pizza (Personal)","1 personal pizza (4 slices)",880,40.1,100.7,35.2,8.5,"official");
+B("b_pizz_boldbbqveggiespanp","Pizza Hut","Bold BBQ Veggies Pan Pizza (Personal)","1 personal pizza (4 slices)",779,38.5,108.2,21.4,10.2,"official");
+B("b_pizz_royalspicepaneerpa","Pizza Hut","Royal Spice Paneer Pan Pizza (Personal)","1 personal pizza (4 slices)",895,40.2,101.2,36.6,14.6,"official");
+B("b_pizz_kadhaipaneerpanpiz","Pizza Hut","Kadhai Paneer Pan Pizza (Personal)","1 personal pizza (4 slices)",1171,39.8,171.5,36.2,14.6,"official");
+B("b_pizz_southernfierypanee","Pizza Hut","Southern Fiery Paneer Pan Pizza (Personal)","1 personal pizza (4 slices)",1198,41.6,175.3,36.7,14.7,"official");
+B("b_pizz_margheritamedium","Pizza Hut","Margherita (Medium)","1 slice (~78 g, 1 of 6)",230,10.1,32.2,6.7,2.6,"official");
+B("b_pizz_schezwanmargherita2","Pizza Hut","Schezwan Margherita (Medium)","1 slice (~78 g, 1 of 6)",235,10.0,32.9,7.1,2.8,"official");
+B("b_pizz_cornncheesemedium","Pizza Hut","Corn n Cheese (Medium)","1 slice (~88 g, 1 of 6)",280,11.6,42.4,7.1,2.5,"official");
+B("b_pizz_veggiefeastmedium","Pizza Hut","Veggie Feast (Medium)","1 slice (~100 g, 1 of 6)",268,11.6,39.7,6.9,2.8,"official");
+B("b_pizz_spicedpaneermedium","Pizza Hut","Spiced Paneer (Medium)","1 slice (~96 g, 1 of 6)",266,14.1,31.0,9.5,4.5,"official");
+B("b_pizz_mexicanfiestavegme","Pizza Hut","Mexican Fiesta Veg (Medium)","1 slice (~104 g, 1 of 6)",275,11.9,35.0,9.7,3.1,"official");
+B("b_pizz_tandooripaneermedi","Pizza Hut","Tandoori Paneer (Medium)","1 slice (~102 g, 1 of 6)",342,11.4,49.0,11.1,4.5,"official");
+B("b_pizz_countryfeastmedium","Pizza Hut","Country Feast (Medium)","1 slice (~112 g, 1 of 6)",273,11.2,45.0,5.4,4.8,"official");
+B("b_pizz_ultimatetandoorive2","Pizza Hut","Ultimate Tandoori Veggie (Medium)","1 slice (~110 g, 1 of 6)",344,10.4,50.4,11.2,3.6,"official");
+B("b_pizz_veggiesuprememediu","Pizza Hut","Veggie Supreme (Medium)","1 slice (~108 g, 1 of 6)",276,11.5,35.8,9.3,2.9,"official");
+B("b_pizz_mazedarmakhnipanee2","Pizza Hut","Mazedar Makhni Paneer (Medium)","1 slice (~100 g, 1 of 6)",288,13.1,32.9,11.5,2.8,"official");
+B("b_pizz_boldbbqveggiesmedi","Pizza Hut","Bold BBQ Veggies (Medium)","1 slice (~102 g, 1 of 6)",247,12.2,34.3,6.8,3.2,"official");
+B("b_pizz_royalspicepaneerme","Pizza Hut","Royal Spice Paneer (Medium)","1 slice (~120 g, 1 of 6)",299,13.4,33.8,12.2,4.9,"official");
+B("b_pizz_kadhaipaneermedium","Pizza Hut","Kadhai Paneer (Medium)","1 slice (~118 g, 1 of 6)",390,13.2,57.1,12.0,4.9,"official");
+B("b_pizz_southernfierypanee2","Pizza Hut","Southern Fiery Paneer (Medium)","1 slice (~121 g, 1 of 6)",400,13.9,58.5,12.2,4.9,"official");
+B("b_pizz_margheritaultimate","Pizza Hut","Margherita Ultimate Cheese (Medium)","1 slice (~103 g, 1 of 6)",292,12.6,41.1,9.3,3.2,"official");
+B("b_pizz_veggiesupremeultim","Pizza Hut","Veggie Supreme Ultimate Cheese (Medium)","1 slice (~135 g, 1 of 6)",341,13.3,45.1,12.6,3.2,"official");
+B("b_pizz_tandooripaneerulti","Pizza Hut","Tandoori Paneer Ultimate Cheese (Medium)","1 slice (~127 g, 1 of 6)",439,14.8,62.5,15.6,5.4,"official");
+B("b_pizz_kadhaigarlicbread","Pizza Hut","Kadhai Garlic Bread","1 serving (198 g)",741,14.5,77.6,41.4,6.9,"official");
+B("b_pizz_southernfierygarli","Pizza Hut","Southern Fiery Garlic Bread","1 serving (190 g)",733,13.6,78.1,40.7,6.7,"official");
+B("b_pizz_classicbreadstix","Pizza Hut","Classic Bread Stix","1 serving (180 g)",517,15.6,111.2,2.2,4.4,"official");
+B("b_pizz_loadedbreadstix","Pizza Hut","Loaded Bread Stix","1 serving (210 g)",673,16.4,113.2,18.3,4.4,"official");
+B("b_pizz_cheezycheesevegmel","Pizza Hut","Cheezy Cheese Veg Melt","1 serving (244 g)",723,22.7,98.2,26.6,7.7,"official");
+B("b_pizz_loadedveggiebbqmel","Pizza Hut","Loaded Veggie BBQ Melt","1 serving (272 g)",695,18.6,101.0,24.4,9.0,"official");
+B("b_pizz_royalspicepaneerme2","Pizza Hut","Royal Spice Paneer Melt","1 serving (254 g)",698,28.7,77.7,30.2,7.6,"official");
+B("b_pizz_kadhaipaneermelt","Pizza Hut","Kadhai Paneer Melt","1 serving (272 g)",734,30.5,82.7,31.3,6.5,"official");
+B("b_pizz_paneermakhnimasala","Pizza Hut","Paneer Makhni Masala Flatzz","1 serving (427 g)",1166,44.0,151.6,45.5,13.2,"official");
+B("b_pizz_overloadedveggiesf","Pizza Hut","Overloaded Veggies Flatzz","1 serving (467 g)",1134,51.0,143.7,42.7,14.6,"official");
+B("b_pizz_fieryschezwanveggi","Pizza Hut","Fiery Schezwan Veggie Flatzz","1 serving (411 g)",1084,49.0,136.5,40.9,13.4,"official");
+B("b_pizz_smokeybbqveggiefla","Pizza Hut","Smokey BBQ Veggie Flatzz","1 serving (421 g)",1084,47.5,137.3,41.2,12.5,"official");
+B("b_havm_kulfiicecream","Havmor","Kulfi Ice Cream","1 serving (125 ml)",261,5.5,28.5,13.9,0,"official");
+B("b_mcdo_mcveggieburger","McDonald's","McVeggie Burger","1 serving (168 g)",402,10.0,53.7,16.3,0,"kcal official, macros estimated");
+B("b_mcdo_mcalootikkiburger","McDonald's","McAloo Tikki Burger","1 serving (146 g)",340,8.5,45.4,13.8,0,"kcal official, macros estimated");
+B("b_mcdo_mcspicypaneerburge","McDonald's","McSpicy Paneer Burger","1 serving (199 g)",653,21.8,61.7,35.5,0,"kcal official, macros estimated");
+B("b_mcdo_bigspicypaneerwrap","McDonald's","Big Spicy Paneer Wrap","1 serving (270 g)",727,24.2,68.7,39.5,0,"kcal official, macros estimated");
+B("b_mcdo_corncheesevegburge","McDonald's","Corn & Cheese Veg Burger","1 serving (177 g)",512,12.8,68.4,20.8,0,"kcal official, macros estimated");
+B("b_mcdo_vegmaharajamac","McDonald's","Veg Maharaja Mac","1 serving (306 g)",833,20.8,111.3,33.8,0,"kcal official, macros estimated");
+B("b_mcdo_mexicanmcalootikki","McDonald's","Mexican McAloo Tikki (whole wheat bun)","1 serving (162 g)",351,8.8,46.9,14.3,0,"kcal official, macros estimated");
+B("b_mcdo_cheeseitalianvegbu","McDonald's","Cheese Italian Veg Burger","1 serving (191 g)",486,12.1,65.0,19.7,0,"kcal official, macros estimated");
+B("b_mcdo_vegsurpriseburger","McDonald's","Veg Surprise Burger","1 serving (131 g)",356,8.9,47.6,14.5,0,"kcal official, macros estimated");
+B("b_mcdo_mcspicydeluxepanee","McDonald's","McSpicy Deluxe Paneer Burger","1 serving (225 g)",678,22.6,64.0,36.8,0,"kcal official, macros estimated");
+B("b_mcdo_piripirimcspicypan","McDonald's","Piri Piri McSpicy Paneer Burger","1 serving (186 g)",597,19.9,56.4,32.4,0,"kcal official, macros estimated");
+B("b_mcdo_triplecheesevegbur","McDonald's","Triple Cheese Veg Burger","1 serving (207 g)",536,13.4,71.6,21.8,0,"kcal official, macros estimated");
+B("b_mcdo_mccheesevegburger","McDonald's","McCheese Veg Burger","1 serving (229 g)",645,16.1,86.2,26.2,0,"kcal official, macros estimated");
+B("b_mcdo_mcspicypremiumvegb","McDonald's","McSpicy Premium Veg Burger","1 serving (212 g)",636,15.9,85.0,25.8,0,"kcal official, macros estimated");
+B("b_mcdo_mcalootikkidoublep","McDonald's","McAloo Tikki Double Patty","1 serving (200 g)",472,11.8,63.1,19.2,0,"kcal official, macros estimated");
+B("b_mcdo_mcveggiedoublepatt","McDonald's","McVeggie Double Patty","1 serving (234 g)",570,14.2,76.2,23.2,0,"kcal official, macros estimated");
+B("b_mcdo_vegnuggets4pcs","McDonald's","Veg Nuggets (4 pcs)","1 serving (76 g)",266,6.7,33.9,11.5,0,"kcal official, macros estimated");
+B("b_mcdo_vegnuggets9pcs","McDonald's","Veg Nuggets (9 pcs)","1 serving (171 g)",600,15.2,76.4,26.0,0,"kcal official, macros estimated");
+B("b_mcdo_regularfries","McDonald's","Regular Fries","1 serving (77 g)",225,4.5,28.7,10.2,0,"kcal official, macros estimated");
+B("b_mcdo_mediumfries","McDonald's","Medium Fries","1 serving (109 g)",318,6.4,40.6,14.4,0,"kcal official, macros estimated");
+B("b_mcdo_largefries","McDonald's","Large Fries","1 serving (154 g)",449,9.0,57.3,20.4,0,"kcal official, macros estimated");
+B("b_mcdo_classiccheesefries","McDonald's","Classic Cheese Fries","1 serving (209 g)",619,12.4,79.1,28.1,0,"kcal official, macros estimated");
+B("b_mcdo_salsacheesefries","McDonald's","Salsa Cheese Fries","1 serving (211 g)",560,11.3,71.5,25.4,0,"kcal official, macros estimated");
+B("b_mcdo_hashbrown","McDonald's","Hash Brown","1 serving (64 g)",140,1.4,17.4,7.2,0,"kcal official, macros estimated");
+B("b_mcdo_softservecone","McDonald's","Soft Serve Cone","1 serving (65 g)",100,1.7,13.8,4.2,0,"kcal official, macros estimated");
+B("b_mcdo_softserveconewitho","McDonald's","Soft Serve Cone with Oreo","1 serving (78 g)",163,2.8,22.6,6.9,0,"kcal official, macros estimated");
+B("b_mcdo_smallmcflurryoreo","McDonald's","Small McFlurry Oreo","1 serving (100 g)",255,4.4,35.3,10.7,0,"kcal official, macros estimated");
+B("b_mcdo_regularmcflurryore","McDonald's","Regular McFlurry Oreo","1 serving (140 g)",310,5.3,42.9,13.0,0,"kcal official, macros estimated");
+B("b_mcdo_regularblackforest","McDonald's","Regular Blackforest Sundae","1 serving (100 g)",243,4.1,33.6,10.2,0,"kcal official, macros estimated");
+B("b_mcdo_strawberryshake14o","McDonald's","Strawberry Shake (14 oz)","1 serving (310 ml)",375,7.6,59.6,11.8,0,"kcal official, macros estimated");
+B("b_mcdo_chocolateshake14oz","McDonald's","Chocolate Shake (14 oz)","1 serving (310 ml)",400,8.1,63.6,12.6,0,"kcal official, macros estimated");
+B("b_mcdo_mangosmoothie14oz","McDonald's","Mango Smoothie (14 oz)","1 serving (320 ml)",301,6.1,47.8,9.5,0,"kcal official, macros estimated");
+B("b_mcdo_mixedberrysmoothie","McDonald's","Mixed Berry Smoothie (14 oz)","1 serving (325 ml)",289,5.8,45.9,9.1,0,"kcal official, macros estimated");
+B("b_mcdo_mochafrappe14oz","McDonald's","Mocha Frappe (14 oz)","1 serving (334 ml)",436,8.8,69.3,13.7,0,"kcal official, macros estimated");
+B("b_mcdo_smallcocacola","McDonald's","Small Coca-Cola","1 serving (299 ml)",110,0.0,27.5,0.0,0,"kcal official, macros estimated");
+B("b_mcdo_mediumcocacola","McDonald's","Medium Coca-Cola","1 serving (394 ml)",151,0.0,37.8,0.0,0,"kcal official, macros estimated");
+B("b_mcdo_smallsprite","McDonald's","Small Sprite","1 serving (299 ml)",120,0.0,30.0,0.0,0,"kcal official, macros estimated");
+B("b_mcdo_smallfantaorange","McDonald's","Small Fanta Orange","1 serving (299 ml)",129,0.0,32.2,0.0,0,"kcal official, macros estimated");
+B("b_mcdo_lemonicedtea14oz","McDonald's","Lemon Iced Tea (14 oz)","1 serving (303 ml)",147,0.0,36.8,0.0,0,"kcal official, macros estimated");
+B("b_mcdo_icedamericano14oz","McDonald's","Iced Americano (14 oz)","1 serving (337 ml)",23,0.0,5.8,0.0,0,"kcal official, macros estimated");
 // ---------- body numbers ----------
 function calcPlan(p){
   const w=+p.w,h=+p.h,age=+p.age,tw=+p.tw,pace=+p.pace;
@@ -848,7 +1003,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 report, records, restaurant';
+const APP_VER='2026.10.23 brands';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1283,12 +1438,12 @@ function validStep(){
 function foodRes(q){
   q=(q||'').trim().toLowerCase();
   const cat=(V.sheet&&V.sheet.cat)||'';
-  let list=Object.values(FD).filter(f=>(!q||f.name.toLowerCase().includes(q)||f.gu.includes(q)||(f.al&&f.al.includes(q))||f.serv.toLowerCase().includes(q))&&(!cat||(cat==='custom'?f.custom:cat==='sweet'?(f.cat==='sweet'||f.cheat):f.cat===cat)));
+  let list=Object.values(FD).filter(f=>(!q||f.name.toLowerCase().includes(q)||f.gu.includes(q)||(f.al&&f.al.includes(q))||f.serv.toLowerCase().includes(q))&&(!cat||(cat==='custom'?f.custom:cat==='sweet'?(f.cat==='sweet'||f.cheat):f.cat===cat))&&(cat!=='brand'||!V.sheet.brand||f.brand===V.sheet.brand));
   if(cat&&!q)list.sort((a,b)=>a.name<b.name?-1:1);
   else if(!q)list.sort((a,b)=>((b.custom?1:0)-(a.custom?1:0))||((b.g?1:0)-(a.g?1:0))||((a.cheat?1:0)-(b.cheat?1:0)));
   list=list.slice(0,q||cat?90:60);
   if(!list.length)return '<p class="note">Nothing found. Add it as a custom food.</p>';
-  return list.map(f=>'<button class="frow" data-a="pickfood" data-id="'+f.id+'"><span><b>'+f.name+'</b><span class="gu">'+f.gu+'</span><small>'+f.serv+'</small></span><em>'+f.k+' kcal</em></button>').join('');
+  return list.map(f=>'<button class="frow" data-a="pickfood" data-id="'+f.id+'"><span><b>'+f.name+'</b><span class="gu">'+f.gu+'</span><small>'+f.serv+(f.brand?' · '+(f.est?'macros estimated':'official'):'')+'</small></span><em>'+f.k+' kcal</em></button>').join('');
 }
 function qsum(u,q){return '<b>'+Math.round(u.k*q)+' kcal</b> · '+(u.p*q).toFixed(1)+' g protein · '+(u.c*q).toFixed(0)+' g carbs · '+(u.f*q).toFixed(1)+' g fat · '+((u.fi||0)*q).toFixed(1)+' g fibre';}
 function qtyPicker(u,q){
@@ -1298,8 +1453,8 @@ function sheetBody(){
   const s=V.sheet;
   const ex=sheetExtra();if(ex)return ex;
   if(s.type==='food'){
-    if(s.sel){const f=FD[s.sel],q=s.qty;return '<h2>'+f.name+'<span class="gu">'+f.gu+'</span></h2><p class="muted">1 serving = '+f.serv+'</p>'+qtyPicker(f,q)+'<button class="btn full" data-a="confirmfood">Add to '+SLOTN[s.slot]+'</button><button class="btn ghost full" data-a="unpick">Back to search</button>'+(f.custom?'<button class="btn ghost full" data-a="delcustom">Delete this custom food</button>':'');}
-    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, diet coke, kiwi…" autocomplete="off" value="'+esc(s.q||'')+'"><div class="row wrap">'+[['','All'],['fruit','Fruits'],['drink','Drinks'],['sweet','Sweets and treats'],['rest','Restaurant'],['custom','My foods']].map(c=>'<button class="chip'+((s.cat||'')===c[0]?' on':'')+'" data-a="fcat" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'</div><div id="fres">'+foodRes(s.q||'')+'</div><button class="btn ghost full" data-a="restosheet" data-s="'+s.slot+'">Eating out? Restaurant mode</button><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
+    if(s.sel){const f=FD[s.sel],q=s.qty;return '<h2>'+f.name+'<span class="gu">'+f.gu+'</span></h2><p class="muted">1 serving = '+f.serv+'</p>'+(f.brand?'<p class="note">Source: '+esc(BRANDS[f.brand].note)+' Values are approximate and can vary by outlet.</p>':'')+qtyPicker(f,q)+'<button class="btn full" data-a="confirmfood">Add to '+SLOTN[s.slot]+'</button><button class="btn ghost full" data-a="unpick">Back to search</button>'+(f.custom?'<button class="btn ghost full" data-a="delcustom">Delete this custom food</button>':'');}
+    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, diet coke, kiwi…" autocomplete="off" value="'+esc(s.q||'')+'"><div class="row wrap">'+[['','All'],['fruit','Fruits'],['drink','Drinks'],['sweet','Sweets and treats'],['rest','Restaurant'],['brand','Brands'],['custom','My foods']].map(c=>'<button class="chip'+((s.cat||'')===c[0]?' on':'')+'" data-a="fcat" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'</div>'+(((s.cat||'')==='brand')?brandBar(s):'')+'<div id="fres">'+foodRes(s.q||'')+'</div><button class="btn ghost full" data-a="restosheet" data-s="'+s.slot+'">Eating out? Restaurant mode</button><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
   }
   if(s.type==='custom')return '<h2>Custom food</h2><p class="muted">Enter what is on the label, or your best estimate. If you leave calories blank, they are worked out from protein, carbs and fat.</p><label class="field">Name<input type="text" id="cn" placeholder="e.g. Aunty\u2019s sev puri"></label><label class="field">Serving size<input type="text" id="cs" placeholder="e.g. 1 plate, 100 g" value="1 serving"></label><div class="row"><label class="field" style="flex:1">Protein (g)<input type="number" inputmode="decimal" id="cp" placeholder="0"></label><label class="field" style="flex:1">Carbs (g)<input type="number" inputmode="decimal" id="cc" placeholder="0"></label></div><div class="row"><label class="field" style="flex:1">Fat (g)<input type="number" inputmode="decimal" id="cf" placeholder="0"></label><label class="field" style="flex:1">Calories (kcal)<input type="number" inputmode="decimal" id="ck" placeholder="auto"></label></div><div class="row"><label class="field" style="flex:1">Fibre (g)<input type="number" inputmode="decimal" id="cfi" placeholder="0"></label><div style="flex:1"></div></div><p class="err" id="cerr"></p><button class="btn full" data-a="saveccustom">Save food</button><p class="note">It is saved under My foods, so you can find it by search next time. Fibre is optional, and label carbs already include it.</p>';
   if(s.type==='planswap'){
@@ -1341,6 +1496,14 @@ function render(){
   $('#sheetwrap').innerHTML=sheetHtml();
   window.scrollTo(0,y);
   if(keep){const e2=document.querySelector('.sheet');if(e2)e2.scrollTop=shY;}
+}
+
+function brandBar(s){
+  const names=Object.keys(BRANDS);
+  let h='<div class="row wrap"><button class="chip'+(!s.brand?' on':'')+'" data-a="fbrand" data-v="">All brands</button>'+names.map(n=>'<button class="chip'+(s.brand===n?' on':'')+'" data-a="fbrand" data-v="'+esc(n)+'">'+esc(n)+'</button>').join('')+'</div>';
+  h+='<p class="note">'+(s.brand?esc(BRANDS[s.brand].note):'Official nutrition tables published by each brand in India. Items tagged "macros estimated" have official calories but estimated protein, carbs and fat.')+'</p>';
+  if(!s.brand)h+='<p class="note">Not added yet (no readable official table found): Domino\u2019s, Subway, Starbucks, Cafe Coffee Day, Haldiram\u2019s, Amul, Baskin Robbins, Wow! Momo. For these, use Restaurant mode or a custom food with the label values.</p>';
+  return h;
 }
 // ---------- plateau check, progress photos, backup and restore, streak freeze ----------
 function plateauInfo(){
@@ -1643,7 +1806,8 @@ function onClick(e){
     case 'radd':V.sheet.sel[d.id]=(V.sheet.sel[d.id]||0)+1;restoKeep();return;
     case 'rstep':{const q=Math.round(((V.sheet.sel[d.id]||0)+(+d.d))*100)/100;if(q<=0)delete V.sheet.sel[d.id];else V.sheet.sel[d.id]=Math.min(10,q);restoKeep();return;}
     case 'rlog':{const sel=V.sheet.sel,slot=V.sheet.slot;if(!Object.keys(sel).length)return;for(const id in sel)addItem(todayK(),slot,id,sel[id]);S.stats.resto=(S.stats.resto||0)+1;V.sheet=null;commit();toast('Added to '+SLOTN[slot]);return;}
-    case 'fcat':V.sheet.cat=d.v;render();return;
+    case 'fcat':V.sheet.cat=d.v;if(d.v!=='brand')V.sheet.brand='';render();return;
+    case 'fbrand':V.sheet.brand=d.v;render();return;
     case 'addphoto':{const i=$('#phin');if(i)i.click();return;}
     case 'viewphoto':V.sheet={type:'photo',i:+d.i};V.delAsk=false;render();return;
     case 'delphoto':{if(!V.delAsk){V.delAsk=true;render();return;}const p=(PH||[])[V.sheet.i];if(p){idbDel(p.id).catch(()=>{});PH.splice(V.sheet.i,1);}V.delAsk=false;V.sheet=null;render();toast('Photo deleted');return;}

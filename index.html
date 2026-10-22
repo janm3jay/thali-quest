@@ -884,6 +884,185 @@ B("b_amul_mastispicedbutterm","Amul","Masti Spiced Buttermilk","1 pack (200 ml)"
 B("b_amul_vanillamagicicecre","Amul","Vanilla Magic Ice Cream Cup","1 cup (~60 g)",130,2,17,6,0,"estimated");
 B("b_amul_triconebutterscotc","Amul","Tricone Butterscotch","1 cone (120 ml)",204,2.5,26,10,0,"estimated");
 B("b_amul_kulfi","Amul","Kulfi","1 stick (~60 g)",131,3,14,7,0,"estimated");
+// ---------- more home foods: rotis, rice, dal, sabzi, snacks, sweets, dairy, basics, drinks, combos ----------
+// Values are per the stated serving for home-cooked food (about 1 tsp oil per katori of sabzi), from IFCT and USDA composition data.
+function H(id,name,gu,serv,p,c,f,fi,cat,o){o=o||{};F(id,name,gu,serv,p,c,f,Object.assign({cat:cat},o));FIB[id]=fi;FD[id].fi=fi;}
+// rotis, parathas, breakfast, rice
+H('plainparatha','Plain wheat paratha','સાદા પરોઠા','1 paratha (60 g flour, 1 tsp oil)',4.5,27,6,3,'bread',{step:1,al:'paratha'});
+H('methiparatha','Methi paratha','મેથી પરોઠા','1 paratha',5,28,7,3.5,'bread',{step:1,g:1});
+H('gobiparatha','Gobi paratha','ફૂલકોબી પરોઠા','1 paratha',6,31,8,3.5,'bread',{step:1,al:'cauliflower'});
+H('paneerparatha','Paneer paratha','પનીર પરોઠા','1 paratha',9,29,11,3,'bread',{step:1});
+H('mooliparatha','Mooli paratha','મૂળા પરોઠા','1 paratha',5,29,7,3.5,'bread',{step:1,al:'radish'});
+H('palakparatha','Palak paratha','પાલક પરોઠા','1 paratha',5,27,7,3.5,'bread',{step:1,al:'spinach'});
+H('gheeroti','Roti with ghee','ઘી વાળી રોટલી','1 roti + 1 tsp ghee',2.6,15,5.6,3,'bread',{step:1,g:1,al:'chapati phulka'});
+H('multigrainroti','Multigrain roti','મલ્ટીગ્રેઈન રોટલી','1 roti (35 g flour)',3.2,15,1,3,'bread',{step:1});
+H('thalipeeth','Thalipeeth','થાલીપીઠ','1 piece (60 g)',4.5,24,6,4,'bread',{step:1});
+H('bhatura','Bhatura','ભટુરા','1 bhatura',6,40,15,2,'bread',{step:1,cheat:1,nj:1});
+H('tortilla','Whole wheat wrap / tortilla','રેપ','1 wrap (45 g)',3.5,25,4,3,'bread',{step:1});
+H('rumali','Rumali roti','રૂમાલી રોટી','1 roti',3,20,1,1.5,'bread',{step:1});
+H('appam','Appam','અપ્પમ','1 appam',2,18,2,1,'bread',{step:1});
+H('pesarattu','Pesarattu (green moong dosa)','પેસરટ્ટુ','1 dosa (80 g)',6,16,4,3,'bread',{step:1});
+H('adai','Adai','અડાઈ','1 adai (80 g)',5,17,4,3.5,'bread',{step:1});
+H('neerdosa','Neer dosa','નીર ઢોસા','1 dosa',1.5,16,1,0.5,'bread',{step:1});
+H('ravadosa','Rava dosa','રવા ઢોસા','1 dosa',4,28,8,1.5,'bread',{step:1});
+H('ragidosa','Ragi dosa','રાગી ઢોસા','1 dosa',3,24,3,3,'bread',{step:1});
+H('paddu','Paddu / appe','પડ્ડુ','3 pieces (75 g)',3,17,5,1,'bread');
+H('ravaidli','Rava idli','રવા ઈડલી','2 idli (100 g)',5,28,4,1.5,'bread',{step:1});
+H('semiyaupma','Semiya (vermicelli) upma','સેમિયા ઉપમા','1 cup (180 g)',5,32,7,2,'bread',{nj:1});
+H('pongal','Ven pongal','પોંગલ','1 cup (200 g)',7,38,8,2,'bread');
+H('oatsupma','Oats upma','ઓટ્સ ઉપમા','1 cup (180 g)',6,28,6,4,'bread');
+H('besanpudla','Besan pudla / chilla','બેસનના પૂડલા','2 pudla (100 g)',9,20,7,4,'bread',{g:1,al:'cheela'});
+H('tomatorice','Tomato rice','ટામેટા ભાત','1 cup (200 g)',4,45,7,2,'bread',{nj:1});
+H('sambarrice','Sambar rice','સાંભાર ભાત','1 bowl (250 g)',8,50,7,4,'bread');
+H('bisibele','Bisi bele bath','બિસિ બેલે ભાત','1 bowl (250 g)',9,50,8,5,'bread');
+H('tamarindrice','Tamarind rice (puliyogare)','આમલી ભાત','1 cup (200 g)',4,46,9,2,'bread');
+H('coconutrice','Coconut rice','નાળિયેર ભાત','1 cup (200 g)',4,45,11,2.5,'bread');
+H('peaspulao','Peas pulao','વટાણા પુલાવ','1 cup (200 g)',6,44,6,4,'bread',{nj:1});
+H('masalabhaat','Masale bhaat','મસાલા ભાત','1 cup (200 g)',5,46,8,3,'bread');
+H('vagharbhaat','Vagharelo bhaat','વઘારેલો ભાત','1 cup (200 g)',4,40,6,1.5,'bread',{g:1});
+H('palakkhichdi','Palak khichdi','પાલક ખીચડી','1 bowl (200 g)',8,36,5,5,'bread',{g:1});
+H('bajrakhichdi','Bajra khichdi','બાજરી ખીચડી','1 bowl (200 g)',9,40,6,6,'bread',{g:1});
+H('daliakhichdi','Dalia (broken wheat) khichdi','દલિયા ખીચડી','1 bowl (200 g)',7,40,4,6,'bread');
+H('samarice','Sama rice (vrat), cooked','સામો','1 cup (150 g)',3,34,1,4,'bread',{g:1,al:'barnyard millet fasting'});
+H('quinoa','Quinoa, cooked','ક્વિનોઆ','1 cup (185 g)',8,39,3.6,5,'bread');
+H('ragimudde','Ragi mudde','રાગી મુદ્દે','1 ball (150 g)',4,36,1,4,'bread');
+H('toast','Toast with butter','બ્રેડ ટોસ્ટ','1 slice',2.5,13,4,0.7,'bread',{step:1});
+H('breadbutterjam','Bread, butter and jam','બ્રેડ બટર જામ','2 slices',5,38,8,1.5,'bread',{step:1});
+H('cheesesandwich','Cheese sandwich','ચીઝ સેન્ડવિચ','2 slices bread + cheese',10,28,12,2,'bread',{step:1});
+H('pbtoast','Peanut butter toast','પીનટ બટર ટોસ્ટ','1 slice + 1 tbsp',5,16,9,2,'bread',{step:1});
+// dal and legumes
+H('masoor','Masoor dal','મસૂર દાળ','1 katori (150 g)',8,20,3,4,'dal');
+H('urad','Urad dal','અડદ દાળ','1 katori (150 g)',9,18,4,5,'dal');
+H('panchmel','Panchmel dal','પંચમેલ દાળ','1 katori (150 g)',7,19,5,5,'dal');
+H('rasam','Rasam','રસમ','1 katori (150 g)',1.5,8,2,1,'dal');
+H('tuverlilva','Tuver lilva sabzi','તુવેર લીલવા','1 katori (150 g)',5,14,5,6,'dal',{g:1});
+H('kalachana','Kala chana curry','કાળા ચણા','1 katori (150 g)',9,24,5,8,'dal');
+H('lobia','Lobia (black-eyed pea) curry','ચોળી','1 katori (150 g)',7,18,4,6,'dal',{g:1,al:'chori chawli'});
+H('sproutscurry','Moong sprouts curry','મગની ઉસળ','1 katori (150 g)',7,14,3,5,'dal');
+H('matki','Matki (moth bean) usal','મઠ','1 katori (150 g)',8,19,4,6,'dal',{g:1});
+H('dalpalak','Dal palak','દાળ પાલક','1 katori (150 g)',8,16,4,5,'dal');
+H('soyakeema','Soya keema','સોયા કીમા','1 katori (150 g)',12,12,6,6,'dal',{nj:1});
+H('soyadry','Soya chunks, dry','સોયા ચંક્સ','30 g',15.5,10,0.4,4,'dal');
+// sabzi, salads, chutneys
+H('aloomatar','Aloo matar','આલુ વટાણા','1 katori (150 g)',4,19,6,4,'sabzi');
+H('aloomethi','Aloo methi','આલુ મેથી','1 katori (150 g)',3,15,6,3.5,'sabzi');
+H('aloopalak','Aloo palak','આલુ પાલક','1 katori (150 g)',3,13,6,3.5,'sabzi');
+H('jeeraaloo','Jeera aloo','જીરા આલુ','1 katori (150 g)',2.5,18,6,3,'sabzi');
+H('dumaloo','Dum aloo (home style)','દમ આલુ','1 katori (150 g)',3,17,9,3,'sabzi');
+H('jalfrezi','Veg jalfrezi','વેજ જલફ્રેઝી','1 katori (150 g)',3,10,7,3.5,'sabzi',{nj:1});
+H('matarpaneer','Matar paneer','મટર પનીર','1 katori (150 g)',11,12,15,4,'sabzi');
+H('mushroommatar','Mushroom matar','મશરૂમ વટાણા','1 katori (150 g)',5,9,6,3,'sabzi',{nj:1});
+H('bharelaringan','Bharela ringan (stuffed brinjal)','ભરેલા રીંગણ','1 katori (150 g)',3,10,9,4,'sabzi',{g:1});
+H('koftacurry','Lauki kofta curry','દૂધીના કોફતા','1 katori (150 g)',5,18,10,3,'sabzi');
+H('laukichana','Dudhi chana dal sabzi','દૂધી ચણાની દાળ','1 katori (150 g)',6,15,5,4,'sabzi',{g:1});
+H('sarson','Sarson ka saag','સરસવનું શાક','1 katori (150 g)',5,8,8,5,'sabzi');
+H('methisabzi','Methi sabzi','મેથીની ભાજી','1 katori (150 g)',3,7,5,4,'sabzi',{g:1});
+H('besancapsicum','Shimla mirch besan sabzi','કેપ્સિકમ બેસન','1 katori (150 g)',5,10,7,4,'sabzi',{g:1});
+H('parwal','Parwal sabzi','પરવળ','1 katori (150 g)',3,9,5,3,'sabzi',{g:1});
+H('vegstirfry','Veg stir-fry (1 tsp oil)','વેજ સ્ટર ફ્રાય','1 katori (150 g)',3,9,6,3.5,'sabzi',{nj:1});
+H('boiledveg','Boiled / steamed vegetables','બાફેલા શાક','1 bowl (150 g)',3,12,0.5,5,'sabzi');
+H('palaksoup','Palak soup','પાલક સૂપ','1 bowl (250 ml)',3,9,4,2.5,'sabzi');
+H('kachumber','Kachumber salad','કચુંબર','1 bowl (100 g)',1,8,0.3,2,'sabzi');
+H('onionsalad','Onion salad','ડુંગળી સલાડ','1 plate (60 g)',1,8,0.1,1.5,'sabzi',{nj:1});
+H('boondiraita','Boondi raita','બુંદી રાયતું','1 katori (150 g)',3,10,5,0.5,'sabzi',{g:1});
+H('greenchutney','Green chutney','લીલી ચટણી','1 tbsp (15 g)',0.3,1.5,0.2,0.5,'sabzi',{step:1,g:1});
+H('imlichutney','Tamarind (imli) chutney','આમલીની ચટણી','1 tbsp (15 g)',0.2,9,0.1,0.3,'sabzi',{step:1});
+H('peanutchutney','Peanut chutney','સિંગની ચટણી','2 tbsp (30 g)',3,3,6,1.5,'sabzi',{g:1});
+H('coconutchutney','Coconut chutney','નાળિયેર ચટણી','2 tbsp (30 g)',1,2.5,6,1.5,'sabzi');
+H('tomatochutney','Tomato chutney','ટામેટાની ચટણી','1 tbsp (15 g)',0.3,2,1,0.3,'sabzi',{step:1});
+H('mangopickle','Mango pickle (achar)','અથાણું','1 tsp (5 g)',0.1,0.6,1.5,0.2,'sabzi',{step:1,g:1});
+H('chhundo','Chhundo (sweet mango pickle)','છુંદો','1 tbsp (20 g)',0.2,10,0.2,0.5,'sabzi',{step:1,g:1});
+H('papad','Papad, roasted','પાપડ','1 piece',1.5,5,0.3,1,'sabzi',{step:1,g:1});
+H('papadfried','Papad, fried','તળેલો પાપડ','1 piece',1.5,5,4.5,1,'sabzi',{step:1,g:1});
+// snacks
+H('sevplain','Sev (besan)','સેવ','30 g',4,14,10,2,'snack',{cheat:1,g:1});
+H('kachori','Dal kachori','કચોરી','1 piece (60 g)',5,28,14,3,'snack',{cheat:1,step:1,g:1});
+H('aloobonda','Aloo bonda','બટાકા વડા','2 pieces (100 g)',4,25,12,2.5,'snack',{cheat:1,nj:1});
+H('onionpakoda','Onion pakoda','ડુંગળી ભજીયા','5 pieces (50 g)',3,15,10,2,'snack',{cheat:1,nj:1});
+H('paneerpakoda','Paneer pakoda','પનીર પકોડા','3 pieces (75 g)',7,10,12,1,'snack',{cheat:1});
+H('mirchibajji','Mirchi bajji','મરચાના ભજીયા','2 pieces (60 g)',3,14,8,2,'snack',{cheat:1,g:1});
+H('vegcutlet','Veg cutlet','વેજ કટલેસ','2 pieces (80 g)',4,22,9,3,'snack',{nj:1});
+H('harabharahome','Hara bhara kabab (home)','હરા ભરા કબાબ','3 pieces (90 g)',6,16,8,4,'snack');
+H('dahivada','Dahi vada','દહીં વડા','2 pieces (150 g)',8,25,10,2,'snack');
+H('sabudanavada','Sabudana vada','સાબુદાણા વડા','2 pieces (80 g)',3,32,12,1.5,'snack',{cheat:1,g:1});
+H('cornchaat','Corn chaat','કોર્ન ચાટ','1 bowl (150 g)',4,26,4,3.5,'snack');
+H('chanachaat','Chana chaat','ચણા ચાટ','1 bowl (150 g)',8,24,4,6,'snack');
+H('murmura','Murmura (puffed rice)','મમરા','1 cup (15 g)',1,12,0.1,0.3,'snack',{g:1,al:'mamra'});
+H('masalapeanut','Masala peanuts','મસાલા સિંગ','30 g',6,8,12,2.5,'snack',{g:1});
+H('ragdapatties','Ragda patties','રગડા પેટીસ','1 plate (250 g)',10,45,12,8,'snack',{cheat:1,nj:1});
+H('khari','Khari biscuit','ખારી','2 pieces (20 g)',2,12,6,0.5,'snack',{step:1});
+H('creambiscuit','Cream biscuits','ક્રીમ બિસ્કિટ','2 pieces (25 g)',1,16,6,0.5,'snack',{cheat:1,step:1});
+H('cakeplain','Plain cake','કેક','1 slice (50 g)',3,32,10,0.8,'snack',{cheat:1,step:1});
+H('energyball','Date and nut energy ball','ખજૂર લાડુ','1 ball (25 g)',2,14,5,2,'snack',{step:1});
+H('mixednuts','Mixed nuts and dry fruits','ડ્રાય ફ્રૂટ','30 g',5,6,16,2.5,'basic');
+// sweets
+H('sheera','Sheera / rava halwa','શીરો','1 katori (100 g)',3,35,10,1,'sweet',{cheat:1,g:1,al:'sooji halwa'});
+H('barfi','Milk barfi','બરફી','1 piece (25 g)',3,14,5,0,'sweet',{cheat:1,step:1});
+H('coconutladoo','Coconut ladoo','નાળિયેર લાડુ','1 ladoo (30 g)',2,12,6,1.5,'sweet',{cheat:1,step:1});
+H('ravaladoo','Rava ladoo','રવા લાડુ','1 ladoo (30 g)',2,14,5,1,'sweet',{cheat:1,step:1});
+H('tilladoo','Til ladoo','તલના લાડુ','1 ladoo (25 g)',3,14,7,2,'sweet',{cheat:1,step:1,g:1});
+H('moongdalhalwa','Moong dal halwa','મગની દાળનો શીરો','1 katori (100 g)',5,30,16,2,'sweet',{cheat:1,g:1});
+H('lapsi','Lapsi (broken wheat sweet)','લાપસી','1 katori (100 g)',4,36,8,3,'sweet',{cheat:1,g:1});
+H('malpua','Malpua','માલપુઆ','1 piece (50 g)',2,22,9,0.5,'sweet',{cheat:1,step:1});
+H('modak','Modak (steamed)','મોદક','1 piece (45 g)',2,17,3,1,'sweet',{cheat:1,step:1});
+// dairy and protein
+H('fullmilk','Full-cream cow milk','ફુલ ક્રીમ દૂધ','1 glass (200 ml)',6.6,9.6,8,0,'dairy');
+H('skimmilk','Skimmed milk','સ્કિમ્ડ દૂધ','1 glass (200 ml)',7,10,0.4,0,'dairy');
+H('lowfatcurd','Low-fat curd','લો ફેટ દહીં','1 katori (100 g)',3.5,4.7,1,0,'dairy');
+H('fullcurd','Full-cream curd (thick)','જાડું દહીં','1 katori (100 g)',3.4,4.6,4.5,0,'dairy',{g:1});
+H('hungcurd','Hung curd','ચક્કા દહીં','2 tbsp (50 g)',3,2.5,3,0,'dairy');
+H('lowfatpaneer','Low-fat paneer','લો ફેટ પનીર','100 g',18,3.5,8,0,'dairy');
+H('cream','Fresh cream (malai)','મલાઈ','1 tbsp (15 g)',0.4,0.6,3.8,0,'dairy',{step:1});
+H('condensed','Condensed milk','કન્ડેન્સ્ડ મિલ્ક','1 tbsp (20 g)',1.5,11,1.7,0,'dairy',{step:1});
+H('milkpowder','Milk powder (full cream)','મિલ્ક પાવડર','2 tbsp (15 g)',3.9,5.7,3.9,0,'dairy',{step:1});
+H('mawa','Khoa / mawa','માવો','30 g',4.5,7,6,0,'dairy');
+H('tofubhurji','Tofu bhurji','ટોફુ ભુરજી','100 g',11,4,8,1.5,'dairy',{nj:1});
+H('wheymilk','Whey protein with toned milk','પ્રોટીન શેક (દૂધ સાથે)','1 scoop + 200 ml milk',30.6,12.6,7.7,0,'dairy',{step:1});
+H('besan','Besan (gram flour), raw','બેસન','2 tbsp (20 g)',4.5,11,1.2,2,'basic');
+// basics: oils, sweeteners, seeds, raw vegetables
+H('oil','Cooking oil','તેલ','1 tsp (5 g)',0,0,5,0,'basic',{step:1,al:'tel refined sunflower groundnut mustard'});
+H('jaggery','Jaggery (gur)','ગોળ','1 tsp (5 g)',0,4.7,0,0,'basic',{step:1,g:1,al:'gud'});
+H('sugar','Sugar','ખાંડ','1 tsp (4 g)',0,4,0,0,'basic',{step:1,al:'cheeni'});
+H('honey','Honey','મધ','1 tsp (7 g)',0,5.8,0,0,'basic',{step:1});
+H('sesame','Sesame seeds (til)','તલ','1 tsp (3 g)',0.5,0.7,1.5,0.4,'basic',{step:1,g:1});
+H('sunflowerseed','Sunflower seeds','સૂર્યમુખીના બીજ','1 tbsp (9 g)',1.9,1.8,4.7,0.8,'basic',{step:1});
+H('coconutgrated','Grated coconut','ખમણેલું નાળિયેર','2 tbsp (20 g)',0.7,3,6.6,1.8,'basic',{g:1});
+H('tomato','Tomato (raw)','ટામેટા','1 medium (100 g)',0.9,3.9,0.2,1.2,'sabzi',{step:1});
+H('carrot','Carrot (raw)','ગાજર','1 medium (60 g)',0.6,5.8,0.1,1.7,'sabzi',{step:1});
+H('onionraw','Onion (raw)','ડુંગળી','1 medium (100 g)',1.1,9.3,0.1,1.7,'sabzi',{step:1,nj:1});
+H('beetroot','Beetroot','બીટ','1 small (80 g)',1.3,7.7,0.1,2,'sabzi',{step:1});
+H('radish','Mooli (radish)','મૂળા','1 small (60 g)',0.4,2,0.1,0.9,'sabzi',{step:1,nj:1});
+H('peasboiled','Green peas, boiled','વટાણા','1/2 cup (80 g)',4.2,11,0.3,4,'sabzi');
+H('cabbageraw','Cabbage (raw)','કોબી','1 cup (70 g)',1,4,0.1,1.8,'sabzi');
+H('spinachraw','Spinach (raw)','પાલક','1 cup (30 g)',0.9,1.1,0.1,0.7,'sabzi');
+// drinks
+H('blacktea','Black tea (no sugar)','બ્લેક ટી','1 cup (150 ml)',0,0.3,0,0,'drink',{step:1});
+H('filtercoffee','South Indian filter coffee','ફિલ્ટર કોફી','1 cup (150 ml)',2.5,9,3,0,'drink',{step:1});
+H('thandai','Thandai','ઠંડાઈ','1 glass (200 ml)',6,26,9,1,'drink');
+H('kesarmilk','Kesar (saffron) milk','કેસર દૂધ','1 glass (200 ml, 2 tsp sugar)',6.6,17,6.5,0,'drink');
+H('saltedlassi','Salted lassi','મીઠી વગરની લસ્સી','1 glass (250 ml)',7,9,5,0,'drink');
+H('mangolassi','Mango lassi','મેંગો લસ્સી','1 glass (250 ml)',6,38,5,0.5,'drink');
+H('watermelonjuice','Watermelon juice','તડબૂચ જ્યુસ','1 glass (250 ml)',1,14,0.4,0.3,'drink');
+H('pomjuice','Pomegranate juice','દાડમ જ્યુસ','1 glass (200 ml)',0.3,26.2,0.6,0.2,'drink');
+H('mosambijuice','Mosambi juice','મોસંબી જ્યુસ','1 glass (250 ml)',1.5,23,0.3,0.5,'drink');
+H('carrotjuice','Carrot juice','ગાજર જ્યુસ','1 glass (250 ml)',2,20,0.4,1,'drink');
+H('beetrootjuice','Beetroot juice','બીટ જ્યુસ','1 glass (200 ml)',1.5,16,0.2,0.8,'drink');
+H('bananashake','Banana milkshake','બનાના શેક','1 glass (300 ml)',9,38,7,2,'drink');
+// ready combos
+H('dalchawal','Dal chawal','દાળ ભાત','1 katori dal + 1 katori rice',10,58,3.9,5.6,'bread',{g:1});
+H('khichdikadhi','Khichdi kadhi','ખીચડી કઢી','1 bowl khichdi + 1 katori kadhi',11,48,8,5,'bread',{g:1});
+H('rajmachawal','Rajma chawal','રાજમા ચાવલ','1 katori rajma + 1 katori rice',12,62,4.4,8.6,'bread');
+H('rotidalsabzi','Roti, dal and sabzi plate','રોટલી દાળ શાક','2 roti + 1 katori dal + 1 katori sabzi',14.2,56,10.7,13,'bread',{g:1});
+H('cholebhature','Chole bhature','છોલે ભટુરા','1 katori chole + 2 bhatura',21,105,35.5,12,'bread',{cheat:1,nj:1});
+H('curdricepickle','Curd rice with pickle','દહીં ભાત','1 katori curd + 1 katori rice',7.2,46.5,3.4,0.8,'bread');
+// categories for the older foods so every chip finds them
+const CATMAP={bread:'roti rotla thepla khakhra paratha rice pulao poha upma oats idli chilla puri bhakri naan dosa uttapam brownrice jeerarice curdrice daliya sabudana khichdi khichu sandwich missi makai jowar ragiroti brownbread whitebread pav lemonrice cornflakes granola friedrice dhebra',
+ dal:'gdal mdal kadhi sambar rajma chole usal dalDhokli sprouts chana toor chanadal dalfry dalmakhani mug mutter valnu soya',
+ sabzi:'bhindi ringan bataka dudhi tindora sevtameta undhiyu palak bhurji mixveg salad raita soup gavar turia kobi karela cauli paneermasala palakpaneer bharta mushroom cucumber corn bpotato sweetpot',
+ snack:'dhokla handvo muthiya khandvi patra sevkhamani ganthiya chakri mathri chevdo popcorn bhelpuri fafda samosa vadapav pavbhaji panipuri dabeli bhajiya dalvada biscuit marie rusk roastedchana makhana locho proteinbar momos',
+ dairy:'curd chaas milk paneer cheese whey soymilk greekyogurt tofu hummus falafel paneertikka',
+ basic:'ghee butter jam pbutter almond peanut cashew walnut raisin pistachio pumpkinseed chia flax'};
+for(const c in CATMAP)for(const id of CATMAP[c].split(' '))if(FD[id]&&!FD[id].cat)FD[id].cat=c;
 // ---------- body numbers ----------
 function calcPlan(p){
   const w=+p.w,h=+p.h,age=+p.age,tw=+p.tw,pace=+p.pace;
@@ -1097,7 +1276,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 xp undo fix';
+const APP_VER='2026.10.23 home foods';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1552,7 +1731,7 @@ function sheetBody(){
   const ex=sheetExtra();if(ex)return ex;
   if(s.type==='food'){
     if(s.sel){const f=FD[s.sel],q=s.qty;return '<h2>'+f.name+'<span class="gu">'+f.gu+'</span></h2><p class="muted">1 serving = '+f.serv+'</p>'+(f.brand?'<p class="note">Source: '+esc(BRANDS[f.brand].note)+' Values are approximate and can vary by outlet.</p>':'')+qtyPicker(f,q)+'<button class="btn full" data-a="confirmfood">Add to '+SLOTN[s.slot]+'</button><button class="btn ghost full" data-a="unpick">Back to search</button>'+(f.custom?'<button class="btn ghost full" data-a="delcustom">Delete this custom food</button>':'');}
-    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, diet coke, kiwi…" autocomplete="off" value="'+esc(s.q||'')+'"><div class="row wrap">'+[['','All'],['fruit','Fruits'],['drink','Drinks'],['sweet','Sweets and treats'],['rest','Restaurant'],['brand','Brands'],['custom','My foods']].map(c=>'<button class="chip'+((s.cat||'')===c[0]?' on':'')+'" data-a="fcat" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'</div>'+(((s.cat||'')==='brand')?brandBar(s):'')+'<div id="fres">'+foodRes(s.q||'')+'</div><button class="btn ghost full" data-a="restosheet" data-s="'+s.slot+'">Eating out? Restaurant mode</button><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
+    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, diet coke, kiwi…" autocomplete="off" value="'+esc(s.q||'')+'"><div class="row wrap">'+[['','All'],['bread','Rotis and rice'],['dal','Dal and legumes'],['sabzi','Sabzi and sides'],['snack','Snacks'],['sweet','Sweets and treats'],['dairy','Dairy and protein'],['fruit','Fruits'],['drink','Drinks'],['basic','Basics'],['rest','Restaurant'],['brand','Brands'],['custom','My foods']].map(c=>'<button class="chip'+((s.cat||'')===c[0]?' on':'')+'" data-a="fcat" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'</div>'+(((s.cat||'')==='brand')?brandBar(s):'')+'<div id="fres">'+foodRes(s.q||'')+'</div><button class="btn ghost full" data-a="restosheet" data-s="'+s.slot+'">Eating out? Restaurant mode</button><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
   }
   if(s.type==='custom')return '<h2>Custom food</h2><p class="muted">Enter what is on the label, or your best estimate. If you leave calories blank, they are worked out from protein, carbs and fat.</p><label class="field">Name<input type="text" id="cn" placeholder="e.g. Aunty\u2019s sev puri"></label><label class="field">Serving size<input type="text" id="cs" placeholder="e.g. 1 plate, 100 g" value="1 serving"></label><div class="row"><label class="field" style="flex:1">Protein (g)<input type="number" inputmode="decimal" id="cp" placeholder="0"></label><label class="field" style="flex:1">Carbs (g)<input type="number" inputmode="decimal" id="cc" placeholder="0"></label></div><div class="row"><label class="field" style="flex:1">Fat (g)<input type="number" inputmode="decimal" id="cf" placeholder="0"></label><label class="field" style="flex:1">Calories (kcal)<input type="number" inputmode="decimal" id="ck" placeholder="auto"></label></div><div class="row"><label class="field" style="flex:1">Fibre (g)<input type="number" inputmode="decimal" id="cfi" placeholder="0"></label><div style="flex:1"></div></div><p class="err" id="cerr"></p><button class="btn full" data-a="saveccustom">Save food</button><p class="note">It is saved under My foods, so you can find it by search next time. Fibre is optional, and label carbs already include it.</p>';
   if(s.type==='planswap'){

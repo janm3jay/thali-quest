@@ -197,6 +197,12 @@ svg .ol{fill:none;stroke:#7d8591;stroke-width:1.3;stroke-linejoin:round;vector-e
 #mini .mst{display:flex;align-items:center;color:var(--pop);font:800 16px var(--display);flex:none}#mini .mst .ic{width:17px;height:17px;fill:var(--pop)}
 @media (prefers-reduced-motion:reduce){#mini{transition:none}}
 .mb .ml{display:inline-flex;align-items:center;gap:5px}.mb .ml .ic{width:15px;height:15px;stroke-width:2.2}.mb.p .ml .ic{color:var(--accent)}.mb.c .ml .ic{color:var(--cyan)}.mb.f .ml .ic{color:var(--gold)}.mb.fi .ml .ic{color:var(--pop)}
+#scanbox{display:none;position:relative;border-radius:18px;overflow:hidden;background:#000;aspect-ratio:4/3;border:2.5px solid var(--edge)}
+#scanbox.on{display:block}
+#scanbox video{width:100%;height:100%;object-fit:cover;display:block}
+#scanbox .sline{position:absolute;left:8%;right:8%;height:3px;border-radius:3px;background:#ff5a4d;box-shadow:0 0 12px #ff5a4d;animation:bcs 1.8s ease-in-out infinite alternate}
+@keyframes bcs{from{top:18%}to{top:80%}}
+@media (prefers-reduced-motion:reduce){#scanbox .sline{animation:none;top:50%}}
 </style>
 </head><body>
 <div id="app"></div><nav id="nav"></nav><div id="sheetwrap"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -1318,7 +1324,7 @@ function adaptW(W,rating,pain){
 let S=null;
 const V={mk:'waist',tab:'today',day:null,sheet:null,form:null,onb:0,err:'',editing:false,resetAsk:false};
 const KEY='thali-quest-v1';
-const APP_VER='2026.10.23 sticky2';
+const APP_VER='2026.10.23 scan';
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1773,7 +1779,7 @@ function sheetBody(){
   const ex=sheetExtra();if(ex)return ex;
   if(s.type==='food'){
     if(s.sel){const f=FD[s.sel],q=s.qty;return '<h2>'+f.name+'<span class="gu">'+f.gu+'</span></h2><p class="muted">1 serving = '+f.serv+'</p>'+(f.brand?'<p class="note">Source: '+esc(BRANDS[f.brand].note)+' Values are approximate and can vary by outlet.</p>':'')+qtyPicker(f,q)+'<button class="btn full" data-a="confirmfood">Add to '+SLOTN[s.slot]+'</button><button class="btn ghost full" data-a="unpick">Back to search</button>'+(f.custom?'<button class="btn ghost full" data-a="delcustom">Delete this custom food</button>':'');}
-    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, diet coke, kiwi…" autocomplete="off" value="'+esc(s.q||'')+'"><div class="row wrap">'+[['','All'],['bread','Rotis and rice'],['dal','Dal and legumes'],['sabzi','Sabzi and sides'],['snack','Snacks'],['sweet','Sweets and treats'],['dairy','Dairy and protein'],['fruit','Fruits'],['drink','Drinks'],['basic','Basics'],['rest','Restaurant'],['brand','Brands'],['custom','My foods']].map(c=>'<button class="chip'+((s.cat||'')===c[0]?' on':'')+'" data-a="fcat" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'</div>'+(((s.cat||'')==='brand')?brandBar(s):'')+'<div id="fres">'+foodRes(s.q||'')+'</div><button class="btn ghost full" data-a="restosheet" data-s="'+s.slot+'">Eating out? Restaurant mode</button><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
+    return '<h2>Add to '+SLOTN[s.slot]+'</h2><input type="search" id="fq" placeholder="Search thepla, dal, diet coke, kiwi…" autocomplete="off" value="'+esc(s.q||'')+'"><button class="btn full" data-a="scan"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-3px;margin-right:8px"><path d="M3 7V4h3M21 7V4h-3M3 17v3h3M21 17v3h-3M7 8v8M11 8v8M15 8v8M18 8v8"/></svg>Scan a barcode</button><div class="row wrap">'+[['','All'],['bread','Rotis and rice'],['dal','Dal and legumes'],['sabzi','Sabzi and sides'],['snack','Snacks'],['sweet','Sweets and treats'],['dairy','Dairy and protein'],['fruit','Fruits'],['drink','Drinks'],['basic','Basics'],['rest','Restaurant'],['brand','Brands'],['custom','My foods']].map(c=>'<button class="chip'+((s.cat||'')===c[0]?' on':'')+'" data-a="fcat" data-v="'+c[0]+'">'+c[1]+'</button>').join('')+'</div>'+(((s.cat||'')==='brand')?brandBar(s):'')+'<div id="fres">'+foodRes(s.q||'')+'</div><button class="btn ghost full" data-a="restosheet" data-s="'+s.slot+'">Eating out? Restaurant mode</button><button class="btn ghost full" data-a="customsheet">Add a custom food</button>';
   }
   if(s.type==='custom')return '<h2>Custom food</h2><p class="muted">Enter what is on the label, or your best estimate. If you leave calories blank, they are worked out from protein, carbs and fat.</p><label class="field">Name<input type="text" id="cn" placeholder="e.g. Aunty\u2019s sev puri"></label><label class="field">Serving size<input type="text" id="cs" placeholder="e.g. 1 plate, 100 g" value="1 serving"></label><div class="row"><label class="field" style="flex:1">Protein (g)<input type="number" inputmode="decimal" id="cp" placeholder="0"></label><label class="field" style="flex:1">Carbs (g)<input type="number" inputmode="decimal" id="cc" placeholder="0"></label></div><div class="row"><label class="field" style="flex:1">Fat (g)<input type="number" inputmode="decimal" id="cf" placeholder="0"></label><label class="field" style="flex:1">Calories (kcal)<input type="number" inputmode="decimal" id="ck" placeholder="auto"></label></div><div class="row"><label class="field" style="flex:1">Fibre (g)<input type="number" inputmode="decimal" id="cfi" placeholder="0"></label><div style="flex:1"></div></div><p class="err" id="cerr"></p><button class="btn full" data-a="saveccustom">Save food</button><p class="note">It is saved under My foods, so you can find it by search next time. Fibre is optional, and label carbs already include it.</p>';
   if(s.type==='planswap'){
@@ -2091,6 +2097,7 @@ function sheetExtra2(s){
   if(s.type==='rem')return remSheet(s);
   if(s.type==='diary')return diarySheet(s);
   if(s.type==='video')return vidSheet(s);
+  if(s.type==='scan')return scanSheet(s);
   return null;
 }
 function restoCard(){return '<section class="card"><h2>Eating out?</h2><p class="muted" style="margin:4px 0 10px">Pick what you plan to order, see calories against your day, then log it in one tap.</p><button class="btn" data-a="restosheet" data-s="'+restoSlotGuess()+'">Restaurant mode</button></section>';}
@@ -2718,6 +2725,81 @@ function miniScroll(){
   miniEl.classList.toggle('show',on);
 }
 window.addEventListener('scroll',()=>{if(miniT)return;miniT=requestAnimationFrame(()=>{miniT=0;miniScroll();});},{passive:true});
+// ---- barcode scanning: camera or photo -> Open Food Facts -> custom food
+const BC={stream:null,t:0};
+function bcStop(){clearTimeout(BC.t);BC.t=0;if(BC.stream){try{BC.stream.getTracks().forEach(t=>t.stop());}catch(e){}BC.stream=null;}}
+(function(){const r0=render;render=function(){if(!(V.sheet&&V.sheet.type==='scan'))bcStop();return r0.apply(this,arguments);};})();
+function bcMsg(t,err){const m=document.getElementById('bcmsg');if(m){m.textContent=t;m.className='note'+(err?' err':'');}}
+function scanSheet(s){
+  return '<h2>Scan a barcode</h2><p class="muted">Point the camera at the barcode on a packet. We look it up in Open Food Facts, a free food database, and save it to My foods so the next scan works without internet.</p>'
+  +'<div id="scanbox"></div><button class="btn full" id="bcstart" data-a="scanstart">Start camera</button>'
+  +'<label class="field">Or type the number under the barcode<input type="text" id="bcin" inputmode="numeric" placeholder="e.g. 8901058852387" autocomplete="off"></label>'
+  +'<button class="btn ghost full" data-a="scango">Look it up</button>'
+  +'<label class="btn ghost full" style="text-align:center;cursor:pointer">Scan from a photo<input type="file" id="bcfile" accept="image/*" style="display:none"></label>'
+  +'<p class="note" id="bcmsg" aria-live="polite"></p>'
+  +'<p class="note">Packaged foods only. Values are per 100 g or per serving as printed on the pack, entered by volunteers, so check them against the label.</p>'
+  +'<button class="btn ghost full" data-a="unscan">Back to search</button>';
+}
+function scanOpen(){V.sheet={type:'scan',slot:V.sheet.slot};render();}
+function scanBack(){const sl=V.sheet&&V.sheet.slot;bcStop();V.sheet={type:'food',slot:sl};render();}
+async function scanStart(){
+  if(!('BarcodeDetector' in window)||!navigator.mediaDevices){bcMsg('Live scanning is not supported in this browser. Type the number under the barcode, or scan from a photo.',1);return;}
+  try{BC.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});}
+  catch(e){bcMsg('Camera access was blocked. Allow the camera for this app, or type the number instead.',1);return;}
+  const box=document.getElementById('scanbox');if(!box||!BC.stream){bcStop();return;}
+  box.className='on';box.innerHTML='<video playsinline muted autoplay></video><div class="sline"></div>';
+  const v=box.querySelector('video');v.srcObject=BC.stream;try{await v.play();}catch(e){}
+  const b=document.getElementById('bcstart');if(b)b.style.display='none';
+  bcMsg('Hold the barcode inside the frame…');
+  let det;try{det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']});}catch(e){det=new BarcodeDetector();}
+  const tick=async()=>{
+    if(!BC.stream)return;
+    try{const r=await det.detect(v);if(r&&r.length){bcFound(r[0].rawValue);return;}}catch(e){}
+    BC.t=setTimeout(tick,180);
+  };
+  tick();
+}
+function bcFound(code){bcStop();if(typeof buzz==='function')buzz(30);const box=document.getElementById('scanbox');if(box){box.className='';box.innerHTML='';}bcLookup(code);}
+async function scanPhoto(f){
+  if(!f)return;
+  if(!('BarcodeDetector' in window)){bcMsg('Photo scanning is not supported in this browser. Type the number instead.',1);return;}
+  bcMsg('Reading the photo…');
+  try{const bm=await createImageBitmap(f);const det=new BarcodeDetector();const r=await det.detect(bm);
+    if(r&&r.length){bcLookup(r[0].rawValue);return;}}catch(e){}
+  bcMsg('No barcode found in that photo. Try a sharper, closer shot or type the number.',1);
+}
+function bcNum(x){x=+x;return isFinite(x)&&x>=0?x:null;}
+async function bcLookup(raw){
+  const code=String(raw||'').replace(/\D/g,'');
+  if(code.length<8||code.length>14){bcMsg('A barcode has 8 to 13 digits. Check the number.',1);return;}
+  const sl=V.sheet&&V.sheet.slot;
+  if(!S.bc)S.bc={};
+  const hit=S.bc[code];
+  if(hit&&FD[hit]){V.sheet={type:'food',slot:sl,sel:hit,qty:1};render();toast('Found in My foods');return;}
+  bcMsg('Looking up '+code+'…');
+  let j;
+  try{
+    const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),10000);
+    const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+code+'.json?fields=product_name,brands,nutriments,serving_quantity',{signal:ctl.signal});
+    clearTimeout(tm);j=await r.json();
+  }catch(e){console.log('bcfail',e&&e.message);if(V.sheet&&V.sheet.type==='scan')bcMsg('Could not reach the food database. Check your internet and try again.',1);return;}
+  if(!(V.sheet&&V.sheet.type==='scan'))return;
+  const p=j&&j.status===1?j.product:null,n=(p&&p.nutriments)||{};
+  let kc=bcNum(n['energy-kcal_100g']);if(kc==null&&bcNum(n['energy_100g'])!=null)kc=bcNum(n['energy_100g'])/4.184;
+  const pr=bcNum(n.proteins_100g),ca=bcNum(n.carbohydrates_100g),fa=bcNum(n.fat_100g),fi=bcNum(n.fiber_100g)||0;
+  if(!p||(kc==null&&pr==null&&ca==null&&fa==null)){
+    V.pendBc=code;V.sheet={type:'custom',slot:sl};render();
+    toast(p?'No nutrition listed for it. Enter the label values once.':'Not in the database yet. Enter the label values once.');return;}
+  const sg=bcNum(p.serving_quantity),per=(sg&&sg>=5&&sg<=1000)?sg:100,m=per/100,r1=x=>Math.round((x||0)*m*10)/10;
+  const P=r1(pr),C=r1(ca),F=r1(fa),FI=r1(fi);
+  let K=kc!=null?Math.round(kc*m):Math.round(4*P+4*C+9*F);
+  if(!(K>0)||K>3000)K=Math.max(0,Math.min(3000,Math.round(4*P+4*C+9*F)));
+  if(!(K>0)){V.pendBc=code;V.sheet={type:'custom',slot:sl};render();toast('Nutrition data looks incomplete. Enter the label values.');return;}
+  let nm=((p.brands||'').split(',')[0].trim()+' '+(p.product_name||'Packaged food')).trim().replace(/\s+/g,' ').slice(0,60);
+  const cf={id:'c_'+uid(),name:nm,serv:per===100?'100 g':'1 serving ('+Math.round(per)+' g)',p:P,c:C,f:F,fi:FI,k:K,bc:code};
+  S.custom.push(cf);S.bc[code]=cf.id;regCustom(cf);saveS();
+  V.sheet={type:'food',slot:sl,sel:cf.id,qty:1};render();toast('Found it. Check against the pack');
+}
 
 // ---------- actions ----------
 function finishOnb(){
@@ -2805,7 +2887,11 @@ function onClick0(e){
     case 'editqty':{const it=DL(todayK()).items.find(x=>x.id===d.id);if(!it)return;V.sheet={type:'editqty',id:it.id,name:it.n,sv:it.sv,qty:it.q,u:{k:it.k/it.q,p:it.p/it.q,c:it.c/it.q,f:it.fa/it.q,fi:(it.fi||0)/it.q}};render();return;}
     case 'saveqty':{const sh=V.sheet,it=DL(todayK()).items.find(x=>x.id===sh.id);if(it&&sh.qty>0){it.q=sh.qty;it.k=Math.round(sh.u.k*sh.qty);it.p=+(sh.u.p*sh.qty).toFixed(1);it.c=+(sh.u.c*sh.qty).toFixed(1);it.fa=+(sh.u.f*sh.qty).toFixed(1);it.fi=+((sh.u.fi||0)*sh.qty).toFixed(1);}V.sheet=null;commit();toast('Amount updated');return;}
     case 'confirmfood':{addItem(todayK(),V.sheet.slot,V.sheet.sel,V.sheet.qty);V.sheet=null;commit();return;}
-    case 'customsheet':V.sheet={type:'custom',slot:V.sheet.slot};render();return;
+    case 'scan':scanOpen();return;
+    case 'unscan':scanBack();return;
+    case 'scanstart':scanStart();return;
+    case 'scango':bcLookup(($('#bcin')||{}).value);return;
+    case 'customsheet':V.pendBc=null;V.sheet={type:'custom',slot:V.sheet.slot};render();return;
     case 'saveccustom':{
       const n=$('#cn').value.trim(),sv=($('#cs').value||'').trim()||'1 serving',p=+$('#cp').value||0,c=+$('#cc').value||0,f=+$('#cf').value||0,fi=+($('#cfi')?$('#cfi').value:0)||0;let k=+$('#ck').value||0;
       if(!n){$('#cerr').textContent='Enter a name for the food.';return;}
@@ -2814,7 +2900,7 @@ function onClick0(e){
       if(!(k>0)){$('#cerr').textContent='Enter the calories, or at least one of protein, carbs or fat.';return;}
       if(k>3000||p>300||c>600||f>300||fi>100){$('#cerr').textContent='That looks too large for one serving. Check the numbers.';return;}
       if(!S.custom)S.custom=[];
-      const cf={id:'c_'+uid(),name:n,serv:sv,p,c,f,fi,k};S.custom.push(cf);regCustom(cf);
+      const cf={id:'c_'+uid(),name:n,serv:sv,p,c,f,fi,k};if(V.pendBc){cf.bc=V.pendBc;(S.bc=S.bc||{})[V.pendBc]=cf.id;V.pendBc=null;}S.custom.push(cf);regCustom(cf);
       V.sheet={type:'food',slot:V.sheet.slot,sel:cf.id,qty:1};saveS();render();return;}
     case 'delcustom':{const id=V.sheet.sel;S.custom=(S.custom||[]).filter(x=>x.id!==id);delete FD[id];V.sheet.sel=null;saveS();render();toast('Food deleted');return;}
     case 'delitem':{const dl=DL(todayK()),it=dl.items.find(i=>i.id===d.id);dl.items=dl.items.filter(i=>i.id!==d.id);
@@ -2888,6 +2974,7 @@ function onChange(e){
   const t=e.target;if(!S)return;
   if(t.dataset&&t.dataset.rt){remChange(t);return;}
   if(t.id==='socname'){const sd=socS();sd.name=t.value.trim().slice(0,24)||'Player';saveS();socPushNow().catch(()=>{});return;}
+  if(t.id==='bcfile'){const f=t.files&&t.files[0];t.value='';scanPhoto(f);return;}
   if(t.id==='phin'){const f=t.files&&t.files[0];t.value='';addPhotoFile(f);return;}
   if(t.id==='rsin'){const f=t.files&&t.files[0];t.value='';readRestore(f);return;}
   if(t.id==='s_days'||t.id==='s_equip'||t.id==='s_body'){
